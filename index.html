@@ -41,6 +41,12 @@ dialog{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
 dialog::backdrop{background:rgba(0,0,0,.6)}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#262b36;padding:10px 16px;border-radius:20px;display:none;z-index:9}
 .err{color:var(--bad)}
+.sub{color:var(--mut);font-size:12px}
+.warn{color:#fbbf24;font-size:13px}
+.catH{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-bottom:4px;border-bottom:1px solid var(--line);font-weight:600}
+.pl{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.catH+.pl{border-top:0}
+summary{cursor:pointer;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -64,10 +70,34 @@ const TRY = n => (Number(n) || 0).toLocaleString('tr-TR', {style:'currency', cur
 const num = v => { if (typeof v === 'string') v = parseFloat(v.replace(',', '.')); return Number.isFinite(v) ? v : 0; };
 const today = () => new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 const validDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d : '';
-const CATS = ['Meyve-Sebze','Et-Tavuk-Balık','Süt-Kahvaltılık','Fırın','Bakliyat-Makarna','İçecek','Atıştırmalık','Temizlik','Kişisel Bakım','Diğer'];
+const CATS = ['Meyve-Sebze','Et-Tavuk-Balık','Süt-Kahvaltılık','Fırın','Bakliyat-Makarna','Yağ-Sos-Baharat','İçecek','Atıştırmalık','Tatlı-Çikolata','Temizlik','Kişisel Bakım','Diğer'];
+const CAT_ICON = {'Meyve-Sebze':'🥬','Et-Tavuk-Balık':'🍗','Süt-Kahvaltılık':'🥛','Fırın':'🍞','Bakliyat-Makarna':'🍝','Yağ-Sos-Baharat':'🫒','İçecek':'🥤','Atıştırmalık':'🍪','Tatlı-Çikolata':'🍫','Temizlik':'🧽','Kişisel Bakım':'🧴','Diğer':'📦'};
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const monthName = k => { const [y,m] = k.split('-'); return MONTHS[+m-1] + ' ' + y; };
 const prevMonth = k => { const [y,m] = k.split('-').map(Number); const d = new Date(y, m-2, 1); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); };
+const DAYS = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const fmtDate = d => { const [y,m,dd] = d.split('-').map(Number); return dd + ' ' + MONTHS[m-1] + ' ' + y + ', ' + DAYS[new Date(y, m-1, dd).getDay()]; };
+const shortDate = d => { const [y,m,dd] = d.split('-').map(Number); return dd + ' ' + MONTHS[m-1].slice(0,3) + ' ' + y; };
+const STORES = {'bim':'BİM','bım':'BİM','a101':'A101','şok':'ŞOK','sok':'ŞOK','migros':'Migros','carrefoursa':'CarrefourSA','carrefour':'CarrefourSA'};
+function normStore(s){ s = String(s || '').trim(); const l = s.toLocaleLowerCase('tr');
+  for (const k in STORES) if (new RegExp('(^|[^a-z0-9çğıöşü])' + k + '([^a-z0-9çğıöşü]|$)').test(l)) return STORES[k];
+  return knownStores().find(k => key(k) === key(s)) || s; }
+const knownStores = () => { try { return JSON.parse(localStorage.getItem('stores') || '[]'); } catch(e) { return []; } };
+function learnStore(s){ if (!s) return; const a = knownStores(); if (a.some(k => key(k) === key(s))) return; a.push(s);
+  try { localStorage.setItem('stores', JSON.stringify(a)); } catch(e) {} }
+function dateWarn(d){
+  if (!validDate(d)) return 'Tarih okunamadı, lütfen gir.';
+  if (d > today()) return 'Tarih bugünden ileride, kontrol et.';
+  if (d < new Date(Date.now() - 400*864e5).toISOString().slice(0,10)) return 'Tarih bir yıldan eski görünüyor, kontrol et.';
+  return ''; }
+const key = s => String(s || '').toLocaleLowerCase('tr').trim();
+const catMap = () => { try { return JSON.parse(localStorage.getItem('catmap') || '{}'); } catch(e) { return {}; } };
+function learnCats(items){ const m = catMap(); items.forEach(i => { const k = key(i.generic || i.name); if (k && i.category) m[k] = i.category; });
+  try { localStorage.setItem('catmap', JSON.stringify(m)); } catch(e) {} }
+const nameMap = () => { try { return JSON.parse(localStorage.getItem('namemap') || '{}'); } catch(e) { return {}; } };
+function learnNames(items){ const m = nameMap();
+  items.forEach(i => { if (i.raw) m[key(i.raw)] = {name:i.name, brand:i.brand || '', generic:i.generic, category:i.category}; });
+  try { localStorage.setItem('namemap', JSON.stringify(m)); } catch(e) {} }
 function toast(t){ const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2600); }
 
 /* ---------- IndexedDB ---------- */
@@ -86,13 +116,20 @@ const DB = {
 
 /* ---------- Gemini ---------- */
 const PROMPT = `Bu bir Türkiye market fişi fotoğrafı. Fişi oku ve SADECE aşağıdaki JSON'u döndür:
-{"store":"market adı","date":"YYYY-MM-DD","total":0,"items":[{"name":"fişteki ürün adı (okunaklı hale getir)","generic":"markasız genel ürün adı, küçük harf, örn: süt, domates, ekmek, deterjan","qty":1,"unit":"adet|kg|lt","unit_price":0,"line_total":0,"category":"..."}]}
+{"store":"market adı","branch":"","date":"YYYY-MM-DD","time":"HH:MM","payment":"","total":0,"discount_total":0,"items":[{"raw":"fişte yazdığı gibi, aynen","name":"fişteki ürün adı (okunaklı hale getir)","uncertain":false,"brand":"","generic":"markasız genel ürün adı, küçük harf, örn: süt, domates, ekmek, deterjan","qty":1,"unit":"adet|kg|lt","unit_price":0,"discount":0,"line_total":0,"category":"..."}]}
 Kurallar:
 - Tutarlar TL, ondalık ayırıcı nokta olan sayı olsun.
 - Kiloyla satılan ürünlerde qty kg cinsinden, unit_price kg fiyatı olsun.
 - İndirim/kampanya satırı varsa ilgili ürünün line_total değerine yansıt; ayrı ürün olarak ekleme.
 - Poşet, KDV, toplam, ara toplam, kart/nakit satırlarını ürün olarak ekleme.
 - category şunlardan biri olsun: ${CATS.join(', ')}.
+- Tarih: Türk fişlerinde GG.AA.YYYY veya GG/AA/YYYY yazar (gün önce gelir). Fişin basıldığı tarihi YYYY-MM-DD yap; son kullanma tarihi, kampanya tarihi veya fiş/işlem numarasıyla karıştırma. Saat varsa time alanına HH:MM yaz.
+- Market adı: fiş başlığındaki market adını yaz. Zincir olabilir (BİM, A101, ŞOK, Migros, CarrefourSA) ya da yerel market olabilir (Tezgel Market gibi); yerelse başlıktaki adı düzgün yazımla, olduğu gibi ver. Şube/adres varsa kısaca branch alanına yaz.
+- raw: ürünün fişte yazdığı ham metin, kısaltmalar dahil aynen. name: bu metni okunaklı ürün adına çevir, kısaltmaları aç. Çözerken ürünün fiyatına, birimine ve fişteki diğer ürünlere bak, Türkiye market ürünlerini düşün. İnternette arama yapamazsın. Çözemezsen en olası tahmini name'e yaz ve uncertain'ı true yap; marka veya ürün uydurma.
+- brand: ürün adında marka varsa yaz (Pınar, Ülker, Eti gibi), yoksa boş bırak.
+- discount: o ürüne uygulanan indirim tutarı (pozitif sayı), yoksa 0. line_total indirim düşülmüş net tutardır. discount_total: fişteki toplam indirim.
+- payment: nakit veya kart, görünmüyorsa boş bırak.
+- Kategori için ürünün ne olduğuna bak: sebze, meyve → Meyve-Sebze; et, tavuk, balık, sucuk, salam → Et-Tavuk-Balık; yumurta, süt, peynir, yoğurt, zeytin, tereyağı → Süt-Kahvaltılık; ekmek, simit, poğaça → Fırın; makarna, pirinç, bulgur, mercimek, un, şeker → Bakliyat-Makarna; yağ, salça, ketçap, baharat, tuz, konserve → Yağ-Sos-Baharat; su, çay, kahve, meşrubat, meyve suyu → İçecek; cips, bisküvi, kuruyemiş → Atıştırmalık; çikolata, dondurma, tatlı → Tatlı-Çikolata; deterjan, çamaşır suyu, kâğıt havlu, tuvalet kâğıdı → Temizlik; şampuan, diş macunu, sabun → Kişisel Bakım.
 - Okuyamadığın alanı boş bırak veya 0 yaz, tahmin uydurma.`;
 
 async function analyze(b64){
@@ -112,11 +149,15 @@ async function analyze(b64){
   return JSON.parse(t.replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, ''));
 }
 function normItem(i){
-  const qty = num(i.qty) || 1; let lt = num(i.line_total); let up = num(i.unit_price);
+  const qty = num(i.qty) || 1; let lt = num(i.line_total); let up = num(i.unit_price); const discount = Math.abs(num(i.discount));
   if (!lt && up) lt = +(up*qty).toFixed(2);
-  if (!up && lt) up = +(lt/qty).toFixed(2);
-  return {name:String(i.name || ''), generic:String(i.generic || i.name || '').toLowerCase(), qty, unit:i.unit || 'adet',
-          unit_price:up, line_total:lt, category:CATS.includes(i.category) ? i.category : 'Diğer'};
+  if (lt && (!up || discount)) up = +(lt/qty).toFixed(2);
+  const raw = String(i.raw || '').trim(); const kn = raw ? nameMap()[key(raw)] : null;
+  const generic = kn ? kn.generic : String(i.generic || i.name || '').toLocaleLowerCase('tr').trim();
+  const learned = kn ? kn.category : catMap()[generic];
+  return {raw, uncertain:!kn && (i.uncertain === true || i.uncertain === 'true'), name:kn ? kn.name : String(i.name || ''),
+          brand:kn ? kn.brand : String(i.brand || ''), generic, qty, unit:i.unit || 'adet',
+          unit_price:up, discount, line_total:lt, category:learned && CATS.includes(learned) ? learned : (CATS.includes(i.category) ? i.category : 'Diğer')};
 }
 
 /* ---------- görsel ---------- */
@@ -127,7 +168,7 @@ function toJpeg(img, max, q){ const s = Math.min(1, max/Math.max(img.width, img.
   return c.toDataURL('image/jpeg', q); }
 
 /* ---------- sekmeler ---------- */
-let tab = 'ekle', draft = null, repMonth = '';
+let tab = 'ekle', draft = null, repMonth = '', detailId = null, detailFrom = 'fisler';
 function show(t){ tab = t; document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); render(); window.scrollTo(0,0); }
 function render(){ ({ekle:renderAdd, fisler:renderList, rapor:renderReport, ayar:renderSettings})[tab](); }
 
@@ -152,8 +193,10 @@ async function handleFile(f){
     const img = await loadImg(f);
     thumb = toJpeg(img, 700, .6);
     const data = await analyze(toJpeg(img, 2200, .85).split(',')[1]);
-    draft = {id:crypto.randomUUID(), thumb, store:data.store || '', date:validDate(data.date) || today(), total:num(data.total),
-             items:(data.items || []).map(normItem), isNew:true};
+    const items = (data.items || []).map(normItem);
+    draft = {id:crypto.randomUUID(), thumb, store:normStore(data.store), branch:String(data.branch || ''), date:validDate(data.date),
+             time:String(data.time || ''), payment:String(data.payment || ''), total:num(data.total),
+             discount_total:num(data.discount_total) || items.reduce((s, i) => s + (i.discount || 0), 0), items, isNew:true};
     renderAdd();
   } catch(e) {
     draft = {id:crypto.randomUUID(), thumb, store:'', date:today(), total:0, items:[], isNew:true};
@@ -167,14 +210,19 @@ function renderReview(){
   view.innerHTML = `<h2>${d.isNew ? 'Kontrol et ve kaydet' : 'Fişi düzenle'}</h2>
   <div class="card">
     ${d.thumb ? `<img src="${d.thumb}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:#000">` : ''}
-    <label class="f">Market</label><input data-k="store" value="${esc(d.store)}">
+    <label class="f">Market</label><input data-k="store" list="stores" value="${esc(d.store)}"><datalist id="stores">${[...new Set([...Object.values(STORES), ...knownStores()])].map(s => `<option value="${esc(s)}">`).join('')}</datalist>
+    <label class="f">Şube / adres (isteğe bağlı)</label><input data-k="branch" value="${esc(d.branch || '')}">
     <div class="row"><div style="flex:1"><label class="f">Tarih</label><input data-k="date" type="date" value="${esc(d.date)}"></div>
     <div style="flex:1"><label class="f">Fiş toplamı (TL)</label><input data-k="total" inputmode="decimal" value="${d.total || ''}"></div></div>
+    ${dateWarn(d.date) ? `<p class="warn">⚠️ ${dateWarn(d.date)}</p>` : `<p class="mut">📅 ${fmtDate(d.date)}</p>`}
     <p class="mut ${diff ? 'err' : ''}">Ürünlerin toplamı: ${TRY(sum)}${diff ? ' — fiş toplamıyla uyuşmuyor, satırları kontrol et.' : ''}</p>
   </div>
   <div class="card"><b>Ürünler (${d.items.length})</b>
-    ${d.items.map((it, i) => `<div class="item">
+    <div class="sub">Kategoriyi değiştirirsen uygulama hatırlar ve sonraki fişlerde aynı ürüne uygular.</div>
+    ${groupItems(d.items).map(([c, arr]) => `<div class="catH"><span>${CAT_ICON[c] || ''} ${esc(c)}</span><span class="sub">${TRY(arr.reduce((s, o) => s + (o.it.line_total || 0), 0))}</span></div>` + arr.map(({it, i}) => `<div class="item">
+      ${it.uncertain ? '<div class="warn">⚠️ Emin değilim, kontrol et</div>' : ''}
       <input data-i="${i}" data-f="name" value="${esc(it.name)}" placeholder="Ürün adı">
+      ${it.raw && key(it.raw) !== key(it.name) ? `<div class="sub">Fişte: ${esc(it.raw)}</div>` : ''}
       <div class="row" style="margin-top:6px">
         <input data-i="${i}" data-f="qty" inputmode="decimal" value="${it.qty}" style="width:64px" title="Miktar">
         <input data-i="${i}" data-f="unit" value="${esc(it.unit)}" style="width:62px">
@@ -184,7 +232,7 @@ function renderReview(){
       <div class="row" style="margin-top:6px">
         <input data-i="${i}" data-f="generic" value="${esc(it.generic)}" placeholder="genel ad">
         <select data-i="${i}" data-f="category">${CATS.map(c => `<option ${c === it.category ? 'selected' : ''}>${c}</option>`).join('')}</select>
-      </div></div>`).join('')}
+      </div></div>`).join('')).join('')}
     <button class="btn alt sm" data-act="addrow">+ Satır ekle</button>
   </div>
   <button class="btn" data-act="save">💾 Kaydet</button>
@@ -197,21 +245,23 @@ function onInput(e){
   if (t.dataset.f) {
     const it = draft.items[+t.dataset.i], f = t.dataset.f;
     if (['qty','line_total'].includes(f)) it[f] = num(t.value); else it[f] = t.value;
+    if (['name','generic','category'].includes(f)) it.uncertain = false;
     if (f === 'qty' || f === 'line_total') it.unit_price = it.qty ? +(it.line_total / it.qty).toFixed(2) : 0;
   }
 }
 
 /* ----- Fişler ----- */
 async function renderList(){
-  const all = (await DB.all()).sort((a, b) => b.date.localeCompare(a.date));
+  if (detailId) return renderDetail();
+  const all = (await DB.all()).sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0));
   if (!all.length) { view.innerHTML = '<h2>Fişler</h2><div class="card mut">Henüz fiş yok.</div>'; return; }
   let html = '<h2>Fişler</h2>', cur = '';
   for (const r of all) {
     const m = r.date.slice(0,7);
     if (m !== cur) { cur = m; html += `<div class="mut" style="margin:12px 4px 6px">${monthName(m)}</div>`; }
-    html += `<div class="card row" data-act="open" data-id="${r.id}" style="cursor:pointer">
+    html += `<div class="card row" data-act="view" data-id="${r.id}" style="cursor:pointer">
       ${r.thumb ? `<img class="thumb" src="${r.thumb}">` : ''}
-      <div style="flex:1"><b>${esc(r.store || 'Market')}</b><div class="mut">${r.date} · ${r.items.length} kalem</div></div>
+      <div style="flex:1"><b>${esc(r.store || 'Market')}</b><div class="mut">${fmtDate(r.date)}</div><div class="sub">${r.items.length} kalem</div></div>
       <b>${TRY(r.total || itemsSum(r))}</b></div>`;
   }
   view.innerHTML = html;
@@ -225,6 +275,7 @@ function unitPrices(rs){ const m = new Map();
   for (const a of m.values()) a.avg = a.ps.length ? a.ps.reduce((s, x) => s + x, 0) / a.ps.length : 0;
   return m; }
 async function renderReport(){
+  if (detailId) return renderDetail();
   const all = await DB.all();
   const months = [...new Set(all.map(r => r.date.slice(0,7)))].sort().reverse();
   if (!months.length) { view.innerHTML = '<h2>Rapor</h2><div class="card mut">Önce birkaç fiş ekle.</div>'; return; }
@@ -238,6 +289,7 @@ async function renderReport(){
   const cur = unitPrices(rs), old = unitPrices(prev);
   const prods = [...cur.values()].sort((a, b) => b.spent - a.spent);
   view.innerHTML = `<h2>Rapor</h2>
+  ${recentCard(all)}
   <select data-act="month">${months.map(m => `<option value="${m}" ${m === repMonth ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select>
   <div class="card" style="margin-top:10px"><div class="mut">Toplam harcama</div><div class="big">${TRY(T)}</div>
     <div class="mut">${rs.length} fiş${delta === null ? '' : ` · geçen aya göre <span class="${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '▲' : '▼'} %${Math.abs(delta).toFixed(0)}</span>`}</div></div>
@@ -261,6 +313,84 @@ async function productDetail(k){
    ${[...pts].reverse().map(x => `<div class="li" style="cursor:default"><span>${x.d} <span class="mut">${esc(x.s)}</span></span><b>${TRY(x.p)}/${esc(x.u)}</b></div>`).join('')}
    <button class="btn alt" data-act="close">Kapat</button>`;
   dlg.showModal();
+}
+
+/* ----- Fiş detayı ve analiz ----- */
+const pct = (a, b) => b ? (a - b) / b * 100 : 0;
+const arrow = p => `<span class="${p > 0 ? 'up' : 'down'}">${p > 0 ? '▲' : '▼'}%${Math.abs(p).toFixed(0)}</span>`;
+const rcTotal = x => x.total || itemsSum(x);
+function groupItems(items){ const g = {}; items.forEach((it, i) => (g[it.category] = g[it.category] || []).push({it, i}));
+  return CATS.filter(c => g[c]).map(c => [c, g[c]]); }
+function topCat(r){ const c = {}; r.items.forEach(i => c[i.category] = (c[i.category] || 0) + (i.line_total || 0));
+  return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0] || ''; }
+function hist(it, r, all){
+  const k = key(it.generic || it.name); if (!k || !it.unit_price) return null;
+  const pts = [];
+  for (const x of all) { if (x.id === r.id) continue;
+    for (const y of x.items) if (key(y.generic || y.name) === k && y.unit_price) pts.push({d:x.date, p:y.unit_price, s:x.store}); }
+  if (!pts.length) return null;
+  const prev = pts.filter(p => p.d <= r.date).sort((a, b) => b.d.localeCompare(a.d))[0] || null;
+  const best = pts.reduce((a, b) => b.p < a.p ? b : a);
+  return {prev, best};
+}
+function recentCard(all){
+  const rs = [...all].sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0)).slice(0, 8);
+  return `<div class="card"><b>Son alışverişler</b>
+    ${rs.map(r => { const tc = topCat(r);
+      return `<div class="li" data-act="view" data-id="${r.id}"><div><div><b>${esc(r.store || 'Market')}</b></div><div class="mut">${fmtDate(r.date)}</div>
+      <div class="sub">${r.items.length} kalem${tc ? ' · en çok: ' + (CAT_ICON[tc] || '') + ' ' + esc(tc) : ''}</div></div><b>${TRY(rcTotal(r))}</b></div>`; }).join('')}
+    ${all.length > rs.length ? `<button class="btn alt sm" data-act="all">Tümünü gör (${all.length})</button>` : ''}</div>`;
+}
+async function renderDetail(){
+  const all = await DB.all(); const r = all.find(x => x.id === detailId);
+  if (!r) { detailId = null; return render(); }
+  const others = all.filter(x => x.id !== r.id);
+  const sum = itemsSum(r), total = rcTotal(r), n = r.items.length;
+  const disc = r.discount_total || r.items.reduce((s, i) => s + (i.discount || 0), 0);
+  const avg = a => a.length ? a.reduce((s, x) => s + rcTotal(x), 0) / a.length : 0;
+  const avgAll = avg(others);
+  const same = others.filter(x => normStore(x.store) === normStore(r.store)), avgSame = avg(same);
+  const cmp = (a, b) => '%' + Math.abs(pct(a, b)).toFixed(0) + (a > b ? ' üstünde' : ' altında');
+  const groups = groupItems(r.items).map(([c, arr]) => ({c, arr, sum:arr.reduce((s, o) => s + (o.it.line_total || 0), 0)})).sort((a, b) => b.sum - a.sum);
+  const hists = r.items.map(it => hist(it, r, all));
+  const rises = [], drops = [], cheaper = [];
+  r.items.forEach((it, i) => { const h = hists[i]; if (!h) return;
+    if (h.prev) { const c = pct(it.unit_price, h.prev.p); if (c >= 5) rises.push({it, h, c}); else if (c <= -5) drops.push({it, h, c}); }
+    if (normStore(h.best.s) !== normStore(r.store) && h.best.p < it.unit_price * 0.95) cheaper.push({it, h, save:(it.unit_price - h.best.p) * (it.qty || 1)}); });
+  rises.sort((a, b) => b.c - a.c); drops.sort((a, b) => a.c - b.c); cheaper.sort((a, b) => b.save - a.save);
+  const top3 = [...r.items].sort((a, b) => (b.line_total || 0) - (a.line_total || 0)).slice(0, 3);
+  const L = [];
+  L.push(`📦 ${n} kalem, kalem başı ortalama ${TRY(n ? sum / n : 0)}`);
+  if (groups[0] && sum) L.push(`${CAT_ICON[groups[0].c] || ''} En büyük grup: ${esc(groups[0].c)} — toplamın %${(groups[0].sum / sum * 100).toFixed(0)}'i`);
+  if (top3.length && sum) L.push(`💸 En çok harcanan: ${top3.map(i => `${esc(i.name)} (${TRY(i.line_total)}, %${((i.line_total || 0) / sum * 100).toFixed(0)})`).join(', ')}`);
+  if (disc) L.push(`🏷️ İndirim: ${TRY(disc)} (indirimsiz tutarın %${(disc / (total + disc) * 100).toFixed(0)}'i)`);
+  if (avgAll) L.push(`🧺 Bu sepet, ${others.length} fişin ortalamasından (${TRY(avgAll)}) ${cmp(total, avgAll)}`);
+  if (avgSame) L.push(`🏪 ${esc(r.store)} ortalaması ${TRY(avgSame)} (${same.length} fiş), bu fiş ${cmp(total, avgSame)}`);
+  if (!others.length) L.push('Fiyat ve sepet karşılaştırmaları daha fazla fiş ekledikçe burada görünecek.');
+  const sec = (title, arr, fn) => arr.length ? `<div style="margin-top:12px"><div class="mut">${title}</div>${arr.slice(0, 5).map(fn).join('')}</div>` : '';
+  const lists = sec('Geçen alışverişe göre zamlananlar', rises, x => `<div class="pl"><span>${esc(x.it.name)}</span><span>${TRY(x.h.prev.p)} → ${TRY(x.it.unit_price)} ${arrow(x.c)}</span></div>`)
+    + sec('Ucuzlayanlar', drops, x => `<div class="pl"><span>${esc(x.it.name)}</span><span>${TRY(x.h.prev.p)} → ${TRY(x.it.unit_price)} ${arrow(x.c)}</span></div>`)
+    + sec('Daha önce başka yerde daha ucuz gördüklerin', cheaper, x => `<div class="pl"><span>${esc(x.it.name)}</span><span class="sub">${esc(x.h.best.s || '')}: ${TRY(x.h.best.p)} (şimdi ${TRY(x.it.unit_price)})</span></div>`);
+  const warns = [];
+  if (dateWarn(r.date)) warns.push(dateWarn(r.date));
+  if (r.total && Math.abs(sum - r.total) > 0.5) warns.push(`Ürünlerin toplamı (${TRY(sum)}) fiş toplamıyla (${TRY(r.total)}) uyuşmuyor.`);
+  const row = o => { const it = o.it, h = hists[o.i]; let ph = '';
+    if (h && h.prev) { const c = pct(it.unit_price, h.prev.p);
+      ph = `<div class="sub">Son: ${TRY(h.prev.p)} (${esc(h.prev.s || '')} · ${shortDate(h.prev.d)}) ${Math.abs(c) >= 1 ? arrow(c) : '≈ aynı'}</div>`; }
+    return `<div class="pl"><div><div>${esc(it.name)}${it.uncertain ? ' ⚠️' : ''}${it.brand ? ` <span class="sub">${esc(it.brand)}</span>` : ''}</div>
+      <div class="sub">${it.qty} ${esc(it.unit)} × ${TRY(it.unit_price)}${it.discount ? ` · indirim −${TRY(it.discount)}` : ''}</div>${ph}</div><b>${TRY(it.line_total)}</b></div>`; };
+  view.innerHTML = `<button class="btn alt sm" data-act="back">← Geri</button>
+  <div class="card"><div style="font-size:22px;font-weight:700">${esc(r.store || 'Market')}</div>
+    ${r.branch ? `<div class="mut">${esc(r.branch)}</div>` : ''}
+    <div style="margin-top:4px">📅 ${validDate(r.date) ? fmtDate(r.date) : 'Tarih yok'}${r.time ? ' · ' + esc(r.time) : ''}</div>
+    ${r.payment ? `<div class="mut">Ödeme: ${esc(r.payment)}</div>` : ''}
+    <div class="big" style="margin-top:8px">${TRY(total)}</div>
+    ${warns.map(w => `<p class="warn">⚠️ ${esc(w)}</p>`).join('')}</div>
+  <div class="card"><b>Analiz</b>${L.map(l => `<div class="pl" style="display:block">${l}</div>`).join('')}${lists}</div>
+  <div class="card"><b>Ürünler</b>${groups.map(g => `<div class="catH"><span>${CAT_ICON[g.c] || ''} ${esc(g.c)}</span><span>${TRY(g.sum)} <span class="sub">%${sum ? (g.sum / sum * 100).toFixed(0) : 0}</span></span></div>${g.arr.map(row).join('')}`).join('')}</div>
+  ${r.thumb ? `<div class="card"><details><summary>Fiş fotoğrafı</summary><img src="${r.thumb}" style="width:100%;margin-top:8px;border-radius:8px"></details></div>` : ''}
+  <button class="btn" data-act="edit">✏️ Düzenle / kategori düzelt</button>
+  <button class="btn bad" data-act="delview">🗑️ Fişi sil</button>`;
 }
 
 /* ----- Ayarlar ----- */
@@ -288,25 +418,34 @@ function download(name, text, type){ const a = document.createElement('a'); a.hr
 
 /* ---------- olaylar ---------- */
 document.addEventListener('input', onInput);
-document.addEventListener('change', e => { if (e.target.dataset.act === 'month') { repMonth = e.target.value; renderReport(); } else onInput(e); });
-$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) { if (b.dataset.tab === 'ekle' && tab === 'ekle') draft = null; show(b.dataset.tab); } };
+document.addEventListener('change', e => {
+  if (e.target.dataset.act === 'month') { repMonth = e.target.value; renderReport(); }
+  else { onInput(e); if (e.target.dataset.f === 'category' && draft) { const y = scrollY; renderReview(); scrollTo(0, y); } } });
+$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) { if (b.dataset.tab === 'ekle' && tab === 'ekle') draft = null; detailId = null; show(b.dataset.tab); } };
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT') return;
   const a = el.dataset.act;
   if (a === 'manual') { draft = {id:crypto.randomUUID(), thumb:'', store:'', date:today(), total:0, items:[], isNew:true}; renderAdd(); }
   else if (a === 'addrow') { draft.items.push(normItem({name:'', qty:1})); renderReview(); }
   else if (a === 'rm') { draft.items.splice(+el.dataset.i, 1); renderReview(); }
-  else if (a === 'cancel') { draft = null; show('fisler'); }
-  else if (a === 'save') { draft.items = draft.items.filter(i => i.name || i.line_total); if (!draft.total) draft.total = +itemsSum(draft).toFixed(2);
-    const r = {...draft}; delete r.isNew; await DB.put(r); draft = null; toast('Kaydedildi'); show('fisler'); }
-  else if (a === 'delete') { if (confirm('Bu fiş silinsin mi?')) { await DB.del(draft.id); draft = null; show('fisler'); } }
-  else if (a === 'open') { const r = (await DB.all()).find(x => x.id === el.dataset.id); draft = JSON.parse(JSON.stringify(r)); show('ekle'); }
+  else if (a === 'cancel') { const was = draft; draft = null; if (was && !was.isNew) { detailId = was.id; show(detailFrom); } else { detailId = null; show('fisler'); } }
+  else if (a === 'save') {
+    if (!validDate(draft.date)) { toast('Tarih gerekli'); return; }
+    draft.store = normStore(draft.store); draft.items = draft.items.filter(i => i.name || i.line_total); if (!draft.total) draft.total = +itemsSum(draft).toFixed(2);
+    const wasNew = draft.isNew; const r = {...draft}; delete r.isNew; if (!r.created) r.created = Date.now();
+    await DB.put(r); learnCats(r.items); learnNames(r.items); learnStore(r.store); draft = null; detailId = r.id; if (wasNew) detailFrom = 'fisler'; toast('Kaydedildi'); show(detailFrom); }
+  else if (a === 'delete') { if (confirm('Bu fiş silinsin mi?')) { await DB.del(draft.id); draft = null; detailId = null; show(detailFrom); } }
+  else if (a === 'view') { detailId = el.dataset.id; detailFrom = tab; show(tab); }
+  else if (a === 'back') { detailId = null; show(tab); }
+  else if (a === 'all') { show('fisler'); }
+  else if (a === 'edit') { const r = (await DB.all()).find(x => x.id === detailId); draft = JSON.parse(JSON.stringify(r)); show('ekle'); }
+  else if (a === 'delview') { if (confirm('Bu fiş silinsin mi?')) { await DB.del(detailId); detailId = null; show(tab); } }
   else if (a === 'prod') productDetail(el.dataset.k);
   else if (a === 'close') $('#dlg').close();
   else if (a === 'savekey') { localStorage.setItem('gkey', $('#gkey').value.trim()); localStorage.setItem('gmodel', $('#gmodel').value.trim() || 'gemini-flash-latest'); toast('Kaydedildi'); }
   else if (a === 'exportjson') download('fis-yedek-' + today() + '.json', JSON.stringify(await DB.all()), 'application/json');
-  else if (a === 'exportcsv') { const rows = [['tarih','market','urun','genel_ad','kategori','adet','birim','birim_fiyat','tutar']];
-    (await DB.all()).sort((x, y) => x.date.localeCompare(y.date)).forEach(r => r.items.forEach(i => rows.push([r.date, r.store, i.name, i.generic, i.category, i.qty, i.unit, i.unit_price, i.line_total])));
+  else if (a === 'exportcsv') { const rows = [['tarih','market','urun','marka','genel_ad','kategori','adet','birim','birim_fiyat','indirim','tutar']];
+    (await DB.all()).sort((x, y) => x.date.localeCompare(y.date)).forEach(r => r.items.forEach(i => rows.push([r.date, r.store, i.name, i.brand, i.generic, i.category, i.qty, i.unit, i.unit_price, i.discount, i.line_total])));
     download('fisler-' + today() + '.csv', '\ufeff' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
   else if (a === 'persist') { const ok = await navigator.storage?.persist?.(); toast(ok ? 'Kalıcı depolama açıldı' : 'Tarayıcı izin vermedi; uygulamayı ana ekrana ekleyip tekrar dene'); renderSettings(); }
   else if (a === 'wipe') { if (confirm('TÜM fişler silinecek. Emin misin?')) { await DB.clear(); toast('Silindi'); renderSettings(); } }
