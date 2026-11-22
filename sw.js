@@ -1,4 +1,4 @@
-const V = 'fis-v1';
+const V = 'fis-v3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

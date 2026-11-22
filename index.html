@@ -3,50 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#DDE2E6">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Fiş Arşivi</title>
 <style>
-:root{--bg:#0f1115;--card:#181b22;--line:#2a2f3a;--tx:#e8eaf0;--mut:#8b93a5;--pri:#14b8a6;--bad:#f87171;--ok:#4ade80}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:76px}
-main{max-width:640px;margin:0 auto;padding:12px 12px 24px}
-h2{margin:6px 0 10px;font-size:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
-.btn{display:block;width:100%;text-align:center;background:var(--pri);color:#04201d;border:0;border-radius:12px;padding:13px;font-size:16px;font-weight:600;margin:8px 0;cursor:pointer}
-.btn.alt{background:#262b36;color:var(--tx)}
-.btn.bad{background:#3b1d1d;color:var(--bad)}
-.btn.sm{display:inline-block;width:auto;padding:8px 12px;font-size:14px;margin:4px 4px 4px 0}
-input,select{width:100%;background:#0f1115;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:9px;font-size:15px}
-label.f{display:block;color:var(--mut);font-size:12px;margin:8px 0 3px}
+:root{color-scheme:light;
+  --desk:#DDE2E6;--paper:#FCFCFA;--ink:#1A2433;--mut:#5C6877;--line:#BAC3CC;--edge:#CBD2D9;--field:#F0F2F4;
+  --hl:#FFD84D;--on-hl:#2B2300;--bad:#B42318;--ok:#157347;--warn:#8A5A00;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Roboto Mono",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;
+  --desk:#0E1217;--paper:#1A2029;--ink:#E9EDF2;--mut:#9AA6B5;--line:#3A4451;--edge:#262E39;--field:#10151B;
+  --hl:#F5CF3E;--on-hl:#2B2300;--bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E}}
+:root[data-theme=dark]{color-scheme:dark;
+  --desk:#0E1217;--paper:#1A2029;--ink:#E9EDF2;--mut:#9AA6B5;--line:#3A4451;--edge:#262E39;--field:#10151B;
+  --hl:#F5CF3E;--on-hl:#2B2300;--bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--desk);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:84px}
+main{max-width:640px;margin:0 auto;padding:14px 14px 28px}
+h2{margin:8px 2px 14px;font-size:24px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
+.card{position:relative;background:var(--paper);border:1px solid var(--edge);border-radius:6px;padding:14px;margin-bottom:12px}
+.card.torn{margin-bottom:22px;border-bottom:0;border-radius:6px 6px 0 0}
+.card.torn::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-9px;height:9px;
+  background:linear-gradient(135deg,var(--paper) 50%,transparent 50%) 0 0/14px 14px,linear-gradient(225deg,var(--paper) 50%,transparent 50%) 7px 0/14px 14px;
+  filter:drop-shadow(0 1px 0 var(--edge))}
+.btn{display:block;width:100%;min-height:48px;text-align:center;background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:12px;font-size:16px;font-weight:700;margin:10px 0;cursor:pointer;font-family:inherit}
+.btn.alt{background:transparent;color:var(--ink)}
+.btn.bad{background:transparent;color:var(--bad);border-color:var(--bad)}
+.btn.sm{display:inline-block;width:auto;min-height:40px;padding:8px 14px;font-size:14px;margin:4px 6px 4px 0}
+.btn:disabled{opacity:.45}
+.btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,nav button:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+input,select{width:100%;min-height:44px;background:var(--field);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit}
+input:focus,select:focus{border-color:var(--ink)}
+input[type=range]{padding:0;border:0;min-height:32px;background:none;accent-color:var(--ink)}
+label.f{display:block;color:var(--mut);font-size:13px;margin:10px 0 4px}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{min-width:0}
-.mut{color:var(--mut);font-size:13px}
-.big{font-size:26px;font-weight:700}
-.up{color:var(--bad)}.down{color:var(--ok)}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#12151b;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 8px;font-size:12px}
-nav button span{display:block;font-size:20px}
-nav button.on{color:var(--pri)}
-.item{border-top:1px solid var(--line);padding:8px 0}
-.item .row input{padding:7px}
-.thumb{width:48px;height:64px;object-fit:cover;border-radius:6px;background:#000;flex:none}
-.bar{height:8px;background:#262b36;border-radius:4px;overflow:hidden;margin-top:3px}
-.bar i{display:block;height:100%;background:var(--pri)}
-.li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
-.li:first-of-type{border-top:0}
-dialog{background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:14px;width:min(92vw,520px);max-height:80vh}
-dialog::backdrop{background:rgba(0,0,0,.6)}
-#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#262b36;padding:10px 16px;border-radius:20px;display:none;z-index:9}
+.mut{color:var(--mut);font-size:14px}
+.sub{color:var(--mut);font-size:13px}
+.big{font-family:var(--mono);font-size:30px;line-height:1.25;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.hl{background:var(--hl);color:var(--on-hl);padding:0 .28em;margin:0 -.28em;border-radius:3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.up{color:var(--bad);font-weight:600}.down{color:var(--ok);font-weight:600}
 .err{color:var(--bad)}
-.sub{color:var(--mut);font-size:12px}
-.warn{color:#fbbf24;font-size:13px}
-.catH{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-bottom:4px;border-bottom:1px solid var(--line);font-weight:600}
-.pl{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.warn{color:var(--warn);font-size:14px;font-weight:600}
+.li>b,.pl>b,.card.row>b,.catH>span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.pl>span:last-child,.pl>div+b{font-variant-numeric:tabular-nums}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--paper);border-top:1px solid var(--edge);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;background:none;border:0;color:var(--mut);padding:8px 0 8px;font-size:12px;font-family:inherit;min-height:58px}
+nav button span{display:inline-block;font-size:20px;line-height:1;padding:5px 18px;border-radius:14px;margin-bottom:2px}
+nav button.on{color:var(--ink);font-weight:700}
+nav button.on span{background:var(--hl)}
+.item{border-top:1px dashed var(--line);padding:10px 0}
+.item .row input{padding:8px 10px;min-height:40px}
+.thumb{width:48px;height:64px;object-fit:cover;border-radius:3px;background:#000;flex:none}
+.bar{height:6px;background:var(--field);border:1px solid var(--edge);border-radius:4px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--ink)}
+.li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px dashed var(--line);cursor:pointer}
+.li:first-of-type{border-top:0}
+.catH{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-bottom:5px;border-bottom:1.5px solid var(--ink);font-weight:700}
+.pl{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .catH+.pl{border-top:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 summary{cursor:pointer;color:var(--mut)}
+dialog{background:var(--paper);color:var(--ink);border:1px solid var(--edge);border-radius:10px;width:min(92vw,520px);max-height:86vh}
+dialog::backdrop{background:rgba(8,11,15,.6)}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:10px;display:none;z-index:9;max-width:90vw;text-align:center;font-weight:600}
+#lock{position:fixed;inset:0;background:var(--desk);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
+#lock[hidden]{display:none}
+.tbar{fill:var(--ink);opacity:.25}.tbar.on{opacity:1}.tlab{fill:var(--mut)}
+.pline{fill:none;stroke:var(--ink);stroke-width:2}.pdot{fill:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -59,10 +86,16 @@ summary{cursor:pointer;color:var(--mut)}
 </nav>
 <dialog id="dlg"></dialog>
 <div id="toast"></div>
+<div id="lock" hidden>
+  <div style="font-size:40px">🔒</div><b>Fiş Arşivi</b>
+  <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" style="max-width:220px;text-align:center;font-size:20px">
+  <button class="btn" id="unlock" style="max-width:220px">Aç</button>
+  <div id="pinerr" class="err"></div>
+</div>
 
 <script>
 'use strict';
-/* ---------- yardımcılar ---------- */
+/* ================= yardımcılar ================= */
 const $ = s => document.querySelector(s);
 const view = $('#view');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -70,53 +103,72 @@ const TRY = n => (Number(n) || 0).toLocaleString('tr-TR', {style:'currency', cur
 const num = v => { if (typeof v === 'string') v = parseFloat(v.replace(',', '.')); return Number.isFinite(v) ? v : 0; };
 const today = () => new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 const validDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d : '';
+const dayNum = d => { const [y,m,dd] = d.split('-').map(Number); return Date.UTC(y, m-1, dd) / 864e5; };
+const key = s => String(s || '').toLocaleLowerCase('tr').trim();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e) { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+};
 const CATS = ['Meyve-Sebze','Et-Tavuk-Balık','Süt-Kahvaltılık','Fırın','Bakliyat-Makarna','Yağ-Sos-Baharat','İçecek','Atıştırmalık','Tatlı-Çikolata','Temizlik','Kişisel Bakım','Diğer'];
 const CAT_ICON = {'Meyve-Sebze':'🥬','Et-Tavuk-Balık':'🍗','Süt-Kahvaltılık':'🥛','Fırın':'🍞','Bakliyat-Makarna':'🍝','Yağ-Sos-Baharat':'🫒','İçecek':'🥤','Atıştırmalık':'🍪','Tatlı-Çikolata':'🍫','Temizlik':'🧽','Kişisel Bakım':'🧴','Diğer':'📦'};
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const DAYS = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
 const monthName = k => { const [y,m] = k.split('-'); return MONTHS[+m-1] + ' ' + y; };
 const prevMonth = k => { const [y,m] = k.split('-').map(Number); const d = new Date(y, m-2, 1); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); };
-const DAYS = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
 const fmtDate = d => { const [y,m,dd] = d.split('-').map(Number); return dd + ' ' + MONTHS[m-1] + ' ' + y + ', ' + DAYS[new Date(y, m-1, dd).getDay()]; };
 const shortDate = d => { const [y,m,dd] = d.split('-').map(Number); return dd + ' ' + MONTHS[m-1].slice(0,3) + ' ' + y; };
+function toast(t){ const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 3200); }
+
+/* birim ve ürün anahtarı: kg ile adet fiyatları karışmasın */
+const uk = u => { u = key(u); return /^(kg|kilo|kilogram|g|gr|gram)$/.test(u) ? 'kg' : /^(lt|l|litre|ml)$/.test(u) ? 'lt' : 'adet'; };
+const pkey = it => key(it.generic || it.name) + '|' + uk(it.unit);
+const pname = id => id.split('|')[0];
+
+/* market adı */
 const STORES = {'bim':'BİM','bım':'BİM','a101':'A101','şok':'ŞOK','sok':'ŞOK','migros':'Migros','carrefoursa':'CarrefourSA','carrefour':'CarrefourSA'};
-function normStore(s){ s = String(s || '').trim(); const l = s.toLocaleLowerCase('tr');
+const knownStores = () => LS.get('stores', []);
+function learnStore(s){ if (!s) return; const a = knownStores(); if (a.some(k => key(k) === key(s))) return; a.push(s); LS.set('stores', a); }
+function normStore(s){ s = String(s || '').trim(); const l = key(s);
   for (const k in STORES) if (new RegExp('(^|[^a-z0-9çğıöşü])' + k + '([^a-z0-9çğıöşü]|$)').test(l)) return STORES[k];
-  return knownStores().find(k => key(k) === key(s)) || s; }
-const knownStores = () => { try { return JSON.parse(localStorage.getItem('stores') || '[]'); } catch(e) { return []; } };
-function learnStore(s){ if (!s) return; const a = knownStores(); if (a.some(k => key(k) === key(s))) return; a.push(s);
-  try { localStorage.setItem('stores', JSON.stringify(a)); } catch(e) {} }
+  return knownStores().find(k => key(k) === l) || s; }
 function dateWarn(d){
   if (!validDate(d)) return 'Tarih okunamadı, lütfen gir.';
   if (d > today()) return 'Tarih bugünden ileride, kontrol et.';
   if (d < new Date(Date.now() - 400*864e5).toISOString().slice(0,10)) return 'Tarih bir yıldan eski görünüyor, kontrol et.';
   return ''; }
-const key = s => String(s || '').toLocaleLowerCase('tr').trim();
-const catMap = () => { try { return JSON.parse(localStorage.getItem('catmap') || '{}'); } catch(e) { return {}; } };
-function learnCats(items){ const m = catMap(); items.forEach(i => { const k = key(i.generic || i.name); if (k && i.category) m[k] = i.category; });
-  try { localStorage.setItem('catmap', JSON.stringify(m)); } catch(e) {} }
-const nameMap = () => { try { return JSON.parse(localStorage.getItem('namemap') || '{}'); } catch(e) { return {}; } };
-function learnNames(items){ const m = nameMap();
-  items.forEach(i => { if (i.raw) m[key(i.raw)] = {name:i.name, brand:i.brand || '', generic:i.generic, category:i.category}; });
-  try { localStorage.setItem('namemap', JSON.stringify(m)); } catch(e) {} }
-function toast(t){ const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2600); }
 
-/* ---------- IndexedDB ---------- */
+/* öğrenme hafızası */
+const catMap = () => LS.get('catmap', {});
+const nameMap = () => LS.get('namemap', {});
+function learnCats(items){ const m = catMap(); items.forEach(i => { const k = key(i.generic || i.name); if (k && i.category) m[k] = i.category; }); LS.set('catmap', m); }
+function learnNames(items){ const m = nameMap();
+  items.forEach(i => { if (i.raw) m[key(i.raw)] = {name:i.name, brand:i.brand || '', generic:i.generic, category:i.category}; }); LS.set('namemap', m); }
+
+/* ================= IndexedDB ================= */
 const DB = {
-  db: null,
-  open(){ return new Promise((res, rej) => { const r = indexedDB.open('fis-arsivi', 1);
-    r.onupgradeneeded = () => r.result.createObjectStore('receipts', {keyPath:'id'});
+  db:null,
+  open(){ return new Promise((res, rej) => { const r = indexedDB.open('fis-arsivi', 2);
+    r.onupgradeneeded = () => { const d = r.result;
+      if (!d.objectStoreNames.contains('receipts')) d.createObjectStore('receipts', {keyPath:'id'});
+      if (!d.objectStoreNames.contains('queue')) d.createObjectStore('queue', {keyPath:'id'}); };
     r.onsuccess = () => { this.db = r.result; res(); }; r.onerror = () => rej(r.error); }); },
-  store(mode){ return this.db.transaction('receipts', mode).objectStore('receipts'); },
   req(q){ return new Promise((res, rej) => { q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); },
-  all(){ return this.req(this.store('readonly').getAll()); },
-  put(o){ return this.req(this.store('readwrite').put(o)); },
-  del(id){ return this.req(this.store('readwrite').delete(id)); },
-  clear(){ return this.req(this.store('readwrite').clear()); }
+  st(n, mode){ return this.db.transaction(n, mode).objectStore(n); },
+  all(n = 'receipts'){ return this.req(this.st(n, 'readonly').getAll()); },
+  put(o, n = 'receipts'){ return this.req(this.st(n, 'readwrite').put(o)); },
+  del(id, n = 'receipts'){ return this.req(this.st(n, 'readwrite').delete(id)); },
+  clear(n = 'receipts'){ return this.req(this.st(n, 'readwrite').clear()); }
 };
 
-/* ---------- Gemini ---------- */
-const PROMPT = `Bu bir Türkiye market fişi fotoğrafı. Fişi oku ve SADECE aşağıdaki JSON'u döndür:
-{"store":"market adı","branch":"","date":"YYYY-MM-DD","time":"HH:MM","payment":"","total":0,"discount_total":0,"items":[{"raw":"fişte yazdığı gibi, aynen","name":"fişteki ürün adı (okunaklı hale getir)","uncertain":false,"brand":"","generic":"markasız genel ürün adı, küçük harf, örn: süt, domates, ekmek, deterjan","qty":1,"unit":"adet|kg|lt","unit_price":0,"discount":0,"line_total":0,"category":"..."}]}
+/* ================= Gemini ================= */
+const examples = () => {
+  const arr = Object.entries(nameMap()).slice(-40); if (!arr.length) return '';
+  return '\nKullanıcının daha önce doğruladığı eşleştirmeler (fişteki yazım → ad | genel ad | kategori). Aynı veya benzer yazım görürsen bunlara uy:\n'
+    + arr.map(([k, v]) => `${k.slice(0, 60)} → ${String(v.name).slice(0, 60)} | ${String(v.generic).slice(0, 40)} | ${v.category}`).join('\n'); };
+function buildPrompt(n){
+  return `Bu bir Türkiye market fişi fotoğrafı${n > 1 ? ` (${n} fotoğraf, aynı fişin parçaları, yukarıdan aşağıya sırayla; tek fiş olarak oku, üst üste binen satırları iki kez sayma)` : ''}. Fişi oku ve SADECE aşağıdaki JSON'u döndür:
+{"store":"market adı","branch":"","date":"YYYY-MM-DD","time":"HH:MM","payment":"","total":0,"discount_total":0,"items":[{"raw":"fişte yazdığı gibi, aynen","name":"fişteki ürün adı (okunaklı hale getir)","uncertain":false,"brand":"","generic":"markasız genel ürün adı, küçük harf, paket boyutuyla, örn: süt 1 lt, domates, ekmek, deterjan 4 kg","qty":1,"unit":"adet|kg|lt","unit_price":0,"discount":0,"line_total":0,"category":"..."}]}
 Kurallar:
 - Tutarlar TL, ondalık ayırıcı nokta olan sayı olsun.
 - Kiloyla satılan ürünlerde qty kg cinsinden, unit_price kg fiyatı olsun.
@@ -126,27 +178,40 @@ Kurallar:
 - Tarih: Türk fişlerinde GG.AA.YYYY veya GG/AA/YYYY yazar (gün önce gelir). Fişin basıldığı tarihi YYYY-MM-DD yap; son kullanma tarihi, kampanya tarihi veya fiş/işlem numarasıyla karıştırma. Saat varsa time alanına HH:MM yaz.
 - Market adı: fiş başlığındaki market adını yaz. Zincir olabilir (BİM, A101, ŞOK, Migros, CarrefourSA) ya da yerel market olabilir (Tezgel Market gibi); yerelse başlıktaki adı düzgün yazımla, olduğu gibi ver. Şube/adres varsa kısaca branch alanına yaz.
 - raw: ürünün fişte yazdığı ham metin, kısaltmalar dahil aynen. name: bu metni okunaklı ürün adına çevir, kısaltmaları aç. Çözerken ürünün fiyatına, birimine ve fişteki diğer ürünlere bak, Türkiye market ürünlerini düşün. İnternette arama yapamazsın. Çözemezsen en olası tahmini name'e yaz ve uncertain'ı true yap; marka veya ürün uydurma.
+- generic: fiyat karşılaştırması için paket boyutunu da ekle (süt 1 lt, yumurta 15'li gibi); boyut fişte yoksa ekleme.
 - brand: ürün adında marka varsa yaz (Pınar, Ülker, Eti gibi), yoksa boş bırak.
 - discount: o ürüne uygulanan indirim tutarı (pozitif sayı), yoksa 0. line_total indirim düşülmüş net tutardır. discount_total: fişteki toplam indirim.
 - payment: nakit veya kart, görünmüyorsa boş bırak.
 - Kategori için ürünün ne olduğuna bak: sebze, meyve → Meyve-Sebze; et, tavuk, balık, sucuk, salam → Et-Tavuk-Balık; yumurta, süt, peynir, yoğurt, zeytin, tereyağı → Süt-Kahvaltılık; ekmek, simit, poğaça → Fırın; makarna, pirinç, bulgur, mercimek, un, şeker → Bakliyat-Makarna; yağ, salça, ketçap, baharat, tuz, konserve → Yağ-Sos-Baharat; su, çay, kahve, meşrubat, meyve suyu → İçecek; cips, bisküvi, kuruyemiş → Atıştırmalık; çikolata, dondurma, tatlı → Tatlı-Çikolata; deterjan, çamaşır suyu, kâğıt havlu, tuvalet kâğıdı → Temizlik; şampuan, diş macunu, sabun → Kişisel Bakım.
-- Okuyamadığın alanı boş bırak veya 0 yaz, tahmin uydurma.`;
-
-async function analyze(b64){
-  const key = localStorage.getItem('gkey');
-  const model = localStorage.getItem('gmodel') || 'gemini-flash-latest';
-  const body = {contents:[{parts:[{text:PROMPT},{inline_data:{mime_type:'image/jpeg', data:b64}}]}],
-                generationConfig:{responseMimeType:'application/json', temperature:0}};
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {method:'POST', headers:{'Content-Type':'application/json','x-goog-api-key':key}, body:JSON.stringify(body)});
-  if (!r.ok) {
-    let m = ''; try { m = (await r.json()).error.message; } catch(e){}
-    if (r.status === 429) throw new Error('Ücretsiz kota doldu, biraz sonra tekrar dene. ' + m);
-    throw new Error('Gemini ' + r.status + ': ' + m);
+- Okuyamadığın alanı boş bırak veya 0 yaz, tahmin uydurma.${examples()}`;
+}
+/* Ağ hatalarında ve kota/sunucu hatalarında kendiliğinden yeniden dener; model adı bulunamazsa yedek modele geçer */
+async function gemini(body){
+  const k = localStorage.getItem('gkey'); if (!k) { const e = new Error('API anahtarı girilmemiş'); e.fatal = true; throw e; }
+  const first = (localStorage.getItem('gmodel') || 'gemini-flash-latest').trim();
+  const models = [...new Set([first, 'gemini-flash-latest', 'gemini-flash-lite-latest'])];
+  let lastErr = null;
+  for (const m of models) {
+    for (let a = 0; a < 3; a++) {
+      let r;
+      try { r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
+        {method:'POST', headers:{'Content-Type':'application/json', 'x-goog-api-key':k}, body:JSON.stringify(body)}); }
+      catch(e) { lastErr = new Error('Google\'a ulaşılamadı (internet?)'); await sleep(a ? 6000 : 2500); continue; }
+      if (r.ok) return r.json();
+      let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
+      if (r.status === 404) { lastErr = new Error('Model bulunamadı: ' + m); break; }
+      if (r.status === 429 || r.status >= 500) { lastErr = new Error(r.status === 429 ? 'Ücretsiz kota veya dakikalık sınır doldu' : 'Google geçici hata verdi (' + r.status + ')'); await sleep(a ? 9000 : 3000); continue; }
+      const e = new Error('Gemini ' + r.status + ': ' + msg); e.fatal = true; throw e;
+    }
   }
-  const j = await r.json();
+  throw lastErr || new Error('Bilinmeyen hata');
+}
+async function analyze(b64s){
+  const parts = [{text:buildPrompt(b64s.length)}, ...b64s.map(d => ({inline_data:{mime_type:'image/jpeg', data:d}}))];
+  const j = await gemini({contents:[{parts}], generationConfig:{responseMimeType:'application/json', temperature:0}});
   const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
-  return JSON.parse(t.replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, ''));
+  try { let d = JSON.parse(t.replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, '')); if (Array.isArray(d)) d = d[0] || {}; return d && typeof d === 'object' ? d : {}; }
+  catch(e) { throw new Error('Cevap okunamadı (fiş çok uzun veya bulanık olabilir)'); }
 }
 function normItem(i){
   const qty = num(i.qty) || 1; let lt = num(i.line_total); let up = num(i.unit_price); const discount = Math.abs(num(i.discount));
@@ -159,57 +224,157 @@ function normItem(i){
           brand:kn ? kn.brand : String(i.brand || ''), generic, qty, unit:i.unit || 'adet',
           unit_price:up, discount, line_total:lt, category:learned && CATS.includes(learned) ? learned : (CATS.includes(i.category) ? i.category : 'Diğer')};
 }
+const fp = i => key(i.name) + '|' + i.qty + '|' + i.line_total + '|' + i.category;
+function makeDraft(data, thumb){
+  const items = (Array.isArray(data.items) ? data.items : []).map(normItem);
+  const d = {id:crypto.randomUUID(), thumb, store:normStore(data.store), branch:String(data.branch || ''), date:validDate(data.date),
+             time:String(data.time || ''), payment:String(data.payment || ''), total:num(data.total),
+             discount_total:num(data.discount_total) || items.reduce((s, i) => s + (i.discount || 0), 0), items, isNew:true};
+  d.ai = {store:key(d.store), date:d.date, total:d.total, items:items.map(fp)};
+  return d;
+}
+function calcAcc(d){ const a = d.ai; if (!a) return null;
+  const pool = [...a.items]; let ok = 0;
+  d.items.map(fp).forEach(f => { const i = pool.indexOf(f); if (i >= 0) { pool.splice(i, 1); ok++; } });
+  return {n:Math.max(a.items.length, d.items.length), ok, head:(a.store === key(normStore(d.store)) ? 1 : 0) + (a.date === d.date ? 1 : 0) + (a.total === d.total ? 1 : 0)};
+}
 
-/* ---------- görsel ---------- */
-function loadImg(file){ return new Promise((res, rej) => { const u = URL.createObjectURL(file); const i = new Image();
-  i.onload = () => { res(i); URL.revokeObjectURL(u); }; i.onerror = () => rej(new Error('Fotoğraf açılamadı')); i.src = u; }); }
+/* ================= görsel ================= */
+function loadSrc(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('Fotoğraf açılamadı')); i.src = src; }); }
+function loadImg(file){ const u = URL.createObjectURL(file); return loadSrc(u).finally(() => URL.revokeObjectURL(u)); }
 function toJpeg(img, max, q){ const s = Math.min(1, max/Math.max(img.width, img.height)); const c = document.createElement('canvas');
   c.width = Math.round(img.width*s); c.height = Math.round(img.height*s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
   return c.toDataURL('image/jpeg', q); }
 
-/* ---------- sekmeler ---------- */
-let tab = 'ekle', draft = null, repMonth = '', detailId = null, detailFrom = 'fisler';
+/* ================= PIN kilidi ================= */
+const pinHash = () => localStorage.getItem('pin');
+async function sha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+async function setPin(p){ const salt = crypto.randomUUID(); localStorage.setItem('pin', salt + ':' + await sha(salt + p)); }
+async function checkPin(p){ const v = pinHash(); if (!v) return true; const [salt, h] = v.split(':'); return (await sha(salt + p)) === h; }
+let pinTries = 0, hiddenAt = 0;
+function lock(){ if (!pinHash()) return; $('#lock').hidden = false; $('#pin').value = ''; try { $('#pin').focus(); } catch(e) {} }
+async function tryUnlock(){
+  if (await checkPin($('#pin').value)) { pinTries = 0; $('#pinerr').textContent = ''; $('#lock').hidden = true; }
+  else { pinTries++; $('#pinerr').textContent = 'Yanlış PIN'; $('#pin').value = ''; const b = $('#unlock'); b.disabled = true; setTimeout(() => b.disabled = false, Math.min(pinTries, 5) * 1000); }
+}
+$('#unlock').onclick = tryUnlock; $('#pin').onkeydown = e => { if (e.key === 'Enter') tryUnlock(); };
+document.addEventListener('visibilitychange', () => { if (document.hidden) hiddenAt = Date.now(); else if (hiddenAt && pinHash() && Date.now() - hiddenAt > 60000) lock(); });
+
+/* ================= tema ================= */
+function applyTheme(){ const t = localStorage.getItem('theme') || 'auto', r = document.documentElement;
+  if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
+  const dark = t === 'dark' || (t === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = dark ? '#0E1217' : '#DDE2E6'; }
+applyTheme();
+if (window.matchMedia) { try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme); } catch(e) {} }
+
+/* ================= durum ================= */
+let tab = 'ekle', draft = null, repMonth = '', detailId = null, detailFrom = 'fisler', photos = [], busy = false, qText = '', qStore = '';
 function show(t){ tab = t; document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); render(); window.scrollTo(0,0); }
 function render(){ ({ekle:renderAdd, fisler:renderList, rapor:renderReport, ayar:renderSettings})[tab](); }
+const itemsSum = r => r.items.reduce((s, i) => s + (i.line_total || 0), 0);
+const rcTotal = x => x.total || itemsSum(x);
+const pct = (a, b) => b ? (a - b) / b * 100 : 0;
+const arrow = p => `<span class="${p > 0 ? 'up' : 'down'}">${p > 0 ? '▲' : '▼'}%${Math.abs(p).toFixed(0)}</span>`;
+function groupItems(items){ const g = {};
+  items.forEach((it, i) => { const c = CATS.includes(it.category) ? it.category : 'Diğer'; (g[c] = g[c] || []).push({it, i}); });
+  return CATS.filter(c => g[c]).map(c => [c, g[c]]); }
+function topCat(r){ const c = {}; r.items.forEach(i => c[i.category] = (c[i.category] || 0) + (i.line_total || 0));
+  return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0] || ''; }
+async function findDup(d){
+  const t = d.total || itemsSum(d); if (!t || !d.date) return null;
+  const all = await DB.all();
+  const x = all.find(x => x.id !== d.id && x.date === d.date && Math.abs(rcTotal(x) - t) < 0.01 && key(normStore(x.store)) === key(normStore(d.store)));
+  return x ? {id:x.id, date:x.date} : null; }
+async function budgetAlert(r){
+  const b = LS.get('budget', null); if (!b || !b.total) return '';
+  const mk = r.date.slice(0, 7); const T = (await DB.all()).filter(x => x.date.startsWith(mk)).reduce((s, x) => s + rcTotal(x), 0);
+  const p = T / b.total * 100;
+  return p >= 100 ? `⚠️ ${monthName(mk)} bütçesi aşıldı (%${p.toFixed(0)})` : p >= 80 ? `⚠️ Bütçenin %${p.toFixed(0)}'ine ulaştın` : ''; }
 
-/* ----- Ekle ----- */
+/* ================= EKLE ================= */
 function renderAdd(){
   if (draft) return renderReview();
-  view.innerHTML = `<h2>Yeni fiş</h2><div class="card">
-    <p class="mut">Fişi düz bir yüzeye koy, tamamı görünsün. Uzun fişlerde parça parça değil tek fotoğraf çek.</p>
+  if (photos.length) return renderPrep();
+  view.innerHTML = `<h2>Yeni fiş</h2><div id="bk"></div><div class="card">
+    <p class="mut">📌 Fişi düz bir yüzeye koy, ışık gölge yapmasın, tamamı kadrajda olsun. Kart numarası görünüyorsa bir sonraki adımda kırp.</p>
     <label class="btn">📷 Fotoğraf çek<input id="f1" type="file" accept="image/*" capture="environment" hidden></label>
-    <label class="btn alt">🖼️ Galeriden seç<input id="f2" type="file" accept="image/*" hidden></label>
-    <button class="btn alt" data-act="manual">✍️ Elle ekle</button>
-    <div id="status" class="mut"></div></div>`;
-  $('#f1').onchange = $('#f2').onchange = e => handleFile(e.target.files[0]);
+    <label class="btn alt">🖼️ Galeriden seç (birden fazla seçilebilir)<input id="f2" type="file" accept="image/*" multiple hidden></label>
+    <button class="btn alt" data-act="manual">✍️ Elle ekle</button></div><div id="qq"></div>`;
+  $('#f1').onchange = $('#f2').onchange = e => addPhotos(e.target.files);
+  fillBackup(); fillQueue();
 }
-async function handleFile(f){
-  if (!f) return;
-  const st = $('#status');
+async function fillBackup(){
+  const el = $('#bk'); if (!el) return; const all = await DB.all(); if (all.length < 3) return;
+  const lb = localStorage.getItem('lastBackup'); const days = lb ? Math.round(dayNum(today()) - dayNum(lb)) : null;
+  if (days !== null && days < 30) return;
+  el.innerHTML = `<div class="card"><div class="warn">💾 ${lb ? 'Son yedeğin ' + days + ' gün önce.' : 'Henüz yedek almadın.'} ${all.length} fişin yalnızca bu telefonda duruyor.</div><button class="btn alt sm" data-act="exportjson">Yedek indir</button></div>`;
+}
+async function fillQueue(){
+  const el = $('#qq'); if (!el) return; const q = (await DB.all('queue')).sort((a, b) => a.created - b.created); if (!q.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="card"><b>Bekleyen fişler (${q.length})</b><div class="sub">Okunamayan fotoğraflar burada saklanır, kaybolmaz.</div>
+    ${q.map(x => `<div class="item"><div class="row"><img class="thumb" src="${x.thumb}"><div class="sub" style="flex:1">${esc(x.err || '')}</div></div>
+      <button class="btn sm" data-act="qread" data-id="${x.id}">🔍 Oku</button><button class="btn alt sm" data-act="qmanual" data-id="${x.id}">✍️ Elle gir</button><button class="btn bad sm" data-act="qdel" data-id="${x.id}">✕</button></div>`).join('')}</div>`;
+}
+async function addPhotos(files){
+  for (const f of files || []) { try { const img = await loadImg(f); photos.push({full:toJpeg(img, 2200, .85), thumb:toJpeg(img, 700, .6)}); } catch(e) { toast('Fotoğraf açılamadı'); } }
+  renderAdd();
+}
+function renderPrep(){
+  view.innerHTML = `<h2>Fiş fotoğrafı (${photos.length})</h2><div class="card">
+    <div class="grid">${photos.map((p, i) => `<div><img src="${p.thumb}" style="width:100%;border-radius:8px"><div class="row" style="margin-top:6px"><button class="btn alt sm" data-act="crop" data-i="${i}">✂️ Kırp</button><button class="btn bad sm" data-act="rmphoto" data-i="${i}">✕</button></div></div>`).join('')}</div>
+    <p class="sub">Fiş uzunsa ikinci fotoğrafı ekle (üstten alta sırayla çek). Hepsi tek fiş olarak okunur.</p>
+    <label class="btn alt">➕ Fotoğraf ekle<input id="f3" type="file" accept="image/*" capture="environment" hidden></label>
+    <button class="btn" data-act="read" id="rd">🔍 Oku</button>
+    <button class="btn alt" data-act="cancelphotos">Vazgeç</button><div id="status" class="mut"></div></div>`;
+  $('#f3').onchange = e => addPhotos(e.target.files);
+}
+async function openCrop(i){
+  const p = photos[i]; if (!p) return; const img = await loadSrc(p.full); const dlg = $('#dlg');
+  dlg.innerHTML = `<b>Kırp</b><p class="sub">Kart numarası veya kişisel bilgi varsa kenarlardan kes. Ürün satırlarını kesme.</p>
+    <canvas id="cv" style="width:100%;border-radius:8px;background:#000"></canvas>
+    ${[['top','Üst'],['bottom','Alt'],['left','Sol'],['right','Sağ']].map(([k, l]) => `<label class="f">${l}</label><input type="range" id="c_${k}" min="0" max="45" value="0">`).join('')}
+    <button class="btn" id="cApply">Uygula</button><button class="btn alt" data-act="close">Vazgeç</button>`;
+  const rect = () => { const g = k => +$('#c_' + k).value / 100; const l = g('left'), r = g('right'), t = g('top'), b = g('bottom');
+    return {sx:img.width*l, sy:img.height*t, sw:Math.max(50, img.width*(1-l-r)), sh:Math.max(50, img.height*(1-t-b))}; };
+  const draw = () => { const {sx, sy, sw, sh} = rect(); const cv = $('#cv'); const sc = Math.min(1, 640 / Math.max(sw, sh));
+    cv.width = Math.round(sw*sc); cv.height = Math.round(sh*sc); cv.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, cv.width, cv.height); };
+  dlg.querySelectorAll('input[type=range]').forEach(r => r.oninput = draw);
+  $('#cApply').onclick = () => { const {sx, sy, sw, sh} = rect(); const c = document.createElement('canvas'); c.width = Math.round(sw); c.height = Math.round(sh);
+    c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+    photos[i] = {full:c.toDataURL('image/jpeg', .85), thumb:toJpeg(c, 700, .6)}; dlg.close(); renderPrep(); };
+  dlg.showModal(); draw();
+}
+async function enqueue(ph, err){ await DB.put({id:crypto.randomUUID(), images:ph.map(p => p.full), thumb:ph[0].thumb, created:Date.now(), err:err || ''}, 'queue'); }
+async function doRead(){
+  if (busy || !photos.length) return;
   if (!localStorage.getItem('gkey')) { toast('Önce Ayarlar\'dan API anahtarını gir'); return show('ayar'); }
-  st.textContent = '⏳ Fiş okunuyor, birkaç saniye sürer…';
-  let thumb = '';
+  busy = true; const st = $('#status'), btn = $('#rd'); if (btn) btn.disabled = true;
   try {
-    const img = await loadImg(f);
-    thumb = toJpeg(img, 700, .6);
-    const data = await analyze(toJpeg(img, 2200, .85).split(',')[1]);
-    const items = (data.items || []).map(normItem);
-    draft = {id:crypto.randomUUID(), thumb, store:normStore(data.store), branch:String(data.branch || ''), date:validDate(data.date),
-             time:String(data.time || ''), payment:String(data.payment || ''), total:num(data.total),
-             discount_total:num(data.discount_total) || items.reduce((s, i) => s + (i.discount || 0), 0), items, isNew:true};
+    if (navigator.onLine === false) { await enqueue(photos, 'İnternet yoktu'); photos = []; toast('İnternet yok, fiş sıraya alındı'); return renderAdd(); }
+    if (st) st.textContent = '⏳ Fiş okunuyor… (gerekirse birkaç kez denenir)';
+    try { const data = await analyze(photos.map(p => p.full.split(',')[1])); draft = makeDraft(data, photos[0].thumb); draft.dupOf = await findDup(draft); photos = []; }
+    catch(e) { await enqueue(photos, e.message); photos = []; toast('Okunamadı: ' + e.message + ' — fiş sıraya alındı'); }
     renderAdd();
-  } catch(e) {
-    draft = {id:crypto.randomUUID(), thumb, store:'', date:today(), total:0, items:[], isNew:true};
-    renderAdd(); toast('Okunamadı: ' + e.message);
-  }
+  } finally { busy = false; }
 }
-function itemsSum(r){ return r.items.reduce((s, i) => s + (i.line_total || 0), 0); }
+async function readQueue(id){
+  if (busy) return; const q = (await DB.all('queue')).find(x => x.id === id); if (!q) return;
+  busy = true; toast('⏳ Okunuyor…');
+  try { const data = await analyze(q.images.map(s => s.split(',')[1])); draft = makeDraft(data, q.thumb); draft.fromQueue = id; draft.dupOf = await findDup(draft); }
+  catch(e) { q.err = e.message; await DB.put(q, 'queue'); toast('Okunamadı: ' + e.message); }
+  finally { busy = false; }
+  renderAdd();
+}
+
+/* ----- kontrol / düzenleme ----- */
 function renderReview(){
   const d = draft, sum = itemsSum(d);
   const diff = d.total && Math.abs(sum - d.total) > 0.5;
   view.innerHTML = `<h2>${d.isNew ? 'Kontrol et ve kaydet' : 'Fişi düzenle'}</h2>
-  <div class="card">
+  <div class="card torn">
     ${d.thumb ? `<img src="${d.thumb}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:#000">` : ''}
+    ${d.dupOf ? `<p class="warn">⚠️ Aynı market, gün ve tutarda kayıtlı başka bir fiş var. Aynı fişi iki kez ekliyor olabilirsin.</p>` : ''}
     <label class="f">Market</label><input data-k="store" list="stores" value="${esc(d.store)}"><datalist id="stores">${[...new Set([...Object.values(STORES), ...knownStores()])].map(s => `<option value="${esc(s)}">`).join('')}</datalist>
     <label class="f">Şube / adres (isteğe bağlı)</label><input data-k="branch" value="${esc(d.branch || '')}">
     <div class="row"><div style="flex:1"><label class="f">Tarih</label><input data-k="date" type="date" value="${esc(d.date)}"></div>
@@ -218,7 +383,7 @@ function renderReview(){
     <p class="mut ${diff ? 'err' : ''}">Ürünlerin toplamı: ${TRY(sum)}${diff ? ' — fiş toplamıyla uyuşmuyor, satırları kontrol et.' : ''}</p>
   </div>
   <div class="card"><b>Ürünler (${d.items.length})</b>
-    <div class="sub">Kategoriyi değiştirirsen uygulama hatırlar ve sonraki fişlerde aynı ürüne uygular.</div>
+    <div class="sub">Kategoriyi veya adı düzeltirsen uygulama hatırlar ve sonraki fişlerde aynı ürüne uygular.</div>
     ${groupItems(d.items).map(([c, arr]) => `<div class="catH"><span>${CAT_ICON[c] || ''} ${esc(c)}</span><span class="sub">${TRY(arr.reduce((s, o) => s + (o.it.line_total || 0), 0))}</span></div>` + arr.map(({it, i}) => `<div class="item">
       ${it.uncertain ? '<div class="warn">⚠️ Emin değilim, kontrol et</div>' : ''}
       <input data-i="${i}" data-f="name" value="${esc(it.name)}" placeholder="Ürün adı">
@@ -243,95 +408,119 @@ function onInput(e){
   const t = e.target; if (!draft) return;
   if (t.dataset.k) { draft[t.dataset.k] = t.dataset.k === 'total' ? num(t.value) : t.value; return; }
   if (t.dataset.f) {
-    const it = draft.items[+t.dataset.i], f = t.dataset.f;
+    const it = draft.items[+t.dataset.i], f = t.dataset.f; if (!it) return;
     if (['qty','line_total'].includes(f)) it[f] = num(t.value); else it[f] = t.value;
     if (['name','generic','category'].includes(f)) it.uncertain = false;
     if (f === 'qty' || f === 'line_total') it.unit_price = it.qty ? +(it.line_total / it.qty).toFixed(2) : 0;
   }
 }
 
-/* ----- Fişler ----- */
+/* ================= FİŞLER (arama + filtre) ================= */
 async function renderList(){
   if (detailId) return renderDetail();
-  const all = (await DB.all()).sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0));
-  if (!all.length) { view.innerHTML = '<h2>Fişler</h2><div class="card mut">Henüz fiş yok.</div>'; return; }
-  let html = '<h2>Fişler</h2>', cur = '';
-  for (const r of all) {
-    const m = r.date.slice(0,7);
-    if (m !== cur) { cur = m; html += `<div class="mut" style="margin:12px 4px 6px">${monthName(m)}</div>`; }
-    html += `<div class="card row" data-act="view" data-id="${r.id}" style="cursor:pointer">
-      ${r.thumb ? `<img class="thumb" src="${r.thumb}">` : ''}
-      <div style="flex:1"><b>${esc(r.store || 'Market')}</b><div class="mut">${fmtDate(r.date)}</div><div class="sub">${r.items.length} kalem</div></div>
-      <b>${TRY(r.total || itemsSum(r))}</b></div>`;
+  const all = await DB.all();
+  const stores = [...new Set(all.map(r => normStore(r.store)).filter(Boolean))].sort();
+  view.innerHTML = `<h2>Fişler</h2><input id="q" placeholder="🔎 Market veya ürün ara…" value="${esc(qText)}">
+    <select id="qsel" style="margin-top:8px"><option value="">Tüm marketler</option>${stores.map(s => `<option value="${esc(s)}" ${key(s) === key(qStore) ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+    <div id="res" style="margin-top:10px"></div>`;
+  fillList(all);
+}
+async function fillList(all){
+  all = all || await DB.all(); const el = $('#res'); if (!el) return;
+  const q = key(qText);
+  let rs = all.filter(r => !qStore || key(normStore(r.store)) === key(qStore));
+  const hit = i => [i.name, i.brand, i.generic, i.raw].some(s => key(s).includes(q));
+  const lines = [];
+  if (q) {
+    rs = rs.filter(r => key(r.store).includes(q) || key(r.branch).includes(q) || r.items.some(hit));
+    rs.forEach(r => r.items.forEach(i => { if (hit(i)) lines.push({r, i}); }));
   }
-  view.innerHTML = html;
+  rs.sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0));
+  lines.sort((a, b) => b.r.date.localeCompare(a.r.date));
+  let html = '';
+  if (lines.length) html += `<div class="card"><b>Eşleşen ürünler (${lines.length})</b>${lines.slice(0, 40).map(({r, i}) => `<div class="li" data-act="view" data-id="${r.id}"><div><div>${esc(i.name)}</div><div class="sub">${shortDate(r.date)} · ${esc(r.store)} · ${i.qty} ${esc(i.unit)} × ${TRY(i.unit_price)}</div></div><b>${TRY(i.line_total)}</b></div>`).join('')}</div>`;
+  if (!rs.length) html += '<div class="card mut">Fiş bulunamadı.</div>';
+  else { let cur = '';
+    for (const r of rs) {
+      const m = r.date.slice(0, 7);
+      if (!q && m !== cur) { cur = m; html += `<div class="mut" style="margin:12px 4px 6px">${monthName(m)}</div>`; }
+      html += `<div class="card row" data-act="view" data-id="${r.id}" style="cursor:pointer">
+        ${r.thumb ? `<img class="thumb" src="${r.thumb}">` : ''}
+        <div style="flex:1"><b>${esc(r.store || 'Market')}</b><div class="mut">${fmtDate(r.date)}</div><div class="sub">${r.items.length} kalem</div></div>
+        <b>${TRY(rcTotal(r))}</b></div>`; } }
+  el.innerHTML = html;
 }
 
-/* ----- Rapor ----- */
+/* ================= RAPOR ================= */
 function unitPrices(rs){ const m = new Map();
-  for (const r of rs) for (const it of r.items) { const k = (it.generic || it.name).toLowerCase().trim(); if (!k) continue;
-    let a = m.get(k); if (!a) { a = {key:k, count:0, qty:0, spent:0, ps:[], unit:it.unit}; m.set(k, a); }
+  for (const r of rs) for (const it of r.items) { const k = pkey(it); if (!pname(k)) continue;
+    let a = m.get(k); if (!a) { a = {id:k, name:it.generic || it.name, unit:uk(it.unit), count:0, qty:0, spent:0, ps:[]}; m.set(k, a); }
     a.count++; a.qty += it.qty || 0; a.spent += it.line_total || 0; if (it.unit_price) a.ps.push(it.unit_price); }
   for (const a of m.values()) a.avg = a.ps.length ? a.ps.reduce((s, x) => s + x, 0) / a.ps.length : 0;
   return m; }
-async function renderReport(){
-  if (detailId) return renderDetail();
-  const all = await DB.all();
-  const months = [...new Set(all.map(r => r.date.slice(0,7)))].sort().reverse();
-  if (!months.length) { view.innerHTML = '<h2>Rapor</h2><div class="card mut">Önce birkaç fiş ekle.</div>'; return; }
-  if (!months.includes(repMonth)) repMonth = months[0];
-  const rs = all.filter(r => r.date.startsWith(repMonth)), prev = all.filter(r => r.date.startsWith(prevMonth(repMonth)));
-  const tot = a => a.reduce((s, r) => s + (r.total || itemsSum(r)), 0);
-  const T = tot(rs), P = tot(prev);
-  const delta = P ? ((T - P) / P * 100) : null;
-  const cats = {}; rs.forEach(r => r.items.forEach(i => cats[i.category] = (cats[i.category] || 0) + (i.line_total || 0)));
-  const catArr = Object.entries(cats).sort((a, b) => b[1] - a[1]); const cmax = catArr[0]?.[1] || 1;
-  const cur = unitPrices(rs), old = unitPrices(prev);
-  const prods = [...cur.values()].sort((a, b) => b.spent - a.spent);
-  view.innerHTML = `<h2>Rapor</h2>
-  ${recentCard(all)}
-  <select data-act="month">${months.map(m => `<option value="${m}" ${m === repMonth ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select>
-  <div class="card" style="margin-top:10px"><div class="mut">Toplam harcama</div><div class="big">${TRY(T)}</div>
-    <div class="mut">${rs.length} fiş${delta === null ? '' : ` · geçen aya göre <span class="${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '▲' : '▼'} %${Math.abs(delta).toFixed(0)}</span>`}</div></div>
-  <div class="card"><b>Kategoriler</b>${catArr.map(([c, v]) => `<div style="margin-top:8px"><div class="row" style="justify-content:space-between"><span>${esc(c)}</span><span>${TRY(v)}</span></div><div class="bar"><i style="width:${v / cmax * 100}%"></i></div></div>`).join('')}</div>
-  <div class="card"><b>Ürünler</b> <span class="mut">(dokun → fiyat geçmişi)</span>
-    ${prods.map(p => { const o = old.get(p.key); const ch = o && o.avg ? (p.avg - o.avg) / o.avg * 100 : null;
-      return `<div class="li" data-act="prod" data-k="${esc(p.key)}"><div><div>${esc(p.key)}</div>
-      <div class="mut">${p.count}× · ort. ${TRY(p.avg)}/${esc(p.unit)}${ch === null ? '' : ` <span class="${ch > 0 ? 'up' : 'down'}">${ch > 0 ? '▲' : '▼'}%${Math.abs(ch).toFixed(0)}</span>`}</div></div>
-      <b>${TRY(p.spent)}</b></div>`; }).join('')}</div>`;
-}
-async function productDetail(k){
-  const all = await DB.all(); const pts = [];
-  for (const r of all) for (const it of r.items) if ((it.generic || it.name).toLowerCase().trim() === k && it.unit_price) pts.push({d:r.date, p:it.unit_price, s:r.store, u:it.unit});
-  pts.sort((a, b) => a.d.localeCompare(b.d));
-  const ps = pts.map(x => x.p), mn = Math.min(...ps), mx = Math.max(...ps), W = 300, H = 70;
-  const xy = pts.map((x, i) => [pts.length > 1 ? i / (pts.length - 1) * W : W / 2, mx === mn ? H / 2 : H - 6 - (x.p - mn) / (mx - mn) * (H - 12)]);
-  const dlg = $('#dlg');
-  dlg.innerHTML = `<b style="font-size:17px">${esc(k)}</b>
-   <div class="mut">En düşük ${TRY(mn)} · en yüksek ${TRY(mx)} · ${pts.length} kayıt</div>
-   <svg viewBox="0 0 ${W} ${H}" style="width:100%;margin:10px 0"><polyline fill="none" stroke="#14b8a6" stroke-width="2" points="${xy.map(a => a.join(',')).join(' ')}"/>${xy.map(a => `<circle cx="${a[0]}" cy="${a[1]}" r="3" fill="#14b8a6"/>`).join('')}</svg>
-   ${[...pts].reverse().map(x => `<div class="li" style="cursor:default"><span>${x.d} <span class="mut">${esc(x.s)}</span></span><b>${TRY(x.p)}/${esc(x.u)}</b></div>`).join('')}
-   <button class="btn alt" data-act="close">Kapat</button>`;
-  dlg.showModal();
-}
-
-/* ----- Fiş detayı ve analiz ----- */
-const pct = (a, b) => b ? (a - b) / b * 100 : 0;
-const arrow = p => `<span class="${p > 0 ? 'up' : 'down'}">${p > 0 ? '▲' : '▼'}%${Math.abs(p).toFixed(0)}</span>`;
-const rcTotal = x => x.total || itemsSum(x);
-function groupItems(items){ const g = {}; items.forEach((it, i) => (g[it.category] = g[it.category] || []).push({it, i}));
-  return CATS.filter(c => g[c]).map(c => [c, g[c]]); }
-function topCat(r){ const c = {}; r.items.forEach(i => c[i.category] = (c[i.category] || 0) + (i.line_total || 0));
-  return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0] || ''; }
 function hist(it, r, all){
-  const k = key(it.generic || it.name); if (!k || !it.unit_price) return null;
+  const k = pkey(it); if (!pname(k) || !it.unit_price) return null;
   const pts = [];
   for (const x of all) { if (x.id === r.id) continue;
-    for (const y of x.items) if (key(y.generic || y.name) === k && y.unit_price) pts.push({d:x.date, p:y.unit_price, s:x.store}); }
+    for (const y of x.items) if (pkey(y) === k && y.unit_price) pts.push({d:x.date, p:y.unit_price, s:x.store}); }
   if (!pts.length) return null;
   const prev = pts.filter(p => p.d <= r.date).sort((a, b) => b.d.localeCompare(a.d))[0] || null;
   const best = pts.reduce((a, b) => b.p < a.p ? b : a);
   return {prev, best};
+}
+/* kişisel enflasyon: ardışık aylarda ortak ürünlerin ağırlıklı fiyat değişimi */
+function inflation(all){
+  const mm = {};
+  for (const r of all) { const mk = r.date.slice(0, 7); const o = mm[mk] = mm[mk] || {};
+    for (const it of r.items) { if (!(it.line_total > 0) || !(it.qty > 0) || !pname(pkey(it))) continue;
+      const k = pkey(it); const a = o[k] = o[k] || {spent:0, qty:0, name:it.generic || it.name}; a.spent += it.line_total; a.qty += it.qty; } }
+  const out = [];
+  for (const mk of Object.keys(mm).sort()) { const pm = prevMonth(mk); if (!mm[pm]) continue;
+    let wsum = 0, acc = 0, n = 0; const movers = [];
+    for (const [k, cur] of Object.entries(mm[mk])) { const pv = mm[pm][k]; if (!pv) continue;
+      const p1 = cur.spent / cur.qty, p0 = pv.spent / pv.qty; if (!(p0 > 0)) continue;
+      const ratio = p1 / p0; if (ratio > 3 || ratio < 1/3) continue;
+      wsum += pv.spent; acc += pv.spent * ratio; n++; movers.push({name:cur.name, p0, p1, c:(ratio - 1) * 100}); }
+    if (n >= 3 && wsum > 0) out.push({mk, change:(acc / wsum - 1) * 100, n, movers}); }
+  return out;
+}
+function inflCard(infl){
+  if (!infl.length) return `<div class="card"><b>Kişisel enflasyon</b><div class="mut">Hesap için ardışık iki ayda en az 3 ortak ürün gerekir. Fiş eklemeye devam et.</div></div>`;
+  const cur = infl.find(x => x.mk === repMonth);
+  let run = 1, cnt = 0; for (let i = infl.length - 1; i >= 0; i--) { if (i < infl.length - 1 && prevMonth(infl[i + 1].mk) !== infl[i].mk) break; run *= 1 + infl[i].change / 100; cnt++; }
+  const last = infl.slice(-6).reverse();
+  return `<div class="card"><b>Kişisel enflasyon</b> <span class="sub">(sık aldığın ürünlerin fiyatı)</span>
+    ${cur ? `<div class="big" style="margin-top:6px">${arrow(cur.change)}</div><div class="mut">${monthName(repMonth)}: bir önceki aya göre ${cur.change >= 0 ? '+' : ''}${cur.change.toFixed(1)}% · ${cur.n} ortak ürün</div>
+      ${cur.movers.length ? `<div class="mut" style="margin-top:8px">En çok değişenler</div>${[...cur.movers].sort((a, b) => Math.abs(b.c) - Math.abs(a.c)).slice(0, 3).map(m => `<div class="pl"><span>${esc(pname(m.name))}</span><span>${TRY(m.p0)} → ${TRY(m.p1)} ${arrow(m.c)}</span></div>`).join('')}` : ''}`
+      : `<div class="mut">${monthName(repMonth)} için önceki ayla yeterli ortak ürün yok.</div>`}
+    ${cnt > 1 ? `<div class="mut" style="margin-top:8px">Son ${cnt} ayda toplam: <b>${run >= 1 ? '+' : ''}${((run - 1) * 100).toFixed(1)}%</b></div>` : ''}
+    <div class="sub" style="margin-top:6px">${last.map(x => `${MONTHS[+x.mk.slice(5) - 1].slice(0, 3)} ${x.change >= 0 ? '+' : ''}${x.change.toFixed(1)}%`).join(' · ')}</div>
+    <div class="sub">Paket boyutu farklı alınan ürünler sonucu oynatabilir; az fişle değerler dalgalı olur.</div></div>`;
+}
+/* ürün ne zaman biter tahmini */
+function dueSoon(all){
+  const m = {};
+  for (const r of all) for (const it of r.items) { const k = pkey(it); if (!pname(k)) continue; const o = m[k] = m[k] || {name:it.generic || it.name, ds:new Set()}; o.ds.add(r.date); }
+  const t = dayNum(today()); const out = [];
+  for (const o of Object.values(m)) { const ds = [...o.ds].sort(); if (ds.length < 3) continue;
+    const iv = []; for (let i = 1; i < ds.length; i++) iv.push(dayNum(ds[i]) - dayNum(ds[i - 1]));
+    iv.sort((a, b) => a - b); const med = iv[Math.floor(iv.length / 2)]; if (med < 3) continue;
+    const since = t - dayNum(ds[ds.length - 1]); const ratio = since / med;
+    if (ratio >= 0.8) out.push({name:o.name, since, med, ratio}); }
+  return out.sort((a, b) => b.ratio - a.ratio).slice(0, 8);
+}
+function dueCard(due){
+  return `<div class="card"><b>Yakında bitebilecekler</b> <span class="sub">(tahmin)</span>
+    ${due.length ? due.map(x => `<div class="pl"><span>${esc(pname(x.name))}</span><span class="sub">${x.since} gün önce aldın · genelde ${x.med} günde bir ${x.ratio >= 1 ? '⏰' : ''}</span></div>`).join('') : '<div class="mut">Bir ürünü en az 3 farklı günde almışsan buradan tahmin yapılır.</div>'}</div>`;
+}
+function trendCard(all){
+  const by = {}; all.forEach(r => by[r.date.slice(0, 7)] = (by[r.date.slice(0, 7)] || 0) + rcTotal(r));
+  const last = Object.keys(by).sort().pop(), nowM = today().slice(0, 7); let k = last > nowM ? last : nowM; const ms = [];
+  for (let i = 0; i < 12; i++) { ms.unshift(k); k = prevMonth(k); }
+  const vals = ms.map(m => by[m] || 0), mx = Math.max(...vals, 1), W = 320, H = 100, bw = 20, gap = (W - 12 * bw) / 11;
+  const bars = ms.map((m, i) => { const h = vals[i] / mx * (H - 22), x = i * (bw + gap);
+    return `<g data-act="setmonth" data-m="${m}" style="cursor:pointer"><rect x="${x.toFixed(1)}" y="${(H - h - 14).toFixed(1)}" width="${bw}" height="${Math.max(h, 1).toFixed(1)}" rx="3" class="tbar${m === repMonth ? ' on' : ''}"/><text x="${(x + bw / 2).toFixed(1)}" y="${H - 2}" font-size="8" class="tlab" text-anchor="middle">${MONTHS[+m.slice(5) - 1].slice(0, 3)}</text></g>`; }).join('');
+  return `<div class="card"><b>Son 12 ay</b><svg viewBox="0 0 ${W} ${H}" style="width:100%;margin-top:6px">${bars}</svg><div class="sub">Bir aya dokununca o ayın raporu açılır.</div></div>`;
 }
 function recentCard(all){
   const rs = [...all].sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0)).slice(0, 8);
@@ -341,6 +530,58 @@ function recentCard(all){
       <div class="sub">${r.items.length} kalem${tc ? ' · en çok: ' + (CAT_ICON[tc] || '') + ' ' + esc(tc) : ''}</div></div><b>${TRY(rcTotal(r))}</b></div>`; }).join('')}
     ${all.length > rs.length ? `<button class="btn alt sm" data-act="all">Tümünü gör (${all.length})</button>` : ''}</div>`;
 }
+const barColor = p => p >= 100 ? 'var(--bad)' : p >= 80 ? 'var(--warn)' : 'var(--ink)';
+async function renderReport(){
+  if (detailId) return renderDetail();
+  const all = await DB.all();
+  const months = [...new Set(all.map(r => r.date.slice(0, 7)))].sort().reverse();
+  if (!months.length) { view.innerHTML = '<h2>Rapor</h2><div class="card mut">Önce birkaç fiş ekle.</div>'; return; }
+  if (!months.includes(repMonth)) repMonth = months[0];
+  const rs = all.filter(r => r.date.startsWith(repMonth)), prev = all.filter(r => r.date.startsWith(prevMonth(repMonth)));
+  const tot = a => a.reduce((s, r) => s + rcTotal(r), 0);
+  const T = tot(rs), P = tot(prev), delta = P ? ((T - P) / P * 100) : null;
+  const bud = LS.get('budget', {total:0, cats:{}}); const bcats = bud.cats || {};
+  const cats = {}; rs.forEach(r => r.items.forEach(i => { const c = CATS.includes(i.category) ? i.category : 'Diğer'; cats[c] = (cats[c] || 0) + (i.line_total || 0); }));
+  const catArr = Object.entries(cats).sort((a, b) => b[1] - a[1]); const cmax = catArr[0]?.[1] || 1;
+  const cur = unitPrices(rs), old = unitPrices(prev);
+  const prods = [...cur.values()].sort((a, b) => b.spent - a.spent);
+  let budHtml = '';
+  if (bud.total > 0) { const p = T / bud.total * 100; budHtml = `<div style="margin-top:10px"><div class="row" style="justify-content:space-between"><span class="mut">Bütçe</span><span class="mut">${TRY(T)} / ${TRY(bud.total)} (%${p.toFixed(0)})</span></div><div class="bar"><i style="width:${Math.min(100, p)}%;background:${barColor(p)}"></i></div>`;
+    if (repMonth === today().slice(0, 7) && +today().slice(8) >= 5) { const day = +today().slice(8), dim = new Date(+repMonth.slice(0, 4), +repMonth.slice(5), 0).getDate(), proj = T / day * dim;
+      budHtml += `<div class="sub" style="margin-top:4px">Bu hızla ay sonu ≈ ${TRY(proj)} ${proj > bud.total ? '<span class="up">(bütçeyi aşar)</span>' : ''}</div>`; }
+    budHtml += '</div>'; }
+  view.innerHTML = `<h2>Rapor</h2>
+  ${recentCard(all)}
+  <select data-act="month">${months.map(m => `<option value="${m}" ${m === repMonth ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select>
+  <div class="card" style="margin-top:10px"><div class="mut">Toplam harcama</div><div class="big"><span class="hl">${TRY(T)}</span></div>
+    <div class="mut">${rs.length} fiş${delta === null ? '' : ` · geçen aya göre <span class="${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '▲' : '▼'} %${Math.abs(delta).toFixed(0)}</span>`}</div>${budHtml}</div>
+  ${trendCard(all)}
+  <div class="card"><b>Kategoriler</b>${catArr.map(([c, v]) => { const lim = num(bcats[c]); const p = lim ? v / lim * 100 : 0;
+    return `<div style="margin-top:8px"><div class="row" style="justify-content:space-between"><span>${CAT_ICON[c] || ''} ${esc(c)}</span><span>${TRY(v)}${lim ? ` <span class="sub">/ ${TRY(lim)}</span>` : ''}</span></div><div class="bar"><i style="width:${lim ? Math.min(100, p) : v / cmax * 100}%;${lim ? 'background:' + barColor(p) : ''}"></i></div></div>`; }).join('')}</div>
+  ${inflCard(inflation(all))}
+  ${dueCard(dueSoon(all))}
+  <div class="card"><b>Ürünler</b> <span class="mut">(dokun → fiyat geçmişi)</span>
+    ${prods.map(p => { const o = old.get(p.id); const ch = o && o.avg ? (p.avg - o.avg) / o.avg * 100 : null;
+      return `<div class="li" data-act="prod" data-k="${esc(p.id)}"><div><div>${esc(p.name)}</div>
+      <div class="mut">${p.count}× · ort. ${TRY(p.avg)}/${esc(p.unit)}${ch === null ? '' : ` ${arrow(ch)}`}</div></div>
+      <b>${TRY(p.spent)}</b></div>`; }).join('')}</div>`;
+}
+async function productDetail(k){
+  const all = await DB.all(); const pts = [];
+  for (const r of all) for (const it of r.items) if (pkey(it) === k && it.unit_price) pts.push({d:r.date, p:it.unit_price, s:r.store, u:uk(it.unit)});
+  pts.sort((a, b) => a.d.localeCompare(b.d)); if (!pts.length) return;
+  const ps = pts.map(x => x.p), mn = Math.min(...ps), mx = Math.max(...ps), W = 300, H = 70;
+  const xy = pts.map((x, i) => [pts.length > 1 ? i / (pts.length - 1) * W : W / 2, mx === mn ? H / 2 : H - 6 - (x.p - mn) / (mx - mn) * (H - 12)]);
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<b style="font-size:17px">${esc(pname(k))}</b>
+   <div class="mut">En düşük ${TRY(mn)} · en yüksek ${TRY(mx)} · ${pts.length} kayıt</div>
+   <svg viewBox="0 0 ${W} ${H}" style="width:100%;margin:10px 0"><polyline class="pline" points="${xy.map(a => a.join(',')).join(' ')}"/>${xy.map(a => `<circle class="pdot" cx="${a[0]}" cy="${a[1]}" r="3"/>`).join('')}</svg>
+   ${[...pts].reverse().map(x => `<div class="li" style="cursor:default"><span>${x.d} <span class="mut">${esc(x.s)}</span></span><b>${TRY(x.p)}/${esc(x.u)}</b></div>`).join('')}
+   <button class="btn alt" data-act="close">Kapat</button>`;
+  dlg.showModal();
+}
+
+/* ----- fiş detayı ve analiz ----- */
 async function renderDetail(){
   const all = await DB.all(); const r = all.find(x => x.id === detailId);
   if (!r) { detailId = null; return render(); }
@@ -349,14 +590,14 @@ async function renderDetail(){
   const disc = r.discount_total || r.items.reduce((s, i) => s + (i.discount || 0), 0);
   const avg = a => a.length ? a.reduce((s, x) => s + rcTotal(x), 0) / a.length : 0;
   const avgAll = avg(others);
-  const same = others.filter(x => normStore(x.store) === normStore(r.store)), avgSame = avg(same);
+  const same = others.filter(x => key(normStore(x.store)) === key(normStore(r.store))), avgSame = avg(same);
   const cmp = (a, b) => '%' + Math.abs(pct(a, b)).toFixed(0) + (a > b ? ' üstünde' : ' altında');
   const groups = groupItems(r.items).map(([c, arr]) => ({c, arr, sum:arr.reduce((s, o) => s + (o.it.line_total || 0), 0)})).sort((a, b) => b.sum - a.sum);
   const hists = r.items.map(it => hist(it, r, all));
   const rises = [], drops = [], cheaper = [];
   r.items.forEach((it, i) => { const h = hists[i]; if (!h) return;
     if (h.prev) { const c = pct(it.unit_price, h.prev.p); if (c >= 5) rises.push({it, h, c}); else if (c <= -5) drops.push({it, h, c}); }
-    if (normStore(h.best.s) !== normStore(r.store) && h.best.p < it.unit_price * 0.95) cheaper.push({it, h, save:(it.unit_price - h.best.p) * (it.qty || 1)}); });
+    if (key(normStore(h.best.s)) !== key(normStore(r.store)) && h.best.p < it.unit_price * 0.95) cheaper.push({it, h, save:(it.unit_price - h.best.p) * (it.qty || 1)}); });
   rises.sort((a, b) => b.c - a.c); drops.sort((a, b) => a.c - b.c); cheaper.sort((a, b) => b.save - a.save);
   const top3 = [...r.items].sort((a, b) => (b.line_total || 0) - (a.line_total || 0)).slice(0, 3);
   const L = [];
@@ -378,13 +619,14 @@ async function renderDetail(){
     if (h && h.prev) { const c = pct(it.unit_price, h.prev.p);
       ph = `<div class="sub">Son: ${TRY(h.prev.p)} (${esc(h.prev.s || '')} · ${shortDate(h.prev.d)}) ${Math.abs(c) >= 1 ? arrow(c) : '≈ aynı'}</div>`; }
     return `<div class="pl"><div><div>${esc(it.name)}${it.uncertain ? ' ⚠️' : ''}${it.brand ? ` <span class="sub">${esc(it.brand)}</span>` : ''}</div>
+      ${it.raw && key(it.raw) !== key(it.name) ? `<div class="sub">Fişte: ${esc(it.raw)}</div>` : ''}
       <div class="sub">${it.qty} ${esc(it.unit)} × ${TRY(it.unit_price)}${it.discount ? ` · indirim −${TRY(it.discount)}` : ''}</div>${ph}</div><b>${TRY(it.line_total)}</b></div>`; };
   view.innerHTML = `<button class="btn alt sm" data-act="back">← Geri</button>
-  <div class="card"><div style="font-size:22px;font-weight:700">${esc(r.store || 'Market')}</div>
+  <div class="card torn"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">${esc(r.store || 'Market')}</div>
     ${r.branch ? `<div class="mut">${esc(r.branch)}</div>` : ''}
     <div style="margin-top:4px">📅 ${validDate(r.date) ? fmtDate(r.date) : 'Tarih yok'}${r.time ? ' · ' + esc(r.time) : ''}</div>
     ${r.payment ? `<div class="mut">Ödeme: ${esc(r.payment)}</div>` : ''}
-    <div class="big" style="margin-top:8px">${TRY(total)}</div>
+    <div class="big" style="margin-top:8px"><span class="hl">${TRY(total)}</span></div>
     ${warns.map(w => `<p class="warn">⚠️ ${esc(w)}</p>`).join('')}</div>
   <div class="card"><b>Analiz</b>${L.map(l => `<div class="pl" style="display:block">${l}</div>`).join('')}${lists}</div>
   <div class="card"><b>Ürünler</b>${groups.map(g => `<div class="catH"><span>${CAT_ICON[g.c] || ''} ${esc(g.c)}</span><span>${TRY(g.sum)} <span class="sub">%${sum ? (g.sum / sum * 100).toFixed(0) : 0}</span></span></div>${g.arr.map(row).join('')}`).join('')}</div>
@@ -393,66 +635,126 @@ async function renderDetail(){
   <button class="btn bad" data-act="delview">🗑️ Fişi sil</button>`;
 }
 
-/* ----- Ayarlar ----- */
+/* ================= AYARLAR ================= */
+function accHtml(all){
+  const a = all.filter(r => r.acc && r.acc.n).sort((x, y) => (x.created || 0) - (y.created || 0));
+  if (!a.length) return '<p class="mut">Henüz ölçüm yok. Fiş okutup kaydettikçe burada görünür.</p>';
+  const rate = arr => { const n = arr.reduce((s, r) => s + r.acc.n, 0), ok = arr.reduce((s, r) => s + r.acc.ok, 0), hd = arr.reduce((s, r) => s + r.acc.head, 0);
+    return {item:n ? ok / n * 100 : 0, head:hd / (arr.length * 3) * 100}; };
+  const last = a.slice(-10), before = a.slice(-20, -10), L = rate(last);
+  return `<p class="mut">Son ${last.length} fiş: kalemlerin %${L.item.toFixed(0)}'i düzeltme istemedi; market, tarih ve toplam %${L.head.toFixed(0)} doğru okundu.${before.length ? ` Önceki ${before.length} fiş: %${rate(before).item.toFixed(0)}.` : ''}</p>`;
+}
 async function renderSettings(){
   const all = await DB.all();
   const persisted = navigator.storage?.persisted ? await navigator.storage.persisted() : false;
+  const b = LS.get('budget', {total:0, cats:{}}); const bc = b.cats || {};
+  const lb = localStorage.getItem('lastBackup');
   view.innerHTML = `<h2>Ayarlar</h2>
+  <div class="card"><b>Görünüm</b>
+    <label class="f">Tema</label>
+    <select id="themesel">${[['auto','Telefonun ayarına uy'],['light','Açık'],['dark','Koyu']].map(([v, l]) => `<option value="${v}" ${(localStorage.getItem('theme') || 'auto') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
   <div class="card"><b>Gemini API anahtarı</b>
-    <p class="mut">Ücretsiz anahtar: aistudio.google.com → "Get API key". Anahtar sadece bu telefonda saklanır.</p>
+    <p class="mut">Ücretsiz anahtar: aistudio.google.com → "Get API key". Anahtar sadece bu telefonda saklanır, yedeğe girmez.</p>
     <input id="gkey" type="password" placeholder="AIza..." value="${esc(localStorage.getItem('gkey') || '')}">
     <label class="f">Model adı (çalışmazsa güncel bir Flash modeliyle değiştir)</label>
     <input id="gmodel" value="${esc(localStorage.getItem('gmodel') || 'gemini-flash-latest')}">
     <button class="btn" data-act="savekey">Kaydet</button></div>
+  <div class="card"><b>Okuma doğruluğu</b>${accHtml(all)}
+    <div class="sub">Düzelttiğin ürün adları ve kategoriler hatırlanır; sonraki fişlerde uygulanır ve Gemini'ye örnek olarak gönderilir.</div>
+    <button class="btn alt sm" data-act="wipemem">Öğrenilenleri sıfırla</button></div>
+  <div class="card"><b>Bütçe</b>
+    <label class="f">Aylık toplam (TL)</label><input id="bt" inputmode="decimal" value="${b.total || ''}">
+    <details style="margin-top:8px"><summary>Kategori bütçeleri (isteğe bağlı)</summary>${CATS.map(c => `<label class="f">${CAT_ICON[c]} ${c}</label><input data-bc="${esc(c)}" inputmode="decimal" value="${bc[c] || ''}">`).join('')}</details>
+    <button class="btn" data-act="savebudget">Bütçeyi kaydet</button></div>
   <div class="card"><b>Veri (${all.length} fiş)</b>
-    <button class="btn alt" data-act="exportjson">Yedek indir (JSON)</button>
+    <div class="sub">Son yedek: ${lb ? shortDate(lb) : 'yok'}</div>
+    <button class="btn alt" data-act="exportjson">Yedek indir (JSON, hafıza dahil)</button>
     <button class="btn alt" data-act="exportcsv">Excel için indir (CSV)</button>
     <label class="btn alt">Yedekten geri yükle<input id="imp" type="file" accept=".json,application/json" hidden></label>
     <button class="btn alt" data-act="persist">${persisted ? '✅ Kalıcı depolama açık' : 'Verilerin silinmesine karşı koru'}</button>
-    <button class="btn bad" data-act="wipe">Tüm verileri sil</button></div>
+    <button class="btn bad" data-act="wipe">Tüm fişleri sil</button></div>
+  <div class="card"><b>PIN kilidi</b>
+    <p class="mut">${pinHash() ? 'PIN kilidi açık.' : 'Telefonu başkası kullanıyorsa uygulama açılırken PIN sorar.'} Bu yalnızca bir ekran kilididir, veriyi şifrelemez. PIN'i unutursan tek çıkış site verisini silmektir ve fişlerin gider; önce yedek al.</p>
+    <input id="pin1" type="password" inputmode="numeric" placeholder="${pinHash() ? 'Mevcut PIN' : '4-8 haneli yeni PIN'}">
+    ${pinHash() ? '<button class="btn alt" data-act="rmpin">PIN\'i kaldır</button>' : '<button class="btn" data-act="setpin">PIN koy</button>'}</div>
   <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>`;
-  $('#imp').onchange = async e => { try { const arr = JSON.parse(await e.target.files[0].text());
-    for (const r of arr) await DB.put(r); toast(arr.length + ' fiş yüklendi'); renderSettings(); } catch(err) { toast('Geçersiz dosya'); } };
+  $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0;
+    for (const r of recs) { if (r && r.id && validDate(r.date) && Array.isArray(r.items)) { await DB.put(r); n++; } else bad++; }
+    if (!Array.isArray(j)) { if (j.catmap) LS.set('catmap', {...catMap(), ...j.catmap}); if (j.namemap) LS.set('namemap', {...nameMap(), ...j.namemap});
+      if (Array.isArray(j.stores)) j.stores.forEach(learnStore); if (j.budget && !(LS.get('budget', null)?.total)) LS.set('budget', j.budget); }
+    toast(n + ' fiş yüklendi' + (bad ? `, ${bad} kayıt atlandı` : '')); renderSettings(); } catch(err) { toast('Geçersiz yedek dosyası'); } };
 }
 function download(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
 
-/* ---------- olaylar ---------- */
-document.addEventListener('input', onInput);
+/* ================= olaylar ================= */
+document.addEventListener('input', e => { if (e.target.id === 'q') { qText = e.target.value; fillList(); return; } onInput(e); });
 document.addEventListener('change', e => {
-  if (e.target.dataset.act === 'month') { repMonth = e.target.value; renderReport(); }
-  else { onInput(e); if (e.target.dataset.f === 'category' && draft) { const y = scrollY; renderReview(); scrollTo(0, y); } } });
-$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) { if (b.dataset.tab === 'ekle' && tab === 'ekle') draft = null; detailId = null; show(b.dataset.tab); } };
+  const t = e.target;
+  if (t.dataset.act === 'month') { repMonth = t.value; renderReport(); }
+  else if (t.id === 'qsel') { qStore = t.value; fillList(); }
+  else if (t.id === 'themesel') { localStorage.setItem('theme', t.value); applyTheme(); }
+  else { onInput(e); if (t.dataset.f === 'category' && draft) { const y = scrollY; renderReview(); scrollTo(0, y); } } });
+$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) { if (b.dataset.tab === 'ekle' && tab === 'ekle') { draft = null; photos = []; } detailId = null; show(b.dataset.tab); } };
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT') return;
   const a = el.dataset.act;
-  if (a === 'manual') { draft = {id:crypto.randomUUID(), thumb:'', store:'', date:today(), total:0, items:[], isNew:true}; renderAdd(); }
+  if (a === 'manual') { draft = {id:crypto.randomUUID(), thumb:'', store:'', date:today(), items:[], total:0, isNew:true}; renderAdd(); }
   else if (a === 'addrow') { draft.items.push(normItem({name:'', qty:1})); renderReview(); }
   else if (a === 'rm') { draft.items.splice(+el.dataset.i, 1); renderReview(); }
   else if (a === 'cancel') { const was = draft; draft = null; if (was && !was.isNew) { detailId = was.id; show(detailFrom); } else { detailId = null; show('fisler'); } }
   else if (a === 'save') {
     if (!validDate(draft.date)) { toast('Tarih gerekli'); return; }
-    draft.store = normStore(draft.store); draft.items = draft.items.filter(i => i.name || i.line_total); if (!draft.total) draft.total = +itemsSum(draft).toFixed(2);
-    const wasNew = draft.isNew; const r = {...draft}; delete r.isNew; if (!r.created) r.created = Date.now();
-    await DB.put(r); learnCats(r.items); learnNames(r.items); learnStore(r.store); draft = null; detailId = r.id; if (wasNew) detailFrom = 'fisler'; toast('Kaydedildi'); show(detailFrom); }
+    draft.store = normStore(draft.store);
+    draft.items = draft.items.filter(i => i.name || i.line_total);
+    const acc = calcAcc(draft);
+    if (!draft.total) draft.total = +itemsSum(draft).toFixed(2);
+    const wasNew = draft.isNew;
+    if (wasNew) { const dup = await findDup(draft); if (dup && !confirm('Aynı market, gün ve tutarda başka bir fiş var. Yine de kaydedilsin mi?')) return; }
+    const r = {...draft}; delete r.isNew; delete r.ai; delete r.dupOf; const fq = r.fromQueue; delete r.fromQueue;
+    if (acc) r.acc = acc; if (!r.created) r.created = Date.now();
+    await DB.put(r); if (fq) await DB.del(fq, 'queue');
+    learnCats(r.items); learnNames(r.items); learnStore(r.store);
+    const msg = await budgetAlert(r);
+    draft = null; detailId = r.id; if (wasNew) detailFrom = 'fisler';
+    toast('Kaydedildi' + (msg ? ' — ' + msg : '')); show(detailFrom); }
   else if (a === 'delete') { if (confirm('Bu fiş silinsin mi?')) { await DB.del(draft.id); draft = null; detailId = null; show(detailFrom); } }
   else if (a === 'view') { detailId = el.dataset.id; detailFrom = tab; show(tab); }
   else if (a === 'back') { detailId = null; show(tab); }
   else if (a === 'all') { show('fisler'); }
-  else if (a === 'edit') { const r = (await DB.all()).find(x => x.id === detailId); draft = JSON.parse(JSON.stringify(r)); show('ekle'); }
+  else if (a === 'edit') { const r = (await DB.all()).find(x => x.id === detailId); if (!r) return; draft = JSON.parse(JSON.stringify(r)); show('ekle'); }
   else if (a === 'delview') { if (confirm('Bu fiş silinsin mi?')) { await DB.del(detailId); detailId = null; show(tab); } }
   else if (a === 'prod') productDetail(el.dataset.k);
   else if (a === 'close') $('#dlg').close();
+  else if (a === 'setmonth') { const m = el.dataset.m; if ((await DB.all()).some(r => r.date.startsWith(m))) { repMonth = m; renderReport(); } else toast('Bu ayda fiş yok'); }
+  else if (a === 'read') doRead();
+  else if (a === 'crop') openCrop(+el.dataset.i);
+  else if (a === 'rmphoto') { photos.splice(+el.dataset.i, 1); renderAdd(); }
+  else if (a === 'cancelphotos') { photos = []; renderAdd(); }
+  else if (a === 'qread') readQueue(el.dataset.id);
+  else if (a === 'qmanual') { const q = (await DB.all('queue')).find(x => x.id === el.dataset.id); if (!q) return;
+    draft = {id:crypto.randomUUID(), thumb:q.thumb, store:'', date:today(), items:[], total:0, isNew:true, fromQueue:q.id}; renderAdd(); }
+  else if (a === 'qdel') { if (confirm('Bekleyen fotoğraf silinsin mi?')) { await DB.del(el.dataset.id, 'queue'); fillQueue(); } }
   else if (a === 'savekey') { localStorage.setItem('gkey', $('#gkey').value.trim()); localStorage.setItem('gmodel', $('#gmodel').value.trim() || 'gemini-flash-latest'); toast('Kaydedildi'); }
-  else if (a === 'exportjson') download('fis-yedek-' + today() + '.json', JSON.stringify(await DB.all()), 'application/json');
+  else if (a === 'savebudget') { const cats = {}; document.querySelectorAll('[data-bc]').forEach(i => { const v = num(i.value); if (v > 0) cats[i.dataset.bc] = v; });
+    LS.set('budget', {total:num($('#bt').value), cats}); toast('Bütçe kaydedildi'); }
+  else if (a === 'exportjson') { download('fis-yedek-' + today() + '.json', JSON.stringify({v:2, exported:new Date().toISOString(), receipts:await DB.all(), catmap:catMap(), namemap:nameMap(), stores:knownStores(), budget:LS.get('budget', null)}), 'application/json');
+    localStorage.setItem('lastBackup', today()); toast('Yedek indirildi'); if (tab === 'ayar') renderSettings(); }
   else if (a === 'exportcsv') { const rows = [['tarih','market','urun','marka','genel_ad','kategori','adet','birim','birim_fiyat','indirim','tutar']];
     (await DB.all()).sort((x, y) => x.date.localeCompare(y.date)).forEach(r => r.items.forEach(i => rows.push([r.date, r.store, i.name, i.brand, i.generic, i.category, i.qty, i.unit, i.unit_price, i.discount, i.line_total])));
-    download('fisler-' + today() + '.csv', '\ufeff' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
+    download('fisler-' + today() + '.csv', '﻿' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
   else if (a === 'persist') { const ok = await navigator.storage?.persist?.(); toast(ok ? 'Kalıcı depolama açıldı' : 'Tarayıcı izin vermedi; uygulamayı ana ekrana ekleyip tekrar dene'); renderSettings(); }
   else if (a === 'wipe') { if (confirm('TÜM fişler silinecek. Emin misin?')) { await DB.clear(); toast('Silindi'); renderSettings(); } }
+  else if (a === 'wipemem') { if (confirm('Öğrenilen kategori ve ürün adı eşleştirmeleri silinsin mi? Fişlerin silinmez.')) { localStorage.removeItem('catmap'); localStorage.removeItem('namemap'); toast('Sıfırlandı'); } }
+  else if (a === 'setpin') { const p = $('#pin1').value.trim(); if (!/^\d{4,8}$/.test(p)) return toast('PIN 4-8 rakam olmalı');
+    if (!(crypto.subtle)) return toast('PIN için https gerekir');
+    if (!confirm('PIN\'i unutursan uygulamaya giremezsin; tek çıkış site verisini silmektir ve fişlerin gider. Önce yedek aldığından emin ol. Devam edilsin mi?')) return;
+    await setPin(p); toast('PIN kilidi açıldı'); renderSettings(); }
+  else if (a === 'rmpin') { if (await checkPin($('#pin1').value)) { localStorage.removeItem('pin'); toast('PIN kaldırıldı'); renderSettings(); } else toast('PIN yanlış'); }
 });
 
-/* ---------- başlat ---------- */
-DB.open().then(() => { show('ekle'); });
+/* ================= başlat ================= */
+lock();
+DB.open().then(() => show('ekle')).catch(() => { view.innerHTML = '<div class="card err">Veritabanı açılamadı. Gizli sekmede olabilirsin; normal sekmede aç.</div>'; });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
