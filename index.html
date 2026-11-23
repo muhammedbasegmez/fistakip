@@ -3,88 +3,143 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#DDE2E6">
+<meta name="theme-color" content="#F2F4F8">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Fiş Arşivi</title>
 <style>
 :root{color-scheme:light;
-  --desk:#DDE2E6;--paper:#FCFCFA;--ink:#1A2433;--mut:#5C6877;--line:#BAC3CC;--edge:#CBD2D9;--field:#F0F2F4;
-  --hl:#FFD84D;--on-hl:#2B2300;--bad:#B42318;--ok:#157347;--warn:#8A5A00;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Roboto Mono",monospace}
+  --bg:#F2F4F8;--card:#FFFFFF;--ink:#0F172A;--mut:#64748B;--line:#E6EAF0;--field:#F1F4F9;
+  --brand:#0E9F6E;--brand-ink:#0B7A55;--on-brand:#FFFFFF;--brand-soft:rgba(14,159,110,.12);
+  --bad:#DC2626;--ok:#15803D;--warn:#B45309;--cardborder:transparent;
+  --shadow:0 1px 2px rgba(15,23,42,.05),0 12px 28px -16px rgba(15,23,42,.22);--r:20px;
+  --paper:var(--card);--edge:var(--line)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;
-  --desk:#0E1217;--paper:#1A2029;--ink:#E9EDF2;--mut:#9AA6B5;--line:#3A4451;--edge:#262E39;--field:#10151B;
-  --hl:#F5CF3E;--on-hl:#2B2300;--bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E}}
+  --bg:#0B0F14;--card:#141A22;--ink:#E8EEF5;--mut:#8EA0B4;--line:#243040;--field:#0E141B;
+  --brand:#34D399;--brand-ink:#34D399;--on-brand:#04201A;--brand-soft:rgba(52,211,153,.14);
+  --bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E;--cardborder:#1E2836;--shadow:none}}
 :root[data-theme=dark]{color-scheme:dark;
-  --desk:#0E1217;--paper:#1A2029;--ink:#E9EDF2;--mut:#9AA6B5;--line:#3A4451;--edge:#262E39;--field:#10151B;
-  --hl:#F5CF3E;--on-hl:#2B2300;--bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E}
+  --bg:#0B0F14;--card:#141A22;--ink:#E8EEF5;--mut:#8EA0B4;--line:#243040;--field:#0E141B;
+  --brand:#34D399;--brand-ink:#34D399;--on-brand:#04201A;--brand-soft:rgba(52,211,153,.14);
+  --bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E;--cardborder:#1E2836;--shadow:none}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--desk);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:84px}
-main{max-width:640px;margin:0 auto;padding:14px 14px 28px}
-h2{margin:8px 2px 14px;font-size:24px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
-.card{position:relative;background:var(--paper);border:1px solid var(--edge);border-radius:6px;padding:14px;margin-bottom:12px}
-.card.torn{margin-bottom:22px;border-bottom:0;border-radius:6px 6px 0 0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;padding-bottom:112px;-webkit-font-smoothing:antialiased}
+main{max-width:640px;margin:0 auto;padding:18px 16px 28px}
+h2{margin:6px 2px 16px;font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-.03em}
+.card{position:relative;background:var(--card);border:1px solid var(--cardborder);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card.torn{margin-bottom:26px;border-radius:var(--r) var(--r) 0 0;border-bottom:0;box-shadow:none;filter:drop-shadow(0 8px 12px rgba(15,23,42,.10))}
+:root[data-theme=dark] .card.torn{filter:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .card.torn{filter:none}}
 .card.torn::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-9px;height:9px;
-  background:linear-gradient(135deg,var(--paper) 50%,transparent 50%) 0 0/14px 14px,linear-gradient(225deg,var(--paper) 50%,transparent 50%) 7px 0/14px 14px;
-  filter:drop-shadow(0 1px 0 var(--edge))}
-.btn{display:block;width:100%;min-height:48px;text-align:center;background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:12px;font-size:16px;font-weight:700;margin:10px 0;cursor:pointer;font-family:inherit}
-.btn.alt{background:transparent;color:var(--ink)}
-.btn.bad{background:transparent;color:var(--bad);border-color:var(--bad)}
-.btn.sm{display:inline-block;width:auto;min-height:40px;padding:8px 14px;font-size:14px;margin:4px 6px 4px 0}
+  background:linear-gradient(135deg,var(--card) 50%,transparent 50%) 0 0/14px 14px,linear-gradient(225deg,var(--card) 50%,transparent 50%) 7px 0/14px 14px}
+.hero{background:linear-gradient(135deg,#0F172A 0%,#115E59 100%);color:#fff;border-color:transparent;
+  --brand:#5EEAD4;--bad:#FCA5A5;--ok:#86EFAC;--warn:#FCD34D}
+.hero .mut,.hero .sub{color:rgba(255,255,255,.74)}
+.hero .big{color:#fff;font-size:38px}
+.hero .bar{background:rgba(255,255,255,.18);border-color:transparent}
+.btn{display:block;width:100%;min-height:52px;text-align:center;background:var(--brand);color:var(--on-brand);border:0;border-radius:16px;padding:13px 16px;font-size:16px;font-weight:700;margin:10px 0;cursor:pointer;font-family:inherit;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn.alt{background:var(--field);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.bad{background:var(--field);color:var(--bad)}
+.btn.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);box-shadow:none}
+.btn.sm{display:inline-block;width:auto;min-height:42px;padding:9px 16px;font-size:14px;margin:4px 6px 4px 0;border-radius:12px}
 .btn:disabled{opacity:.45}
-.btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,nav button:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
-input,select{width:100%;min-height:44px;background:var(--field);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit}
-input:focus,select:focus{border-color:var(--ink)}
-input[type=range]{padding:0;border:0;min-height:32px;background:none;accent-color:var(--ink)}
-label.f{display:block;color:var(--mut);font-size:13px;margin:10px 0 4px}
+.btn:focus-visible,summary:focus-visible,nav button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+input,select{width:100%;min-height:48px;background:var(--field);color:var(--ink);border:1.5px solid transparent;border-radius:14px;padding:11px 14px;font-size:16px;font-family:inherit}
+input:focus,select:focus{outline:0;border-color:var(--brand);background:var(--card)}
+input[type=range]{padding:0;border:0;min-height:32px;background:none;accent-color:var(--brand)}
+input[type=checkbox]{width:22px;min-height:22px;height:22px;accent-color:var(--brand);flex:none}
+label.f{display:block;color:var(--mut);font-size:13px;font-weight:600;margin:12px 0 5px}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{min-width:0}
 .mut{color:var(--mut);font-size:14px}
 .sub{color:var(--mut);font-size:13px}
-.big{font-family:var(--mono);font-size:30px;line-height:1.25;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.hl{background:var(--hl);color:var(--on-hl);padding:0 .28em;margin:0 -.28em;border-radius:3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
-.up{color:var(--bad);font-weight:600}.down{color:var(--ok);font-weight:600}
+.big{font-size:34px;line-height:1.15;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.up{color:var(--bad);font-weight:700}.down{color:var(--ok);font-weight:700}
 .err{color:var(--bad)}
 .warn{color:var(--warn);font-size:14px;font-weight:600}
-.li>b,.pl>b,.card.row>b,.catH>span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
-.pl>span:last-child,.pl>div+b{font-variant-numeric:tabular-nums}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--paper);border-top:1px solid var(--edge);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;display:flex;flex-direction:column;align-items:center;background:none;border:0;color:var(--mut);padding:8px 0 8px;font-size:12px;font-family:inherit;min-height:58px}
-nav button span{display:inline-block;font-size:20px;line-height:1;padding:5px 18px;border-radius:14px;margin-bottom:2px}
-nav button.on{color:var(--ink);font-weight:700}
-nav button.on span{background:var(--hl)}
-.item{border-top:1px dashed var(--line);padding:10px 0}
-.item .row input{padding:8px 10px;min-height:40px}
-.thumb{width:48px;height:64px;object-fit:cover;border-radius:3px;background:#000;flex:none}
-.bar{height:6px;background:var(--field);border:1px solid var(--edge);border-radius:4px;overflow:hidden;margin-top:4px}
-.bar i{display:block;height:100%;background:var(--ink)}
-.li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px dashed var(--line);cursor:pointer}
+.li>b,.pl>b,.card.row>b,.catH>span:last-child{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.pl>span:last-child{font-variant-numeric:tabular-nums}
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(calc(100% - 24px),520px);display:flex;gap:4px;padding:6px;
+  background:var(--card);background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);
+  border-radius:26px;box-shadow:0 14px 34px -12px rgba(15,23,42,.34),0 0 0 1px var(--line);z-index:20}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;background:none;border:0;color:var(--mut);padding:7px 0 6px;font-size:11.5px;font-weight:600;font-family:inherit;min-height:56px;border-radius:20px;transition:background .15s,color .15s}
+nav button span{font-size:21px;line-height:1.1}
+nav button.fab{flex:0 0 62px;width:62px;height:62px;min-height:62px;margin:-26px 6px 0;padding:0;border-radius:50%;background:linear-gradient(145deg,#34D399,#0E9F6E);color:#fff;box-shadow:0 10px 22px -6px rgba(14,159,110,.65),0 0 0 4px var(--card);justify-content:center}
+nav button.fab span{font-size:28px}nav button.fab:active{transform:scale(.94)}
+#sheetBg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+#sheetBg .sheet{width:min(100%,520px);background:var(--card);border-radius:26px 26px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));animation:shUp .22s ease-out}
+@keyframes shUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet .grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 12px;font-size:18px}
+.sheet .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sheet .tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 8px;border-radius:20px;background:var(--brand-soft);color:var(--brand-ink);font-weight:700;font-size:15px;text-align:center;cursor:pointer;border:0;font-family:inherit}
+.sheet .tile span{font-size:34px}.sheet .tile small{font-weight:500;font-size:12px;opacity:.8}
+.sheet .opt{display:flex;align-items:center;gap:10px;width:100%;padding:13px 4px;background:none;border:0;border-top:1px solid var(--line);color:var(--fg,inherit);font-size:15px;font-family:inherit;text-align:left;cursor:pointer}
+.sheet .opt:first-of-type{margin-top:12px}
+nav button.on{background:var(--brand-soft);color:var(--brand-ink)}
+.item{border-top:1px solid var(--line);padding:12px 0}
+.item .row input{padding:8px 12px;min-height:44px}
+.thumb{width:48px;height:64px;object-fit:cover;border-radius:10px;background:#000;flex:none}
+.bar{height:8px;background:var(--field);border-radius:99px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--brand)}
+.li{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
 .li:first-of-type{border-top:0}
-.catH{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-bottom:5px;border-bottom:1.5px solid var(--ink);font-weight:700}
-.pl{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.catH{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-bottom:8px;border-bottom:1px solid var(--line);font-weight:700}
+.catH>span:first-child{display:flex;align-items:center}
+.pl{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
 .catH+.pl{border-top:0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chip{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:11px;font-size:16px;margin-right:9px;flex:none;background:var(--field);background:color-mix(in srgb,var(--c) 16%,transparent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 summary{cursor:pointer;color:var(--mut)}
-dialog{background:var(--paper);color:var(--ink);border:1px solid var(--edge);border-radius:10px;width:min(92vw,520px);max-height:86vh}
-dialog::backdrop{background:rgba(8,11,15,.6)}
-#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:10px;display:none;z-index:9;max-width:90vw;text-align:center;font-weight:600}
-#lock{position:fixed;inset:0;background:var(--desk);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--cardborder);border-radius:24px;width:min(92vw,520px);max-height:86vh;padding:18px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(8,11,15,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;display:none;z-index:60;max-width:90vw;text-align:center;font-weight:600;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+#lock{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
 #lock[hidden]{display:none}
-.tbar{fill:var(--ink);opacity:.25}.tbar.on{opacity:1}.tlab{fill:var(--mut)}
-.pline{fill:none;stroke:var(--ink);stroke-width:2}.pdot{fill:var(--ink)}
+.tbar{fill:var(--brand);opacity:.28}.tbar.on{opacity:1}.tlab{fill:var(--mut)}
+.pline{fill:none;stroke:var(--brand);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.pdot{fill:var(--brand)}
+.ask{display:flex;gap:8px;margin-top:10px}.ask input{flex:1}.ask .btn{margin:0;flex:none}
+.note{background:var(--brand-soft);color:var(--ink);border-radius:14px;padding:10px 12px;font-size:14px;margin:10px 0}
+#cropper{position:fixed;inset:0;z-index:40;background:#0A0D12;display:flex;flex-direction:column;color:#fff}
+#cropper[hidden]{display:none}
+.cr-top{padding:calc(14px + env(safe-area-inset-top)) 18px 8px}
+.cr-top b{display:block;font-size:18px}
+.cr-top span{font-size:13px;color:rgba(255,255,255,.7)}
+.cr-stage{flex:1;position:relative;min-height:0}
+.cr-stage canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.cr-bar{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 16px calc(16px + env(safe-area-inset-bottom))}
+.cr-bar .btn{margin:0}
+.cr-bar .btn.alt{background:rgba(255,255,255,.14);color:#fff}
+.fstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.fstats div{background:rgba(255,255,255,.1);border-radius:14px;padding:10px 8px;text-align:center}
+.fstats b{display:block;font-size:17px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fstats span{font-size:11.5px;color:rgba(255,255,255,.72)}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px}
+.chk label{font-size:15px;line-height:1.3}
+.lnk{color:var(--brand-ink);font-size:13px;font-weight:700;margin-top:4px;cursor:pointer}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;background:var(--brand-soft);color:var(--brand-ink);vertical-align:middle}
+.badge.bad{background:var(--field);background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.vr{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.vr:first-of-type{border-top:0}
+.vr .px{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.aitext{white-space:pre-wrap;font-size:15px;line-height:1.5}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <main id="view"></main>
 <nav id="nav">
-  <button data-tab="ekle"><span>📷</span>Ekle</button>
   <button data-tab="fisler"><span>🧾</span>Fişler</button>
+  <button data-tab="yakit"><span>⛽</span>Yakıt</button>
+  <button data-tab="add" class="fab" aria-label="Fiş ekle"><span>📷</span></button>
   <button data-tab="rapor"><span>📊</span>Rapor</button>
   <button data-tab="ayar"><span>⚙️</span>Ayarlar</button>
 </nav>
 <dialog id="dlg"></dialog>
+<div id="cropper" hidden></div>
 <div id="toast"></div>
 <div id="lock" hidden>
   <div style="font-size:40px">🔒</div><b>Fiş Arşivi</b>
@@ -112,6 +167,8 @@ const LS = {
 };
 const CATS = ['Meyve-Sebze','Et-Tavuk-Balık','Süt-Kahvaltılık','Fırın','Bakliyat-Makarna','Yağ-Sos-Baharat','İçecek','Atıştırmalık','Tatlı-Çikolata','Temizlik','Kişisel Bakım','Diğer'];
 const CAT_ICON = {'Meyve-Sebze':'🥬','Et-Tavuk-Balık':'🍗','Süt-Kahvaltılık':'🥛','Fırın':'🍞','Bakliyat-Makarna':'🍝','Yağ-Sos-Baharat':'🫒','İçecek':'🥤','Atıştırmalık':'🍪','Tatlı-Çikolata':'🍫','Temizlik':'🧽','Kişisel Bakım':'🧴','Diğer':'📦'};
+const CAT_COLOR = {'Meyve-Sebze':'#16A34A','Et-Tavuk-Balık':'#DC2626','Süt-Kahvaltılık':'#2563EB','Fırın':'#D97706','Bakliyat-Makarna':'#CA8A04','Yağ-Sos-Baharat':'#65A30D','İçecek':'#0891B2','Atıştırmalık':'#EA580C','Tatlı-Çikolata':'#DB2777','Temizlik':'#0D9488','Kişisel Bakım':'#7C3AED','Diğer':'#64748B'};
+const catChip = c => `<span class="chip" style="--c:${CAT_COLOR[c] || '#64748B'}">${CAT_ICON[c] || ''}</span>`;
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const DAYS = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
 const monthName = k => { const [y,m] = k.split('-'); return MONTHS[+m-1] + ' ' + y; };
@@ -130,8 +187,11 @@ const STORES = {'bim':'BİM','bım':'BİM','a101':'A101','şok':'ŞOK','sok':'Ş
 const knownStores = () => LS.get('stores', []);
 function learnStore(s){ if (!s) return; const a = knownStores(); if (a.some(k => key(k) === key(s))) return; a.push(s); LS.set('stores', a); }
 function normStore(s){ s = String(s || '').trim(); const l = key(s);
-  for (const k in STORES) if (new RegExp('(^|[^a-z0-9çğıöşü])' + k + '([^a-z0-9çğıöşü]|$)').test(l)) return STORES[k];
-  return knownStores().find(k => key(k) === l) || s; }
+  const kn = knownStores().find(k => key(k) === l); if (kn) return kn;
+  for (const k in STORES) if (new RegExp('^' + k + '([^a-z0-9çğıöşü]|$)').test(l)) return STORES[k];
+  return s; }
+const storeMap = () => LS.get('storemap', {});
+function learnStoreRaw(raw, store){ raw = key(raw); if (!raw || !store) return; const m = storeMap(); m[raw] = store; LS.set('storemap', m); }
 function dateWarn(d){
   if (!validDate(d)) return 'Tarih okunamadı, lütfen gir.';
   if (d > today()) return 'Tarih bugünden ileride, kontrol et.';
@@ -141,6 +201,7 @@ function dateWarn(d){
 /* öğrenme hafızası */
 const catMap = () => LS.get('catmap', {});
 const nameMap = () => LS.get('namemap', {});
+const genMap = () => LS.get('genmap', {});
 function learnCats(items){ const m = catMap(); items.forEach(i => { const k = key(i.generic || i.name); if (k && i.category) m[k] = i.category; }); LS.set('catmap', m); }
 function learnNames(items){ const m = nameMap();
   items.forEach(i => { if (i.raw) m[key(i.raw)] = {name:i.name, brand:i.brand || '', generic:i.generic, category:i.category}; }); LS.set('namemap', m); }
@@ -148,10 +209,11 @@ function learnNames(items){ const m = nameMap();
 /* ================= IndexedDB ================= */
 const DB = {
   db:null,
-  open(){ return new Promise((res, rej) => { const r = indexedDB.open('fis-arsivi', 2);
+  open(){ return new Promise((res, rej) => { const r = indexedDB.open('fis-arsivi', 3);
     r.onupgradeneeded = () => { const d = r.result;
       if (!d.objectStoreNames.contains('receipts')) d.createObjectStore('receipts', {keyPath:'id'});
-      if (!d.objectStoreNames.contains('queue')) d.createObjectStore('queue', {keyPath:'id'}); };
+      if (!d.objectStoreNames.contains('queue')) d.createObjectStore('queue', {keyPath:'id'});
+      if (!d.objectStoreNames.contains('fuel')) d.createObjectStore('fuel', {keyPath:'id'}); };
     r.onsuccess = () => { this.db = r.result; res(); }; r.onerror = () => rej(r.error); }); },
   req(q){ return new Promise((res, rej) => { q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); },
   st(n, mode){ return this.db.transaction(n, mode).objectStore(n); },
@@ -168,15 +230,15 @@ const examples = () => {
     + arr.map(([k, v]) => `${k.slice(0, 60)} → ${String(v.name).slice(0, 60)} | ${String(v.generic).slice(0, 40)} | ${v.category}`).join('\n'); };
 function buildPrompt(n){
   return `Bu bir Türkiye market fişi fotoğrafı${n > 1 ? ` (${n} fotoğraf, aynı fişin parçaları, yukarıdan aşağıya sırayla; tek fiş olarak oku, üst üste binen satırları iki kez sayma)` : ''}. Fişi oku ve SADECE aşağıdaki JSON'u döndür:
-{"store":"market adı","branch":"","date":"YYYY-MM-DD","time":"HH:MM","payment":"","total":0,"discount_total":0,"items":[{"raw":"fişte yazdığı gibi, aynen","name":"fişteki ürün adı (okunaklı hale getir)","uncertain":false,"brand":"","generic":"markasız genel ürün adı, küçük harf, paket boyutuyla, örn: süt 1 lt, domates, ekmek, deterjan 4 kg","qty":1,"unit":"adet|kg|lt","unit_price":0,"discount":0,"line_total":0,"category":"..."}]}
+{"store":"market adı","store_raw":"","branch":"","date":"YYYY-MM-DD","time":"HH:MM","payment":"","total":0,"discount_total":0,"items":[{"raw":"fişte yazdığı gibi, aynen","name":"fişteki ürün adı (okunaklı hale getir)","uncertain":false,"brand":"","generic":"markasız genel ürün adı, küçük harf, paket boyutuyla, örn: süt 1 lt, domates, ekmek, deterjan 4 kg","qty":1,"unit":"adet|kg|lt","unit_price":0,"discount":0,"line_total":0,"category":"..."}]}
 Kurallar:
 - Tutarlar TL, ondalık ayırıcı nokta olan sayı olsun.
 - Kiloyla satılan ürünlerde qty kg cinsinden, unit_price kg fiyatı olsun.
 - İndirim/kampanya satırı varsa ilgili ürünün line_total değerine yansıt; ayrı ürün olarak ekleme.
-- Poşet, KDV, toplam, ara toplam, kart/nakit satırlarını ürün olarak ekleme.
+- KDV, toplam, ara toplam, kart/nakit ve banka/POS bilgisi satırlarını ürün olarak ekleme. Ücretli poşet/torba satırı ise ÜRÜN olarak eklenir (name "Poşet", category "Diğer"), çünkü fiş toplamına dahildir. Ürün satırlarının line_total toplamı fiş toplamına eşit olmalı; eşit değilse bir satırı atlamış olabilirsin, fişi baştan tekrar kontrol et.
 - category şunlardan biri olsun: ${CATS.join(', ')}.
 - Tarih: Türk fişlerinde GG.AA.YYYY veya GG/AA/YYYY yazar (gün önce gelir). Fişin basıldığı tarihi YYYY-MM-DD yap; son kullanma tarihi, kampanya tarihi veya fiş/işlem numarasıyla karıştırma. Saat varsa time alanına HH:MM yaz.
-- Market adı: fiş başlığındaki market adını yaz. Zincir olabilir (BİM, A101, ŞOK, Migros, CarrefourSA) ya da yerel market olabilir (Tezgel Market gibi); yerelse başlıktaki adı düzgün yazımla, olduğu gibi ver. Şube/adres varsa kısaca branch alanına yaz.
+- Market adı (store): fişi düzenleyen işletme, yani fişin en üstündeki ilk satırlarda yazan firma/ticari ünvan. Zincir olabilir (BİM, A101, ŞOK, Migros, CarrefourSA) ya da bağımsız işletme olabilir (Tezgel Market, Ödem Kuruyemiş gibi). Resmi ünvandan "Gıda Sanayi ve Ticaret Anonim Şirketi", "Ltd. Şti.", "A.Ş." gibi ekleri at, kısa ticari adı düzgün yazımla ver. Adres satırındaki yer adlarını market adı sanma: adreste "MM Migros", "Carrefour AVM", "Forum" gibi bir alışveriş merkezi veya site adı geçebilir, işletme o değildir. Başlıkta zincir markası yoksa zincir adı yazma. store_raw: başlıktaki firma ünvanını aynen yaz (ilk 1-2 satır). Şube/adres varsa kısaca branch alanına yaz.
 - raw: ürünün fişte yazdığı ham metin, kısaltmalar dahil aynen. name: bu metni okunaklı ürün adına çevir, kısaltmaları aç. Çözerken ürünün fiyatına, birimine ve fişteki diğer ürünlere bak, Türkiye market ürünlerini düşün. İnternette arama yapamazsın. Çözemezsen en olası tahmini name'e yaz ve uncertain'ı true yap; marka veya ürün uydurma.
 - generic: fiyat karşılaştırması için paket boyutunu da ekle (süt 1 lt, yumurta 15'li gibi); boyut fişte yoksa ekleme.
 - brand: ürün adında marka varsa yaz (Pınar, Ülker, Eti gibi), yoksa boş bırak.
@@ -206,19 +268,39 @@ async function gemini(body){
   }
   throw lastErr || new Error('Bilinmeyen hata');
 }
-async function analyze(b64s){
-  const parts = [{text:buildPrompt(b64s.length)}, ...b64s.map(d => ({inline_data:{mime_type:'image/jpeg', data:d}}))];
+async function analyze(b64s, hint){
+  const parts = [{text:buildPrompt(b64s.length) + (hint || '')}, ...b64s.map(d => ({inline_data:{mime_type:'image/jpeg', data:d}}))];
   const j = await gemini({contents:[{parts}], generationConfig:{responseMimeType:'application/json', temperature:0}});
   const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
   try { let d = JSON.parse(t.replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, '')); if (Array.isArray(d)) d = d[0] || {}; return d && typeof d === 'object' ? d : {}; }
   catch(e) { throw new Error('Cevap okunamadı (fiş çok uzun veya bulanık olabilir)'); }
+}
+function parseJ(j){
+  const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+  try { let d = JSON.parse(t.replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, '')); if (Array.isArray(d)) d = d[0] || {}; return d && typeof d === 'object' ? d : {}; }
+  catch(e) { throw new Error('Yapay zekanın cevabı anlaşılamadı, biraz değiştirip tekrar dene'); }
+}
+const dsum = d => (Array.isArray(d.items) ? d.items : []).map(normItem).reduce((s, i) => s + (i.line_total || 0), 0);
+/* Ürün toplamı fiş toplamına uymuyorsa fişi bir kez daha, farkı söyleyerek okutur. Daha iyi çıkarsa onu kullanır. */
+async function analyzeChecked(b64s){
+  const data = await analyze(b64s); const t = num(data.total);
+  if (!t || Math.abs(dsum(data) - t) <= 0.5) return {data, recheck:''};
+  const s1 = dsum(data), d1 = Math.abs(s1 - t);
+  try {
+    const prev = JSON.stringify({total:data.total, items:(data.items || []).map(i => ({raw:i.raw, name:i.name, qty:i.qty, line_total:i.line_total}))}).slice(0, 6000);
+    const hint = `\n\nİKİNCİ KONTROL: Önceki okumanda ürün satırlarının toplamı ${s1.toFixed(2)} TL, fiş toplamı ${t.toFixed(2)} TL çıktı; fark ${(t - s1).toFixed(2)} TL. Önceki okuma (hatalı olabilir): ${prev}\nFişi baştan, satır satır dikkatle oku. Atladığın satırı (ücretli poşet dahil) ekle, yanlış okuduğun tutarı düzelt. Fişte olmayan satır uydurma. Aynı JSON formatında TAM sonucu döndür.`;
+    const d2 = await analyze(b64s, hint); const t2 = num(d2.total) || t;
+    if (Math.abs(t2 - t) <= 0.5 && Math.abs(dsum(d2) - t) < d1) return {data:d2, recheck:Math.abs(dsum(d2) - t) <= 0.5 ? 'fixed' : 'better'};
+    return {data, recheck:'same'};
+  } catch(e) { return {data, recheck:''}; }
 }
 function normItem(i){
   const qty = num(i.qty) || 1; let lt = num(i.line_total); let up = num(i.unit_price); const discount = Math.abs(num(i.discount));
   if (!lt && up) lt = +(up*qty).toFixed(2);
   if (lt && (!up || discount)) up = +(lt/qty).toFixed(2);
   const raw = String(i.raw || '').trim(); const kn = raw ? nameMap()[key(raw)] : null;
-  const generic = kn ? kn.generic : String(i.generic || i.name || '').toLocaleLowerCase('tr').trim();
+  let generic = kn ? kn.generic : String(i.generic || i.name || '').toLocaleLowerCase('tr').trim();
+  const gm = genMap()[generic]; if (gm) generic = gm;
   const learned = kn ? kn.category : catMap()[generic];
   return {raw, uncertain:!kn && (i.uncertain === true || i.uncertain === 'true'), name:kn ? kn.name : String(i.name || ''),
           brand:kn ? kn.brand : String(i.brand || ''), generic, qty, unit:i.unit || 'adet',
@@ -227,7 +309,8 @@ function normItem(i){
 const fp = i => key(i.name) + '|' + i.qty + '|' + i.line_total + '|' + i.category;
 function makeDraft(data, thumb){
   const items = (Array.isArray(data.items) ? data.items : []).map(normItem);
-  const d = {id:crypto.randomUUID(), thumb, store:normStore(data.store), branch:String(data.branch || ''), date:validDate(data.date),
+  const sr = String(data.store_raw || '').trim();
+  const d = {id:crypto.randomUUID(), thumb, store:normStore(storeMap()[key(sr)] || data.store), store_raw:sr, branch:String(data.branch || ''), date:validDate(data.date),
              time:String(data.time || ''), payment:String(data.payment || ''), total:num(data.total),
              discount_total:num(data.discount_total) || items.reduce((s, i) => s + (i.discount || 0), 0), items, isNew:true};
   d.ai = {store:key(d.store), date:d.date, total:d.total, items:items.map(fp)};
@@ -260,18 +343,23 @@ async function tryUnlock(){
 $('#unlock').onclick = tryUnlock; $('#pin').onkeydown = e => { if (e.key === 'Enter') tryUnlock(); };
 document.addEventListener('visibilitychange', () => { if (document.hidden) hiddenAt = Date.now(); else if (hiddenAt && pinHash() && Date.now() - hiddenAt > 60000) lock(); });
 
+const renderReport0 = renderReport;
+renderReport = async function(){ if (cmpType) return renderCompare(); await renderReport0(); maybeEnrich(); };
+
 /* ================= tema ================= */
 function applyTheme(){ const t = localStorage.getItem('theme') || 'auto', r = document.documentElement;
   if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
   const dark = t === 'dark' || (t === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-  const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = dark ? '#0E1217' : '#DDE2E6'; }
+  const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = dark ? '#0B0F14' : '#F2F4F8'; }
 applyTheme();
 if (window.matchMedia) { try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme); } catch(e) {} }
 
 /* ================= durum ================= */
+let fdraft = null, fph = [], fshowAll = false;
+let cmpType = null, cmpFrom = 'rapor', cmpAll = false, enriching = false, enrichFail = 0, cmpSet = new Set();
 let tab = 'ekle', draft = null, repMonth = '', detailId = null, detailFrom = 'fisler', photos = [], busy = false, qText = '', qStore = '';
 function show(t){ tab = t; document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); render(); window.scrollTo(0,0); }
-function render(){ ({ekle:renderAdd, fisler:renderList, rapor:renderReport, ayar:renderSettings})[tab](); }
+function render(){ ({ekle:renderAdd, fisler:renderList, yakit:renderFuel, rapor:renderReport, ayar:renderSettings})[tab](); }
 const itemsSum = r => r.items.reduce((s, i) => s + (i.line_total || 0), 0);
 const rcTotal = x => x.total || itemsSum(x);
 const pct = (a, b) => b ? (a - b) / b * 100 : 0;
@@ -296,6 +384,7 @@ async function budgetAlert(r){
 function renderAdd(){
   if (draft) return renderReview();
   if (photos.length) return renderPrep();
+  if (tab === 'ekle') return show('fisler');
   view.innerHTML = `<h2>Yeni fiş</h2><div id="bk"></div><div class="card">
     <p class="mut">📌 Fişi düz bir yüzeye koy, ışık gölge yapmasın, tamamı kadrajda olsun. Kart numarası görünüyorsa bir sonraki adımda kırp.</p>
     <label class="btn">📷 Fotoğraf çek<input id="f1" type="file" accept="image/*" capture="environment" hidden></label>
@@ -318,32 +407,77 @@ async function fillQueue(){
 }
 async function addPhotos(files){
   for (const f of files || []) { try { const img = await loadImg(f); photos.push({full:toJpeg(img, 2200, .85), thumb:toJpeg(img, 700, .6)}); } catch(e) { toast('Fotoğraf açılamadı'); } }
-  renderAdd();
+  show('ekle');
 }
 function renderPrep(){
   view.innerHTML = `<h2>Fiş fotoğrafı (${photos.length})</h2><div class="card">
-    <div class="grid">${photos.map((p, i) => `<div><img src="${p.thumb}" style="width:100%;border-radius:8px"><div class="row" style="margin-top:6px"><button class="btn alt sm" data-act="crop" data-i="${i}">✂️ Kırp</button><button class="btn bad sm" data-act="rmphoto" data-i="${i}">✕</button></div></div>`).join('')}</div>
+    <div class="grid">${photos.map((p, i) => `<div><img src="${p.thumb}" style="width:100%;border-radius:8px"><div class="row" style="margin-top:6px"><button class="btn alt sm" data-act="crop" data-i="${i}">✂️ Kırp / döndür</button><button class="btn bad sm" data-act="rmphoto" data-i="${i}">✕</button></div></div>`).join('')}</div>
     <p class="sub">Fiş uzunsa ikinci fotoğrafı ekle (üstten alta sırayla çek). Hepsi tek fiş olarak okunur.</p>
     <label class="btn alt">➕ Fotoğraf ekle<input id="f3" type="file" accept="image/*" capture="environment" hidden></label>
     <button class="btn" data-act="read" id="rd">🔍 Oku</button>
     <button class="btn alt" data-act="cancelphotos">Vazgeç</button><div id="status" class="mut"></div></div>`;
   $('#f3').onchange = e => addPhotos(e.target.files);
 }
-async function openCrop(i){
-  const p = photos[i]; if (!p) return; const img = await loadSrc(p.full); const dlg = $('#dlg');
-  dlg.innerHTML = `<b>Kırp</b><p class="sub">Kart numarası veya kişisel bilgi varsa kenarlardan kes. Ürün satırlarını kesme.</p>
-    <canvas id="cv" style="width:100%;border-radius:8px;background:#000"></canvas>
-    ${[['top','Üst'],['bottom','Alt'],['left','Sol'],['right','Sağ']].map(([k, l]) => `<label class="f">${l}</label><input type="range" id="c_${k}" min="0" max="45" value="0">`).join('')}
-    <button class="btn" id="cApply">Uygula</button><button class="btn alt" data-act="close">Vazgeç</button>`;
-  const rect = () => { const g = k => +$('#c_' + k).value / 100; const l = g('left'), r = g('right'), t = g('top'), b = g('bottom');
-    return {sx:img.width*l, sy:img.height*t, sw:Math.max(50, img.width*(1-l-r)), sh:Math.max(50, img.height*(1-t-b))}; };
-  const draw = () => { const {sx, sy, sw, sh} = rect(); const cv = $('#cv'); const sc = Math.min(1, 640 / Math.max(sw, sh));
-    cv.width = Math.round(sw*sc); cv.height = Math.round(sh*sc); cv.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, cv.width, cv.height); };
-  dlg.querySelectorAll('input[type=range]').forEach(r => r.oninput = draw);
-  $('#cApply').onclick = () => { const {sx, sy, sw, sh} = rect(); const c = document.createElement('canvas'); c.width = Math.round(sw); c.height = Math.round(sh);
-    c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
-    photos[i] = {full:c.toDataURL('image/jpeg', .85), thumb:toJpeg(c, 700, .6)}; dlg.close(); renderPrep(); };
-  dlg.showModal(); draw();
+async function openCrop(i, list = photos, after = renderPrep){
+  const p = list[i]; if (!p) return;
+  const base = await loadSrc(p.full);
+  const host = $('#cropper'); let rot = 0, src = base, R = null, sc = 1, ox = 0, oy = 0, W = 0, H = 0, dpr = 1, drag = null;
+  const MIN = 60, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  host.innerHTML = `<div class="cr-top"><b>Fişi kırp</b><span>Köşeleri ve kenarları sürükle. Kart numarası gibi bilgileri dışarıda bırak, ürün satırlarını kesme. Kutunun içini sürüklersen kutu taşınır.</span></div>
+    <div class="cr-stage" id="crStage"><canvas id="crCv"></canvas></div>
+    <div class="cr-bar"><button class="btn alt" id="crRot">↻ Döndür</button><button class="btn alt" id="crReset">Sıfırla</button><button class="btn alt" id="crCancel">Vazgeç</button><button class="btn" id="crOk">Uygula</button></div>`;
+  host.hidden = false; document.body.style.overflow = 'hidden';
+  const cv = $('#crCv'), stage = $('#crStage'), ctx = cv.getContext('2d');
+  const rotated = () => { if (!rot) return base; const c = document.createElement('canvas'), o = rot % 2;
+    c.width = o ? base.height : base.width; c.height = o ? base.width : base.height; const x = c.getContext('2d');
+    x.translate(c.width / 2, c.height / 2); x.rotate(rot * Math.PI / 2); x.drawImage(base, -base.width / 2, -base.height / 2); return c; };
+  const reset = () => { R = {x:0, y:0, w:src.width, h:src.height}; };
+  const layout = () => { W = stage.clientWidth; H = stage.clientHeight; dpr = window.devicePixelRatio || 1;
+    cv.width = Math.max(1, Math.round(W * dpr)); cv.height = Math.max(1, Math.round(H * dpr));
+    sc = Math.min((W - 40) / src.width, (H - 40) / src.height); ox = (W - src.width * sc) / 2; oy = (H - src.height * sc) / 2; };
+  const box = () => ({x:ox + R.x * sc, y:oy + R.y * sc, w:R.w * sc, h:R.h * sc});
+  const draw = () => {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(src, ox, oy, src.width * sc, src.height * sc);
+    const b = box(), iw = src.width * sc, ih = src.height * sc;
+    ctx.fillStyle = 'rgba(0,0,0,.6)';
+    ctx.fillRect(ox, oy, iw, b.y - oy); ctx.fillRect(ox, b.y + b.h, iw, oy + ih - (b.y + b.h));
+    ctx.fillRect(ox, b.y, b.x - ox, b.h); ctx.fillRect(b.x + b.w, b.y, ox + iw - (b.x + b.w), b.h);
+    ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (let k = 1; k < 3; k++) { ctx.moveTo(b.x + b.w * k / 3, b.y); ctx.lineTo(b.x + b.w * k / 3, b.y + b.h); ctx.moveTo(b.x, b.y + b.h * k / 3); ctx.lineTo(b.x + b.w, b.y + b.h * k / 3); }
+    ctx.stroke();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(b.x, b.y, b.w, b.h);
+    ctx.fillStyle = '#fff';
+    [[b.x, b.y], [b.x + b.w, b.y], [b.x, b.y + b.h], [b.x + b.w, b.y + b.h]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 11, 0, 7); ctx.fill(); });
+    const pill = (x, y, w, h) => { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - w / 2, y - h / 2, w, h, 5) : ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); };
+    pill(b.x + b.w / 2, b.y, 34, 8); pill(b.x + b.w / 2, b.y + b.h, 34, 8); pill(b.x, b.y + b.h / 2, 8, 34); pill(b.x + b.w, b.y + b.h / 2, 8, 34);
+  };
+  const hit = (x, y) => { const b = box(), T = 30, near = (a, c) => Math.abs(a - c) < T;
+    const L = near(x, b.x), Rr = near(x, b.x + b.w), Tp = near(y, b.y), Bt = near(y, b.y + b.h);
+    if (Tp && L) return 'tl'; if (Tp && Rr) return 'tr'; if (Bt && L) return 'bl'; if (Bt && Rr) return 'br';
+    const inX = x > b.x - T && x < b.x + b.w + T, inY = y > b.y - T && y < b.y + b.h + T;
+    if (Tp && inX) return 't'; if (Bt && inX) return 'b'; if (L && inY) return 'l'; if (Rr && inY) return 'r';
+    if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) return 'move';
+    return null; };
+  const pos = e => { const r = cv.getBoundingClientRect(); return {x:e.clientX - r.left, y:e.clientY - r.top}; };
+  cv.onpointerdown = e => { const q = pos(e), m = hit(q.x, q.y); if (!m) return; drag = {m, q, R0:{...R}}; try { cv.setPointerCapture(e.pointerId); } catch(_) {} e.preventDefault(); };
+  cv.onpointermove = e => { if (!drag) return; const q = pos(e), dx = (q.x - drag.q.x) / sc, dy = (q.y - drag.q.y) / sc, m = drag.m;
+    let {x, y, w, h} = drag.R0, r = x + w, b = y + h;
+    if (m === 'move') { x = clamp(x + dx, 0, src.width - w); y = clamp(y + dy, 0, src.height - h); r = x + w; b = y + h; }
+    else { if (m.includes('l')) x = clamp(x + dx, 0, r - MIN); if (m.includes('r')) r = clamp(r + dx, x + MIN, src.width);
+           if (m.includes('t')) y = clamp(y + dy, 0, b - MIN); if (m.includes('b')) b = clamp(b + dy, y + MIN, src.height); }
+    R = {x, y, w:r - x, h:b - y}; draw(); };
+  cv.onpointerup = cv.onpointercancel = () => { drag = null; };
+  const onResize = () => { layout(); draw(); };
+  const close = () => { window.removeEventListener('resize', onResize); host.hidden = true; host.innerHTML = ''; document.body.style.overflow = ''; after(); };
+  $('#crRot').onclick = () => { rot = (rot + 1) % 4; src = rotated(); reset(); layout(); draw(); };
+  $('#crReset').onclick = () => { reset(); draw(); };
+  $('#crCancel').onclick = () => { if (rot) { /* döndürme kaydedilmez */ } close(); };
+  $('#crOk').onclick = () => { const c = document.createElement('canvas'); c.width = Math.round(R.w); c.height = Math.round(R.h);
+    c.getContext('2d').drawImage(src, R.x, R.y, R.w, R.h, 0, 0, c.width, c.height);
+    list[i] = {full:c.toDataURL('image/jpeg', .88), thumb:toJpeg(c, 700, .6)}; close(); };
+  window.addEventListener('resize', onResize); reset();
+  requestAnimationFrame(() => { layout(); draw(); });
 }
 async function enqueue(ph, err){ await DB.put({id:crypto.randomUUID(), images:ph.map(p => p.full), thumb:ph[0].thumb, created:Date.now(), err:err || ''}, 'queue'); }
 async function doRead(){
@@ -352,8 +486,8 @@ async function doRead(){
   busy = true; const st = $('#status'), btn = $('#rd'); if (btn) btn.disabled = true;
   try {
     if (navigator.onLine === false) { await enqueue(photos, 'İnternet yoktu'); photos = []; toast('İnternet yok, fiş sıraya alındı'); return renderAdd(); }
-    if (st) st.textContent = '⏳ Fiş okunuyor… (gerekirse birkaç kez denenir)';
-    try { const data = await analyze(photos.map(p => p.full.split(',')[1])); draft = makeDraft(data, photos[0].thumb); draft.dupOf = await findDup(draft); photos = []; }
+    if (st) st.textContent = '⏳ Fiş okunuyor… (toplam uyuşmazsa ikinci kez kontrol edilir)';
+    try { const {data, recheck} = await analyzeChecked(photos.map(p => p.full.split(',')[1])); draft = makeDraft(data, photos[0].thumb); draft.recheck = recheck; draft.dupOf = await findDup(draft); photos = []; }
     catch(e) { await enqueue(photos, e.message); photos = []; toast('Okunamadı: ' + e.message + ' — fiş sıraya alındı'); }
     renderAdd();
   } finally { busy = false; }
@@ -361,7 +495,7 @@ async function doRead(){
 async function readQueue(id){
   if (busy) return; const q = (await DB.all('queue')).find(x => x.id === id); if (!q) return;
   busy = true; toast('⏳ Okunuyor…');
-  try { const data = await analyze(q.images.map(s => s.split(',')[1])); draft = makeDraft(data, q.thumb); draft.fromQueue = id; draft.dupOf = await findDup(draft); }
+  try { const {data, recheck} = await analyzeChecked(q.images.map(s => s.split(',')[1])); draft = makeDraft(data, q.thumb); draft.recheck = recheck; draft.fromQueue = id; draft.dupOf = await findDup(draft); }
   catch(e) { q.err = e.message; await DB.put(q, 'queue'); toast('Okunamadı: ' + e.message); }
   finally { busy = false; }
   renderAdd();
@@ -374,6 +508,7 @@ function renderReview(){
   view.innerHTML = `<h2>${d.isNew ? 'Kontrol et ve kaydet' : 'Fişi düzenle'}</h2>
   <div class="card torn">
     ${d.thumb ? `<img src="${d.thumb}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:#000">` : ''}
+    ${d.recheck ? `<div class="note">🔁 ${{fixed:'Ürün toplamı fiş toplamıyla uyuşmadığı için fiş ikinci kez okundu ve fark kapandı.', better:'Ürün toplamı uyuşmadığı için fiş ikinci kez okundu; fark azaldı ama hâlâ kontrol etmelisin.', same:'Ürün toplamı uyuşmadığı için fiş ikinci kez okundu ama fark kapanmadı. Satırları kontrol et.'}[d.recheck] || ''}</div>` : ''}
     ${d.dupOf ? `<p class="warn">⚠️ Aynı market, gün ve tutarda kayıtlı başka bir fiş var. Aynı fişi iki kez ekliyor olabilirsin.</p>` : ''}
     <label class="f">Market</label><input data-k="store" list="stores" value="${esc(d.store)}"><datalist id="stores">${[...new Set([...Object.values(STORES), ...knownStores()])].map(s => `<option value="${esc(s)}">`).join('')}</datalist>
     <label class="f">Şube / adres (isteğe bağlı)</label><input data-k="branch" value="${esc(d.branch || '')}">
@@ -381,10 +516,11 @@ function renderReview(){
     <div style="flex:1"><label class="f">Fiş toplamı (TL)</label><input data-k="total" inputmode="decimal" value="${d.total || ''}"></div></div>
     ${dateWarn(d.date) ? `<p class="warn">⚠️ ${dateWarn(d.date)}</p>` : `<p class="mut">📅 ${fmtDate(d.date)}</p>`}
     <p class="mut ${diff ? 'err' : ''}">Ürünlerin toplamı: ${TRY(sum)}${diff ? ' — fiş toplamıyla uyuşmuyor, satırları kontrol et.' : ''}</p>
+    ${diff && d.total > sum ? `<button class="btn alt sm" data-act="adddiff">+ Farkı (${TRY(d.total - sum)}) satır olarak ekle</button>` : ''}
   </div>
   <div class="card"><b>Ürünler (${d.items.length})</b>
     <div class="sub">Kategoriyi veya adı düzeltirsen uygulama hatırlar ve sonraki fişlerde aynı ürüne uygular.</div>
-    ${groupItems(d.items).map(([c, arr]) => `<div class="catH"><span>${CAT_ICON[c] || ''} ${esc(c)}</span><span class="sub">${TRY(arr.reduce((s, o) => s + (o.it.line_total || 0), 0))}</span></div>` + arr.map(({it, i}) => `<div class="item">
+    ${groupItems(d.items).map(([c, arr]) => `<div class="catH"><span>${catChip(c)}${esc(c)}</span><span class="sub">${TRY(arr.reduce((s, o) => s + (o.it.line_total || 0), 0))}</span></div>` + arr.map(({it, i}) => `<div class="item">
       ${it.uncertain ? '<div class="warn">⚠️ Emin değilim, kontrol et</div>' : ''}
       <input data-i="${i}" data-f="name" value="${esc(it.name)}" placeholder="Ürün adı">
       ${it.raw && key(it.raw) !== key(it.name) ? `<div class="sub">Fişte: ${esc(it.raw)}</div>` : ''}
@@ -405,7 +541,11 @@ function renderReview(){
   <button class="btn alt" data-act="cancel">Vazgeç</button>`;
 }
 function onInput(e){
-  const t = e.target; if (!draft) return;
+  const t = e.target;
+  if (t.dataset.fk && fdraft) { const k = t.dataset.fk;
+    fdraft[k] = k === 'odo' ? odoNum(t.value) : ['liters', 'unit_price', 'total'].includes(k) ? num(t.value) : (t.type === 'checkbox' ? t.checked : t.value);
+    if (['liters', 'unit_price', 'total', 'odo', 'date'].includes(k)) updateFuelWarn(); return; }
+  if (!draft) return;
   if (t.dataset.k) { draft[t.dataset.k] = t.dataset.k === 'total' ? num(t.value) : t.value; return; }
   if (t.dataset.f) {
     const it = draft.items[+t.dataset.i], f = t.dataset.f; if (!it) return;
@@ -420,10 +560,10 @@ async function renderList(){
   if (detailId) return renderDetail();
   const all = await DB.all();
   const stores = [...new Set(all.map(r => normStore(r.store)).filter(Boolean))].sort();
-  view.innerHTML = `<h2>Fişler</h2><input id="q" placeholder="🔎 Market veya ürün ara…" value="${esc(qText)}">
+  view.innerHTML = `<h2>Fişler</h2><div id="bk"></div><div id="qq"></div><input id="q" placeholder="🔎 Market veya ürün ara…" value="${esc(qText)}">
     <select id="qsel" style="margin-top:8px"><option value="">Tüm marketler</option>${stores.map(s => `<option value="${esc(s)}" ${key(s) === key(qStore) ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
     <div id="res" style="margin-top:10px"></div>`;
-  fillList(all);
+  fillList(all); fillBackup(); fillQueue();
 }
 async function fillList(all){
   all = all || await DB.all(); const el = $('#res'); if (!el) return;
@@ -530,7 +670,7 @@ function recentCard(all){
       <div class="sub">${r.items.length} kalem${tc ? ' · en çok: ' + (CAT_ICON[tc] || '') + ' ' + esc(tc) : ''}</div></div><b>${TRY(rcTotal(r))}</b></div>`; }).join('')}
     ${all.length > rs.length ? `<button class="btn alt sm" data-act="all">Tümünü gör (${all.length})</button>` : ''}</div>`;
 }
-const barColor = p => p >= 100 ? 'var(--bad)' : p >= 80 ? 'var(--warn)' : 'var(--ink)';
+const barColor = p => p >= 100 ? 'var(--bad)' : p >= 80 ? 'var(--warn)' : 'var(--brand)';
 async function renderReport(){
   if (detailId) return renderDetail();
   const all = await DB.all();
@@ -552,12 +692,14 @@ async function renderReport(){
     budHtml += '</div>'; }
   view.innerHTML = `<h2>Rapor</h2>
   ${recentCard(all)}
+  ${cmpHubCard(all)}
+  ${askCard()}
   <select data-act="month">${months.map(m => `<option value="${m}" ${m === repMonth ? 'selected' : ''}>${monthName(m)}</option>`).join('')}</select>
-  <div class="card" style="margin-top:10px"><div class="mut">Toplam harcama</div><div class="big"><span class="hl">${TRY(T)}</span></div>
+  <div class="card hero" style="margin-top:10px"><div class="mut">Toplam harcama</div><div class="big">${TRY(T)}</div>
     <div class="mut">${rs.length} fiş${delta === null ? '' : ` · geçen aya göre <span class="${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '▲' : '▼'} %${Math.abs(delta).toFixed(0)}</span>`}</div>${budHtml}</div>
   ${trendCard(all)}
   <div class="card"><b>Kategoriler</b>${catArr.map(([c, v]) => { const lim = num(bcats[c]); const p = lim ? v / lim * 100 : 0;
-    return `<div style="margin-top:8px"><div class="row" style="justify-content:space-between"><span>${CAT_ICON[c] || ''} ${esc(c)}</span><span>${TRY(v)}${lim ? ` <span class="sub">/ ${TRY(lim)}</span>` : ''}</span></div><div class="bar"><i style="width:${lim ? Math.min(100, p) : v / cmax * 100}%;${lim ? 'background:' + barColor(p) : ''}"></i></div></div>`; }).join('')}</div>
+    return `<div style="margin-top:8px"><div class="row" style="justify-content:space-between"><span>${catChip(c)}${esc(c)}</span><span>${TRY(v)}${lim ? ` <span class="sub">/ ${TRY(lim)}</span>` : ''}</span></div><div class="bar"><i style="width:${lim ? Math.min(100, p) : v / cmax * 100}%;${lim ? 'background:' + barColor(p) : ''}"></i></div></div>`; }).join('')}</div>
   ${inflCard(inflation(all))}
   ${dueCard(dueSoon(all))}
   <div class="card"><b>Ürünler</b> <span class="mut">(dokun → fiyat geçmişi)</span>
@@ -586,6 +728,7 @@ async function renderDetail(){
   const all = await DB.all(); const r = all.find(x => x.id === detailId);
   if (!r) { detailId = null; return render(); }
   const others = all.filter(x => x.id !== r.id);
+  cmpSet = comparableTypes(all);
   const sum = itemsSum(r), total = rcTotal(r), n = r.items.length;
   const disc = r.discount_total || r.items.reduce((s, i) => s + (i.discount || 0), 0);
   const avg = a => a.length ? a.reduce((s, x) => s + rcTotal(x), 0) / a.length : 0;
@@ -620,19 +763,504 @@ async function renderDetail(){
       ph = `<div class="sub">Son: ${TRY(h.prev.p)} (${esc(h.prev.s || '')} · ${shortDate(h.prev.d)}) ${Math.abs(c) >= 1 ? arrow(c) : '≈ aynı'}</div>`; }
     return `<div class="pl"><div><div>${esc(it.name)}${it.uncertain ? ' ⚠️' : ''}${it.brand ? ` <span class="sub">${esc(it.brand)}</span>` : ''}</div>
       ${it.raw && key(it.raw) !== key(it.name) ? `<div class="sub">Fişte: ${esc(it.raw)}</div>` : ''}
-      <div class="sub">${it.qty} ${esc(it.unit)} × ${TRY(it.unit_price)}${it.discount ? ` · indirim −${TRY(it.discount)}` : ''}</div>${ph}</div><b>${TRY(it.line_total)}</b></div>`; };
+      <div class="sub">${it.qty} ${esc(it.unit)} × ${TRY(it.unit_price)}${it.discount ? ` · indirim −${TRY(it.discount)}` : ''}</div>${ph}${cmpLink(it)}</div><b>${TRY(it.line_total)}</b></div>`; };
   view.innerHTML = `<button class="btn alt sm" data-act="back">← Geri</button>
-  <div class="card torn"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">${esc(r.store || 'Market')}</div>
+  <div class="card torn"><div style="font-size:26px;font-weight:800;letter-spacing:-.03em">${esc(r.store || 'Market')}</div>
     ${r.branch ? `<div class="mut">${esc(r.branch)}</div>` : ''}
     <div style="margin-top:4px">📅 ${validDate(r.date) ? fmtDate(r.date) : 'Tarih yok'}${r.time ? ' · ' + esc(r.time) : ''}</div>
     ${r.payment ? `<div class="mut">Ödeme: ${esc(r.payment)}</div>` : ''}
-    <div class="big" style="margin-top:8px"><span class="hl">${TRY(total)}</span></div>
+    <div class="big" style="margin-top:8px">${TRY(total)}</div>
     ${warns.map(w => `<p class="warn">⚠️ ${esc(w)}</p>`).join('')}</div>
   <div class="card"><b>Analiz</b>${L.map(l => `<div class="pl" style="display:block">${l}</div>`).join('')}${lists}</div>
-  <div class="card"><b>Ürünler</b>${groups.map(g => `<div class="catH"><span>${CAT_ICON[g.c] || ''} ${esc(g.c)}</span><span>${TRY(g.sum)} <span class="sub">%${sum ? (g.sum / sum * 100).toFixed(0) : 0}</span></span></div>${g.arr.map(row).join('')}`).join('')}</div>
+  <div class="card"><b>Ürünler</b>${groups.map(g => `<div class="catH"><span>${catChip(g.c)}${esc(g.c)}</span><span>${TRY(g.sum)} <span class="sub">%${sum ? (g.sum / sum * 100).toFixed(0) : 0}</span></span></div>${g.arr.map(row).join('')}`).join('')}</div>
   ${r.thumb ? `<div class="card"><details><summary>Fiş fotoğrafı</summary><img src="${r.thumb}" style="width:100%;margin-top:8px;border-radius:8px"></details></div>` : ''}
   <button class="btn" data-act="edit">✏️ Düzenle / kategori düzelt</button>
   <button class="btn bad" data-act="delview">🗑️ Fişi sil</button>`;
+  maybeEnrich();
+}
+
+/* ================= VERİYE SOR (yapay zeka soruyu sorguya çevirir, hesabı uygulama yapar) ================= */
+const METRICS = {spent:'toplam harcama', quantity:'toplam miktar', count_purchases:'kaç fişte alındı', avg_unit_price:'ortalama birim fiyat', min_unit_price:'en düşük birim fiyat', max_unit_price:'en yüksek birim fiyat', last_price:'son birim fiyat'};
+const GROUPS = ['none', 'month', 'store', 'category', 'product'];
+const askCard = () => `<div class="card"><b>Veriye sor</b><div class="sub">Örn: "Son 3 ayda süte ne kadar verdim?", "En ucuz yağı nereden aldım?", "Hangi markete en çok harcadım?"</div>
+  <div class="ask"><input id="askq" placeholder="Sorunu yaz…" enterkeyhint="send" autocomplete="off"><button class="btn sm" data-act="ask">Sor</button></div><div id="askout"></div></div>`;
+async function askData(q, all){
+  const prods = {}; all.forEach(r => r.items.forEach(i => { const g = key(i.generic || i.name); if (g) prods[g] = (prods[g] || 0) + 1; }));
+  const plist = Object.entries(prods).sort((a, b) => b[1] - a[1]).slice(0, 150).map(x => x[0]);
+  const stores = [...new Set(all.map(r => normStore(r.store)).filter(Boolean))];
+  const dates = all.map(r => r.date).sort();
+  const prompt = `Sen bir market fişi arşivi için soru çözücüsün. Kullanıcının Türkçe sorusunu aşağıdaki JSON sorgusuna çevir. SADECE JSON döndür. Cevabı kendin hesaplama, sadece sorguyu yaz; hesabı uygulama yapacak.
+Bugün: ${today()}. Arşivdeki en eski fiş: ${dates[0]}, en yeni: ${dates[dates.length - 1]}.
+Kategoriler: ${CATS.join(', ')}.
+Marketler: ${stores.join(', ')}.
+Ürün adları (genel ad): ${plist.join(' | ')}.
+Şema: {"ok":true,"product":null veya ürün adı (yukarıdaki listeden en uygun olan, genel bir ürün soruldaysa kısa kök yaz, örn "süt"),"category":null veya kategori,"store":null veya market,"from":null veya "YYYY-MM-DD","to":null veya "YYYY-MM-DD","metric":"spent|quantity|count_purchases|avg_unit_price|min_unit_price|max_unit_price|last_price","group_by":"none|month|store|category|product","top":null veya sayı,"summary":"sorgunun tek cümlelik Türkçe açıklaması"}
+Anlaşılamayan veya arşivle ilgisiz soru için: {"ok":false,"reason":"kısa Türkçe açıklama"}.
+Kurallar: "son 3 ay" gibi ifadeleri bugünden hesaplayıp from/to yaz. "ne kadar verdim/harcadım" → spent. "kaç kilo/adet aldım" → quantity. "kaç kez aldım" → count_purchases. "en ucuz" → min_unit_price, "en pahalı" → max_unit_price, "ortalama fiyat" → avg_unit_price, "en son kaça aldım" → last_price. "En çok" gibi sıralamalarda group_by (product, store veya category) kullan ve top ver.
+Soru: ${q}`;
+  return parseJ(await gemini({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:'application/json', temperature:0}}));
+}
+const fmtQty = by => Object.entries(by).map(([u, n]) => n.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' ' + u).join(' · ') || '0';
+function priceStat(ps, m){
+  const by = {}; ps.forEach(x => (by[x.u] = by[x.u] || []).push(x));
+  return Object.entries(by).map(([u, a]) => { let v, ex = ''; const at = x => `${esc(x.s)} · ${shortDate(x.d)}`;
+    if (m === 'avg_unit_price') v = a.reduce((s, x) => s + x.p, 0) / a.length;
+    else if (m === 'min_unit_price') { const x = a.reduce((b, c) => c.p < b.p ? c : b); v = x.p; ex = at(x); }
+    else if (m === 'max_unit_price') { const x = a.reduce((b, c) => c.p > b.p ? c : b); v = x.p; ex = at(x); }
+    else { const x = [...a].sort((p, q) => q.d.localeCompare(p.d))[0]; v = x.p; ex = at(x); }
+    return {u, v, ex}; });
+}
+function runQuery(all, sp){
+  const m = METRICS[sp.metric] ? sp.metric : 'spent', g = GROUPS.includes(sp.group_by) ? sp.group_by : 'none';
+  const pq = key(sp.product), from = validDate(sp.from), to = validDate(sp.to), cat = CATS.includes(sp.category) ? sp.category : '', st = sp.store ? key(normStore(sp.store)) : '';
+  const lines = [];
+  for (const r of all) { if (from && r.date < from) continue; if (to && r.date > to) continue; if (st && key(normStore(r.store)) !== st) continue;
+    for (const it of r.items) { if (cat && it.category !== cat) continue;
+      if (pq && ![it.generic, it.name, it.brand].some(x => key(x).includes(pq))) continue;
+      lines.push({r, it}); } }
+  const B = {};
+  for (const {r, it} of lines) { const k = g === 'month' ? r.date.slice(0, 7) : g === 'store' ? normStore(r.store) : g === 'category' ? it.category : g === 'product' ? key(it.generic || it.name) : 'Toplam';
+    const o = B[k] = B[k] || {spent:0, qty:{}, rc:new Set(), ps:[], n:0}; o.n++; o.spent += it.line_total || 0; const u = uk(it.unit); o.qty[u] = (o.qty[u] || 0) + (it.qty || 0);
+    o.rc.add(r.id); if (it.unit_price) o.ps.push({p:it.unit_price, d:r.date, s:r.store, u}); }
+  let rows = Object.entries(B).map(([label, o]) => {
+    if (m === 'spent') return {label, value:TRY(o.spent), sort:o.spent, n:o.n};
+    if (m === 'quantity') return {label, value:fmtQty(o.qty), sort:Object.values(o.qty).reduce((a, b) => a + b, 0), n:o.n};
+    if (m === 'count_purchases') return {label, value:o.rc.size + ' fiş', sort:o.rc.size, n:o.n};
+    const st2 = priceStat(o.ps, m); return {label, value:st2.map(x => `${TRY(x.v)}/${x.u}`).join(' · ') || '—', sub:st2.map(x => x.ex).filter(Boolean).join(' · '), sort:st2[0] ? st2[0].v : 0, n:o.n}; });
+  if (g === 'month') rows.sort((a, b) => a.label.localeCompare(b.label)); else rows.sort((a, b) => (m === 'min_unit_price' ? a.sort - b.sort : b.sort - a.sort));
+  const top = Math.round(num(sp.top)); if (top > 0 && g !== 'none') rows = rows.slice(0, Math.min(top, 20));
+  if (g === 'month') rows.forEach(r => r.label = monthName(r.label));
+  if (g === 'category') rows.forEach(r => r.label = r.label);
+  return {rows, lines, m, g};
+}
+function askHtml(sp, res){
+  const flt = [sp.product && `Ürün: ${esc(sp.product)}`, CATS.includes(sp.category) && `Kategori: ${esc(sp.category)}`, sp.store && `Market: ${esc(sp.store)}`,
+    (validDate(sp.from) || validDate(sp.to)) && `Dönem: ${validDate(sp.from) ? shortDate(sp.from) : '…'} – ${validDate(sp.to) ? shortDate(sp.to) : '…'}`, `Hesap: ${METRICS[res.m]}`].filter(Boolean).join(' · ');
+  let h = `<div class="note"><b>Anladığım soru:</b> ${esc(sp.summary || '')}<div class="sub">${flt}</div></div>`;
+  if (!res.lines.length) return h + '<p class="warn">Eşleşen kalem bulunamadı. Ürün adını farklı yazmayı dene veya dönemi genişlet.</p>';
+  h += res.rows.map(r => `<div class="pl"><div><div>${res.g === 'none' ? 'Sonuç' : esc(r.label)}</div>${r.sub ? `<div class="sub">${r.sub}</div>` : ''}</div><b>${r.value}</b></div>`).join('');
+  h += `<details style="margin-top:8px"><summary>Hesaba giren ${res.lines.length} kalem</summary>${res.lines.slice(0, 40).sort((a, b) => b.r.date.localeCompare(a.r.date)).map(({r, it}) => `<div class="pl"><div><div>${esc(it.name)}</div><div class="sub">${shortDate(r.date)} · ${esc(r.store)} · ${it.qty} ${esc(it.unit)} × ${TRY(it.unit_price)}</div></div><b>${TRY(it.line_total)}</b></div>`).join('')}</details>`;
+  return h;
+}
+async function doAsk(){
+  const q = (($('#askq') || {}).value || '').trim(), out = $('#askout'); if (!q || !out) return;
+  if (!localStorage.getItem('gkey')) { toast('Önce Ayarlar\'dan API anahtarını gir'); return show('ayar'); }
+  if (busy) return; busy = true; out.innerHTML = '<p class="mut">⏳ Soru çözülüyor…</p>';
+  try { const all = await DB.all(); const sp = await askData(q, all);
+    out.innerHTML = sp.ok === false ? `<p class="warn">${esc(sp.reason || 'Bu soruyu arşivle cevaplayamadım.')}</p>` : askHtml(sp, runQuery(all, sp)); }
+  catch(e) { out.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { busy = false; }
+}
+
+/* ================= ÜRÜN BİRLEŞTİRME ================= */
+async function findMerges(){
+  const all = await DB.all(), cnt = {};
+  all.forEach(r => r.items.forEach(i => { const g = key(i.generic || i.name); if (g) cnt[g] = (cnt[g] || 0) + 1; }));
+  const list = Object.keys(cnt).sort().slice(0, 300); if (list.length < 2) return {groups:[], cnt};
+  const prompt = `Aşağıda market fişlerinden toplanmış "genel ürün adları" var. Aynı ürünü anlatan ve yalnızca yazım, kısaltma veya marka farkı olan adları grupla. Paket boyutu veya ürün çeşidi farklıysa (süt 1 lt ile süt 200 ml; beyaz peynir ile kaşar peyniri; domates ile salkım domates) ASLA birleştirme. Emin olmadığın grubu yazma. Her grup için en okunaklı kısa ortak adı "canonical" olarak seç (küçük harf). SADECE JSON döndür: {"groups":[{"canonical":"süt 1 lt","members":["süt 1lt","pınar süt 1 lt"]}]}\nAdlar:\n${list.join('\n')}`;
+  const d = parseJ(await gemini({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:'application/json', temperature:0}}));
+  const used = new Set(), groups = [];
+  (Array.isArray(d.groups) ? d.groups : []).forEach(g => {
+    const mem = [...new Set((Array.isArray(g.members) ? g.members : []).map(key).filter(x => cnt[x] && !used.has(x)))];
+    const can = key(g.canonical); if (mem.length < 2 || !can) return; mem.forEach(x => used.add(x)); groups.push({canonical:can, members:mem}); });
+  return {groups, cnt};
+}
+function mergeDialog(res){
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<b style="font-size:18px">Birleştirme önerileri</b><p class="mut">Yapay zekanın "aynı ürün" dediği gruplar. İşaretli olanlar birleştirilir; ortak adı değiştirebilirsin. Hatalı bir grup varsa işaretini kaldır.</p>
+    ${res.groups.map((g, i) => `<div class="card" style="box-shadow:none;border:1px solid var(--line);padding:12px"><div class="row"><input type="checkbox" data-mg="${i}" checked><input data-mc="${i}" value="${esc(g.canonical)}"></div>
+      <div class="sub" style="margin-top:6px">${g.members.map(m => `${esc(m)} (${res.cnt[m]}×)`).join(' · ')}</div></div>`).join('')}
+    <button class="btn" data-act="mergeapply">Seçilenleri birleştir</button><button class="btn alt" data-act="close">Kapat</button>`;
+  dlg._merge = res; dlg.showModal();
+}
+async function applyMerges(){
+  const dlg = $('#dlg'), res = dlg._merge; if (!res) return 0; const map = {};
+  res.groups.forEach((g, i) => { const on = dlg.querySelector(`[data-mg="${i}"]`)?.checked, can = key(dlg.querySelector(`[data-mc="${i}"]`)?.value);
+    if (on && can) g.members.forEach(m => { if (m !== can) map[m] = can; }); });
+  if (!Object.keys(map).length) return 0;
+  LS.set('genmap', {...genMap(), ...map}); let n = 0;
+  for (const r of await DB.all()) { let ch = false; r.items.forEach(i => { const g = key(i.generic || i.name); if (map[g]) { i.generic = map[g]; ch = true; n++; } }); if (ch) await DB.put(r); }
+  return n;
+}
+
+/* ================= YAKIT ================= */
+const FUELS = ['Benzin', 'Motorin', 'LPG', 'Elektrik', 'Diğer'];
+const funit = t => t === 'Elektrik' ? 'kWh' : 'L';
+const STATIONS = {'opet':'Opet', 'shell':'Shell', 'bp':'BP', 'petrol ofisi':'Petrol Ofisi', 'po':'Petrol Ofisi', 'totalenergies':'TotalEnergies', 'total':'TotalEnergies',
+  'aytemiz':'Aytemiz', 'lukoil':'Lukoil', 'alpet':'Alpet', 'kadoil':'Kadoil', 'sunpet':'Sunpet', 'moil':'Moil', 'parkoil':'Parkoil', 'termo':'Termo', 'turkuaz':'Turkuaz'};
+const n1 = (v, d = 1) => (Number(v) || 0).toLocaleString('tr-TR', {minimumFractionDigits:d, maximumFractionDigits:d});
+const odoNum = v => parseInt(String(v).replace(/[^\d]/g, ''), 10) || 0;
+const r2 = v => Math.round((Number(v) || 0) * 100) / 100;
+const vehicle = () => LS.get('vehicle', {name:'', fuel:'Benzin'});
+function normStation(s){ s = String(s || '').trim(); const l = key(s);
+  const kn = LS.get('fstations', []).find(k => key(k) === l); if (kn) return kn;
+  for (const k in STATIONS) if (new RegExp('^' + k + '([^a-z0-9çğıöşü]|$)').test(l)) return STATIONS[k];
+  return s; }
+function learnStation(s){ if (!s) return; const a = LS.get('fstations', []); if (!a.some(k => key(k) === key(s))) { a.push(s); LS.set('fstations', a); } }
+function normFuel(t, name){
+  if (FUELS.includes(t) && t !== 'Diğer') return t;
+  const s = key((t || '') + ' ' + (name || ''));
+  if (/elektrik|kwh|şarj|sarj/.test(s)) return 'Elektrik';
+  if (/lpg|otogaz/.test(s)) return 'LPG';
+  if (/motorin|dizel|diesel/.test(s)) return 'Motorin';
+  if (/benzin|kur[sş]unsuz|95|98|v-?power|unleaded|ecto|nitro/.test(s)) return 'Benzin';
+  return vehicle().fuel || 'Benzin';
+}
+const FUEL_PROMPT = `Bu bir Türkiye akaryakıt istasyonu fişi fotoğrafı. Fişi oku ve SADECE şu JSON'u döndür:
+{"station":"istasyon markası","branch":"","date":"YYYY-MM-DD","time":"HH:MM","fuel_type":"Benzin|Motorin|LPG|Elektrik|Diğer","product":"fişte yazan yakıt adı","liters":0,"unit_price":0,"total":0,"odometer":0,"plate":"","payment":""}
+Kurallar:
+- Tutarlar TL, ondalık ayırıcı nokta olan sayı olsun. liters: litre (elektrikte kWh). unit_price: litre başına fiyat (TL/LT). total: yakıt için ödenen tutar.
+- Tarih Türk fişlerinde GG.AA.YYYY veya GG/AA/YYYY yazar (gün önce gelir); YYYY-MM-DD yap. Saat varsa time alanına yaz.
+- station: fiş başlığındaki istasyon markası (Opet, Shell, BP, Petrol Ofisi, TotalEnergies, Aytemiz, Lukoil, Alpet, Kadoil gibi). Resmi ünvandan "Petrolcülük A.Ş." gibi ekleri at. Adres satırındaki yer adlarını marka sanma. Bayi veya şube adı varsa branch alanına yaz.
+- fuel_type: Kurşunsuz 95/98, V-Power gibi benzin türleri → Benzin; motorin, dizel, Eurodiesel → Motorin; LPG, otogaz → LPG; elektrikli şarj → Elektrik. product alanına fişteki adı aynen yaz.
+- Fişte yakıtın yanında başka ürün (kahve, market ürünü) varsa yalnızca yakıt satırını al; total o satırın tutarı olsun.
+- Litre × birim fiyat ≈ total olmalıdır; olmuyorsa değerleri tekrar kontrol et.
+- odometer: fişte km veya kilometre bilgisi açıkça yazıyorsa o sayı, yoksa 0. plate: plaka yazıyorsa onu yaz.
+- Okuyamadığın alanı 0 veya boş bırak, tahmin uydurma.`;
+const fuelBad = d => { const l = num(d.liters), p = num(d.unit_price), t = num(d.total); return l > 0 && p > 0 && t > 0 && Math.abs(l * p - t) > Math.max(1, t * 0.01); };
+async function analyzeFuel(b64, hint){
+  return parseJ(await gemini({contents:[{parts:[{text:FUEL_PROMPT + (hint || '')}, {inline_data:{mime_type:'image/jpeg', data:b64}}]}], generationConfig:{responseMimeType:'application/json', temperature:0}}));
+}
+async function analyzeFuelChecked(b64){
+  const d1 = await analyzeFuel(b64); if (!fuelBad(d1)) return {data:d1, recheck:''};
+  try {
+    const hint = `\n\nİKİNCİ KONTROL: Önceki okumanda litre ${d1.liters} × birim fiyat ${d1.unit_price} = ${r2(num(d1.liters) * num(d1.unit_price))} TL çıktı ama toplam ${d1.total} TL okudun. Bu üç değer tutarlı olmalı. Fişi baştan dikkatle oku, yanlış okuduğun değeri düzelt. Aynı JSON formatında döndür.`;
+    const d2 = await analyzeFuel(b64, hint);
+    return !fuelBad(d2) && num(d2.total) > 0 ? {data:d2, recheck:'fixed'} : {data:d1, recheck:'same'};
+  } catch(e) { return {data:d1, recheck:''}; }
+}
+function newFuel(thumb){ return {id:crypto.randomUUID(), thumb:thumb || '', station:'', branch:'', date:today(), time:'', fuel:vehicle().fuel || 'Benzin', product:'', liters:0, unit_price:0, total:0, odo:0, full:true, plate:'', note:'', isNew:true}; }
+function makeFuelDraft(data, thumb){
+  let l = num(data.liters), p = num(data.unit_price), t = num(data.total);
+  if (!l && t && p) l = r2(t / p); if (!p && t && l) p = r2(t / l); if (!t && l && p) t = r2(l * p);
+  return {...newFuel(thumb), station:normStation(data.station), branch:String(data.branch || ''), date:validDate(data.date) || today(), time:String(data.time || ''),
+    fuel:normFuel(data.fuel_type, data.product), product:String(data.product || ''), liters:r2(l), unit_price:r2(p), total:r2(t), odo:odoNum(data.odometer), plate:String(data.plate || '')};
+}
+/* Dolu depodan dolu depoya tüketim: iki dolu depo arasındaki tüm yakıt, o aradaki km'ye bölünür (yakıt türüne göre ayrı) */
+function fuelSegments(all){
+  const out = [], by = {};
+  all.filter(r => r.odo > 0 && r.liters > 0).forEach(r => (by[r.fuel] = by[r.fuel] || []).push(r));
+  for (const [fuel, arr] of Object.entries(by)) {
+    arr.sort((a, b) => a.odo - b.odo || a.date.localeCompare(b.date));
+    let base = null, l = 0, c = 0;
+    for (const r of arr) {
+      if (base === null) { if (r.full) { base = r.odo; l = 0; c = 0; } continue; }
+      l += r.liters; c += r.total;
+      if (r.full) { const dist = r.odo - base;
+        if (dist > 0) { const l100 = l / dist * 100; out.push({id:r.id, fuel, date:r.date, dist, liters:l, cost:c, l100, perKm:c / dist, odd:l100 < 2 || l100 > 40}); }
+        base = r.odo; l = 0; c = 0; }
+    }
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+async function updateFuelWarn(){
+  const el = $('#fwarn'), d = fdraft; if (!el || !d) return; const all = await DB.all('fuel'), w = [];
+  const dw = dateWarn(d.date); if (dw) w.push(dw);
+  if (d.liters > 200) w.push('Miktar çok yüksek görünüyor.');
+  if (d.unit_price && (d.unit_price < 5 || d.unit_price > 300)) w.push('Birim fiyat olağan dışı görünüyor.');
+  let fix = '';
+  if (fuelBad(d)) { const l = d.liters, p = d.unit_price;
+    w.push(`${funit(d.fuel)} × birim fiyat = ${TRY(l * p)}, ama tutar ${TRY(d.total)}. Hangisi yanlış?`);
+    fix = `<button class="btn alt sm" data-act="ffix" data-w="total">Tutar = ${TRY(l * p)}</button><button class="btn alt sm" data-act="ffix" data-w="liters">${funit(d.fuel)} = ${n1(d.total / p, 2)}</button><button class="btn alt sm" data-act="ffix" data-w="price">Fiyat = ${TRY(d.total / l)}</button>`; }
+  if (d.odo) { const others = all.filter(x => x.id !== d.id && x.odo > 0);
+    const prev = others.filter(x => x.date <= d.date).sort((a, b) => b.date.localeCompare(a.date) || b.odo - a.odo)[0];
+    const next = others.filter(x => x.date > d.date).sort((a, b) => a.date.localeCompare(b.date))[0];
+    if (prev && d.odo < prev.odo) w.push(`Kilometre önceki kayıttan (${prev.odo.toLocaleString('tr-TR')} km, ${shortDate(prev.date)}) küçük.`);
+    else if (next && d.odo > next.odo) w.push(`Kilometre sonraki kayıttan (${next.odo.toLocaleString('tr-TR')} km, ${shortDate(next.date)}) büyük.`);
+    else if (prev && d.odo - prev.odo > 3000) w.push(`Son kayıttan bu yana ${(d.odo - prev.odo).toLocaleString('tr-TR')} km yapmışsın; aradaki bir fişi atlamış olabilirsin, tüketim bu yüzden yüksek çıkabilir.`); }
+  if (d.isNew && d.total) { const dup = all.find(x => x.id !== d.id && x.date === d.date && Math.abs(x.total - d.total) < 0.01 && key(normStation(x.station)) === key(normStation(d.station)));
+    if (dup) w.push('Aynı istasyon, gün ve tutarda kayıtlı başka bir fiş var. Aynı fişi iki kez ekliyor olabilirsin.'); }
+  el.innerHTML = w.map(x => `<p class="warn">⚠️ ${esc(x)}</p>`).join('') + fix;
+}
+function fuelFix(w){ const d = fdraft; if (!d) return;
+  if (w === 'total') d.total = r2(d.liters * d.unit_price); else if (w === 'liters' && d.unit_price) d.liters = r2(d.total / d.unit_price); else if (w === 'price' && d.liters) d.unit_price = r2(d.total / d.liters);
+  renderFuelReview(); }
+async function saveFuel(){
+  const d = fdraft; if (!d) return;
+  if (!validDate(d.date)) return toast('Tarih gerekli');
+  if (!(d.total > 0) && d.liters > 0 && d.unit_price > 0) d.total = r2(d.liters * d.unit_price);
+  if (!(d.liters > 0) || !(d.total > 0)) return toast('Miktar ve tutar gerekli');
+  if (!(d.unit_price > 0)) d.unit_price = r2(d.total / d.liters);
+  if (d.isNew) { const all = await DB.all('fuel'); const dup = all.find(x => x.date === d.date && Math.abs(x.total - d.total) < 0.01 && key(normStation(x.station)) === key(normStation(d.station)));
+    if (dup && !confirm('Aynı istasyon, gün ve tutarda başka bir kayıt var. Yine de kaydedilsin mi?')) return; }
+  const r = {...d}; delete r.isNew; r.station = normStation(r.station); if (!r.created) r.created = Date.now();
+  await DB.put(r, 'fuel'); learnStation(r.station); fdraft = null; fph = []; toast('Kaydedildi'); show('yakit');
+}
+async function addFuelPhoto(f){
+  if (!f) return;
+  try { const img = await loadImg(f); fph = [{full:toJpeg(img, 2000, .85), thumb:toJpeg(img, 700, .6)}]; } catch(e) { return toast('Fotoğraf açılamadı'); }
+  show('yakit');
+}
+async function readFuel(){
+  if (busy || !fph.length) return;
+  if (!localStorage.getItem('gkey')) { toast('Önce Ayarlar\'dan API anahtarını gir'); return show('ayar'); }
+  busy = true; const st = $('#fstatus'), btn = $('#frd'); if (btn) btn.disabled = true; if (st) st.textContent = '⏳ Fiş okunuyor…';
+  try { const {data, recheck} = await analyzeFuelChecked(fph[0].full.split(',')[1]); fdraft = makeFuelDraft(data, fph[0].thumb); fdraft.recheck = recheck; fph = []; }
+  catch(e) { fdraft = newFuel(fph[0].thumb); fph = []; toast('Okunamadı: ' + e.message + ' — bilgileri elle girebilirsin'); }
+  finally { busy = false; }
+  renderFuel();
+}
+function renderFuelPrep(){
+  view.innerHTML = `<h2>Yakıt fişi</h2><div class="card"><img src="${fph[0].thumb}" style="width:100%;max-height:360px;object-fit:contain;border-radius:14px;background:#000">
+    <button class="btn alt" data-act="fcrop">✂️ Kırp / döndür</button>
+    <button class="btn" data-act="fread" id="frd">🔍 Oku</button>
+    <button class="btn alt" data-act="fcancelphoto">Vazgeç</button><div id="fstatus" class="mut"></div></div>`;
+}
+async function renderFuelReview(){
+  const d = fdraft; const all = await DB.all('fuel');
+  const last = all.filter(x => x.id !== d.id && x.odo > 0).sort((a, b) => b.odo - a.odo)[0];
+  view.innerHTML = `<h2>${d.isNew ? 'Kontrol et ve kaydet' : 'Yakıt kaydını düzenle'}</h2>
+  <div class="card">
+    ${d.thumb ? `<img src="${d.thumb}" style="width:100%;max-height:200px;object-fit:contain;border-radius:14px;background:#000">` : ''}
+    ${d.recheck ? `<div class="note">🔁 ${{fixed:'Litre, fiyat ve tutar birbirini tutmadığı için fiş ikinci kez okundu ve düzeldi.', same:'Değerler tutmadığı için fiş ikinci kez okundu ama düzelmedi. Rakamları fişle karşılaştır.'}[d.recheck] || ''}</div>` : ''}
+    <div id="fwarn"></div>
+    <label class="f">İstasyon</label><input data-fk="station" list="fst" value="${esc(d.station)}"><datalist id="fst">${[...new Set([...Object.values(STATIONS), ...LS.get('fstations', [])])].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <div class="row"><div style="flex:1"><label class="f">Tarih</label><input data-fk="date" type="date" value="${esc(d.date)}"></div>
+    <div style="flex:1"><label class="f">Yakıt türü</label><select data-fk="fuel">${FUELS.map(x => `<option ${x === d.fuel ? 'selected' : ''}>${x}</option>`).join('')}</select></div></div>
+    <div class="three"><div><label class="f">${d.fuel === 'Elektrik' ? 'kWh' : 'Litre'}</label><input data-fk="liters" inputmode="decimal" value="${d.liters || ''}"></div>
+    <div><label class="f">Birim fiyat</label><input data-fk="unit_price" inputmode="decimal" value="${d.unit_price || ''}"></div>
+    <div><label class="f">Tutar (TL)</label><input data-fk="total" inputmode="decimal" value="${d.total || ''}"></div></div>
+    <label class="f">Kilometre (göstergedeki)</label><input data-fk="odo" inputmode="numeric" placeholder="Örn. 45230" value="${d.odo || ''}">
+    <div class="sub" style="margin-top:4px">${last ? `Son kayıt: ${last.odo.toLocaleString('tr-TR')} km (${shortDate(last.date)}). ` : ''}Kilometreyi yazarsan tüketimi hesaplarım.</div>
+    <div class="chk"><input type="checkbox" data-fk="full" id="ffull" ${d.full ? 'checked' : ''}><label for="ffull">Depoyu doldurdum<div class="sub">Tüketim hesabı için dolu depo kayıtları gerekir. Kısmi dolum yaptıysan işareti kaldır.</div></label></div>
+    <label class="f">Not (isteğe bağlı)</label><input data-fk="note" value="${esc(d.note || '')}">
+  </div>
+  <button class="btn" data-act="fsave">💾 Kaydet</button>
+  ${d.isNew ? '' : '<button class="btn bad" data-act="fdelete">🗑️ Sil</button>'}
+  <button class="btn alt" data-act="fcancel">Vazgeç</button>`;
+  updateFuelWarn();
+}
+function miniBars(by){
+  const last = Object.keys(by).sort().pop(), nowM = today().slice(0, 7); let k = last > nowM ? last : nowM; const ms = [];
+  for (let i = 0; i < 12; i++) { ms.unshift(k); k = prevMonth(k); }
+  const vals = ms.map(m => by[m] || 0), mx = Math.max(...vals, 1), W = 320, H = 100, bw = 20, gap = (W - 12 * bw) / 11;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;margin-top:6px">${ms.map((m, i) => { const h = vals[i] / mx * (H - 22), x = i * (bw + gap), on = m === nowM || m === last;
+    return `<rect x="${x.toFixed(1)}" y="${(H - h - 14).toFixed(1)}" width="${bw}" height="${Math.max(h, 1).toFixed(1)}" rx="3" class="tbar${on ? ' on' : ''}"/><text x="${(x + bw / 2).toFixed(1)}" y="${H - 2}" font-size="8" class="tlab" text-anchor="middle">${MONTHS[+m.slice(5) - 1].slice(0, 3)}</text>`; }).join('')}</svg>`;
+}
+async function renderFuel(){
+  if (fdraft) return renderFuelReview();
+  if (fph.length) return renderFuelPrep();
+  const all = (await DB.all('fuel')).sort((a, b) => b.date.localeCompare(a.date) || (b.created || 0) - (a.created || 0));
+  const v = vehicle(); const segs = fuelSegments(all), segBy = {}; segs.forEach(x => segBy[x.id] = x);
+  const addCard = `<div class="card"><b>Yeni yakıt fişi</b><div class="sub">Fişin fotoğrafını çek; litre, fiyat ve tutarı okurum. Kilometreyi sen yazarsın.</div>
+    <label class="btn" style="margin-top:12px">📷 Fotoğraf çek<input id="ff1" type="file" accept="image/*" capture="environment" hidden></label>
+    <label class="btn alt">🖼️ Galeriden seç<input id="ff2" type="file" accept="image/*" hidden></label>
+    <button class="btn alt" data-act="fmanual">✍️ Elle ekle</button></div>`;
+  let html = `<h2>Yakıt${v.name ? ` <span class="sub" style="font-weight:600">· ${esc(v.name)}</span>` : ''}</h2>${addCard}`;
+  if (!all.length) html += `<div class="card"><div class="mut">Henüz yakıt kaydı yok. İlk fişini ekle. Her alımda kilometreyi de yazarsan, iki dolu depo arasındaki tüketimi (L/100 km) ve km başı maliyeti hesaplarım.</div></div>`;
+  else {
+    const main = all[0].fuel, mAll = all.filter(r => r.fuel === main), unit = funit(main);
+    const mk = all[0].date.slice(0, 7), monthRecs = all.filter(r => r.date.startsWith(mk)), monthTot = monthRecs.reduce((s, r) => s + r.total, 0), monthL = monthRecs.filter(r => r.fuel === main).reduce((s, r) => s + r.liters, 0);
+    const ok = segs.filter(x => x.fuel === main && !x.odd).slice(-5), sd = ok.reduce((s, x) => s + x.dist, 0);
+    const cons = sd ? ok.reduce((s, x) => s + x.liters, 0) / sd * 100 : 0, perKm = sd ? ok.reduce((s, x) => s + x.cost, 0) / sd : 0;
+    const odos = all.filter(r => r.odo > 0).map(r => r.odo), span = odos.length > 1 ? Math.max(...odos) - Math.min(...odos) : 0;
+    html += `<div class="card hero"><div class="mut">${mk === today().slice(0, 7) ? 'Bu ay' : monthName(mk)} yakıt</div><div class="big">${TRY(monthTot)}</div>
+      <div class="mut">${monthRecs.length} alım · ${n1(monthL)} ${unit} ${esc(main)}</div>
+      <div class="fstats"><div><b>${cons ? n1(cons) : '—'}</b><span>${unit}/100 km</span></div><div><b>${perKm ? TRY(perKm) : '—'}</b><span>km başı</span></div><div><b>${span ? span.toLocaleString('tr-TR') : '—'}</b><span>kayıtlı km</span></div></div>
+      ${cons ? '' : '<div class="sub" style="margin-top:10px">Tüketim için kilometreli en az iki dolu depo kaydı gerekir.</div>'}</div>`;
+    const by = {}; all.forEach(r => by[r.date.slice(0, 7)] = (by[r.date.slice(0, 7)] || 0) + r.total);
+    html += `<div class="card"><b>Aylık yakıt harcaması</b>${miniBars(by)}</div>`;
+    const pts = [...mAll].sort((a, b) => a.date.localeCompare(b.date)).slice(-12);
+    if (pts.length >= 2) { const ps = pts.map(x => x.unit_price), mn = Math.min(...ps), mx = Math.max(...ps), W = 300, H = 70;
+      const xy = pts.map((x, i) => [i / (pts.length - 1) * W, mx === mn ? H / 2 : H - 6 - (x.unit_price - mn) / (mx - mn) * (H - 12)]);
+      const lastP = pts[pts.length - 1].unit_price, prevP = pts[pts.length - 2].unit_price;
+      html += `<div class="card"><b>${esc(main)} fiyatı</b> <span class="sub">(birim fiyat)</span><div class="big" style="font-size:26px;margin-top:4px">${TRY(lastP)} ${Math.abs(pct(lastP, prevP)) >= 0.5 ? arrow(pct(lastP, prevP)) : ''}</div>
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;margin:8px 0 2px"><polyline class="pline" points="${xy.map(a => a.join(',')).join(' ')}"/>${xy.map(a => `<circle class="pdot" cx="${a[0]}" cy="${a[1]}" r="3"/>`).join('')}</svg>
+        <div class="sub">En düşük ${TRY(mn)} · en yüksek ${TRY(mx)} · ${pts.length} alım</div></div>`; }
+    const st = {}; mAll.forEach(r => { const k = normStation(r.station) || '—'; const o = st[k] = st[k] || {l:0, t:0, n:0}; o.l += r.liters; o.t += r.total; o.n++; });
+    const sa = Object.entries(st).map(([k, o]) => ({k, avg:o.t / o.l, n:o.n})).sort((a, b) => a.avg - b.avg);
+    if (sa.length >= 2) html += `<div class="card"><b>İstasyon karşılaştırması</b> <span class="sub">(${esc(main)}, ortalama litre fiyatı)</span>${sa.map((x, i) => `<div class="pl"><div>${i === 0 ? '✅ ' : ''}${esc(x.k)} <span class="sub">${x.n} alım</span></div><b>${TRY(x.avg)}${i ? ` <span class="up" style="font-size:12px">+%${pct(x.avg, sa[0].avg).toFixed(0)}</span>` : ''}</b></div>`).join('')}</div>`;
+    const list = fshowAll ? all : all.slice(0, 8);
+    html += `<div class="card"><b>Son alımlar</b>${list.map(r => { const sg = segBy[r.id];
+      return `<div class="li" data-act="fedit" data-id="${r.id}"><div><div><b>${esc(r.station || 'İstasyon')}</b> <span class="sub">${esc(r.fuel)}</span></div><div class="mut">${fmtDate(r.date)}</div>
+        <div class="sub">${n1(r.liters, 2)} ${funit(r.fuel)} × ${TRY(r.unit_price)}${r.odo ? ' · ' + r.odo.toLocaleString('tr-TR') + ' km' : ''}${r.full ? '' : ' · kısmi'}</div>
+        ${sg ? `<div class="sub">${sg.odd ? '⚠️ ' : '⛽ '}${n1(sg.l100)} ${funit(r.fuel)}/100 km · ${sg.dist.toLocaleString('tr-TR')} km · km başı ${TRY(sg.perKm)}</div>` : ''}</div><b>${TRY(r.total)}</b></div>`; }).join('')}
+      ${all.length > 8 ? `<button class="btn alt sm" data-act="fall">${fshowAll ? 'Daha az göster' : `Tümünü gör (${all.length})`}</button>` : ''}</div>`;
+  }
+  view.innerHTML = html;
+  $('#ff1').onchange = $('#ff2').onchange = e => addFuelPhoto(e.target.files[0]);
+}
+
+/* ================= ÜRÜN KARŞILAŞTIRMA (marka / boyut / fiyat) ================= */
+const pinfoMap = () => LS.get('pinfo', {});
+const ikey = it => key(it.name) + '|' + key(it.brand) + '|' + key(it.generic);
+const cap = t => t ? t.charAt(0).toLocaleUpperCase('tr') + t.slice(1) : t;
+const SIZE_RE = /(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilogram|gr|gram|g|lt|litre|l|ml|cl)(?![a-zçğıöşü])/i;
+const PACK_RE = /(\d+)\s*['’]?\s*(li|lı|lu|lü)(?![a-zçğıöşü])/i;
+const BASE_LABEL = {kg:'kg', lt:'lt', adet:'adet'};
+const fmtN = n => (Number(n) || 0).toLocaleString('tr-TR', {maximumFractionDigits:3});
+function parseSize(...texts){
+  for (const t of texts) { const s = key(t); if (!s) continue;
+    const m = s.match(SIZE_RE);
+    if (m) { let u = m[2].toLowerCase(); u = /^(kg|kilo|kilogram)$/.test(u) ? 'kg' : /^(gr|gram|g)$/.test(u) ? 'g' : /^(lt|litre|l)$/.test(u) ? 'lt' : u;
+      return {size:parseFloat(m[1].replace(',', '.')), size_unit:u, pack:1}; }
+    const q = s.match(PACK_RE); if (q) return {size:+q[1], size_unit:'adet', pack:1}; }
+  return {size:0, size_unit:'', pack:1};
+}
+function heurInfo(it){
+  const t = key(it.generic || it.name).replace(new RegExp(SIZE_RE.source, 'gi'), ' ').replace(new RegExp(PACK_RE.source, 'gi'), ' ').replace(/%\s*\d+/g, ' ').replace(/\s+/g, ' ').trim();
+  return {type:t, brand:it.brand || '', detail:'', ...parseSize(it.generic, it.name, it.raw), src:'auto'};
+}
+function getInfo(it, pi){
+  const a = pi[ikey(it)], h = heurInfo(it); if (!a) return h;
+  if (a.src === 'user') return {type:a.type || h.type, brand:a.brand || '', detail:a.detail || '', size:a.size || 0, size_unit:a.size_unit || '', pack:a.pack || 1, src:'user'};
+  const ok = a.size > 0 && a.size_unit;
+  return {type:a.type || h.type, brand:a.brand || h.brand || '', detail:a.detail || '', size:ok ? a.size : h.size, size_unit:ok ? a.size_unit : h.size_unit, pack:ok ? (a.pack || 1) : 1, src:a.src};
+}
+function packAmount(info){
+  const t = info.size * (info.pack || 1); if (!(t > 0)) return null;
+  return ({kg:{base:'kg', amt:t}, g:{base:'kg', amt:t / 1000}, lt:{base:'lt', amt:t}, ml:{base:'lt', amt:t / 1000}, cl:{base:'lt', amt:t / 100}, adet:{base:'adet', amt:t}})[info.size_unit] || null;
+}
+const sizeLabel = info => { const u = info.size_unit; return info.size > 0 && u ? `${(info.pack || 1) > 1 ? info.pack + '×' : ''}${fmtN(info.size)} ${u}` : ''; };
+/* tek ürün satırını ortak birime (₺/lt, ₺/kg, ₺/adet) çevirir; paket boyutu bilinmiyorsa known:false */
+function normOf(it, info){
+  const u = uk(it.unit);
+  if (u === 'kg' || u === 'lt') return {base:u, price:it.unit_price, known:true, sizeLabel:u};
+  const pa = packAmount(info); if (pa) return {base:pa.base, price:it.unit_price / pa.amt, known:true, sizeLabel:sizeLabel(info)};
+  return {base:'adet', price:it.unit_price, known:false, sizeLabel:''};
+}
+function buildCompare(all){
+  const pi = pinfoMap(), types = {};
+  for (const r of all) for (const it of r.items) {
+    if (!(it.unit_price > 0)) continue; const info = getInfo(it, pi); if (!info.type) continue; const n = normOf(it, info);
+    const T = types[info.type] = types[info.type] || {type:info.type, groups:{}, n:0, spent:0}; T.n++; T.spent += it.line_total || 0;
+    const gk = n.base + (n.known ? '' : '?'), G = T.groups[gk] = T.groups[gk] || {gk, base:n.base, known:n.known, vars:{}};
+    const vk = key(info.brand || it.name) + '|' + n.sizeLabel;
+    const V = G.vars[vk] = G.vars[vk] || {vk, title:info.brand || it.name, hasBrand:!!info.brand, sizeLabel:n.sizeLabel, detail:info.detail, info, pts:[], pks:new Set()};
+    V.pts.push({d:r.date, s:r.store, p:n.price, pack:it.unit_price}); V.pks.add(ikey(it)); }
+  for (const T of Object.values(types)) for (const G of Object.values(T.groups)) {
+    G.list = Object.values(G.vars).map(V => { V.pts.sort((a, b) => a.d.localeCompare(b.d)); V.last = V.pts[V.pts.length - 1]; V.avg = V.pts.reduce((s, x) => s + x.p, 0) / V.pts.length; return V; }).sort((a, b) => a.last.p - b.last.p); }
+  return types;
+}
+const comparable = T => Object.values(T.groups).some(G => G.known && G.list.length >= 2);
+function comparableTypes(all){ const B = buildCompare(all); return new Set(Object.values(B).filter(comparable).map(T => T.type)); }
+const cmpLink = it => { const t = getInfo(it, pinfoMap()).type; return t && cmpSet.has(t) ? `<div class="lnk" data-act="cmp" data-t="${esc(t)}">⚖️ Markaları karşılaştır</div>` : ''; };
+const mainGroup = T => Object.values(T.groups).filter(G => G.known && G.list.length >= 2).sort((a, b) => b.list.length - a.list.length)[0];
+
+/* ---- yapay zeka: ürün satırlarından marka, boyut ve ürün cinsini çıkarır (fiyat hesabını uygulama yapar) ---- */
+async function geminiText(prompt){
+  const j = await gemini({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.2}});
+  return (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+}
+function cleanInfo(o){
+  const su = ['kg', 'g', 'lt', 'ml', 'cl', 'adet'].includes(String(o.size_unit).toLowerCase()) ? String(o.size_unit).toLowerCase() : '';
+  const size = Math.max(0, num(o.size)), ok = su && size > 0 && size < 100000;
+  return {type:key(o.type).slice(0, 40), brand:String(o.brand || '').trim().slice(0, 40), detail:String(o.detail || '').trim().slice(0, 40),
+          size:ok ? size : 0, size_unit:ok ? su : '', pack:ok ? Math.min(100, Math.max(1, Math.round(num(o.pack) || 1))) : 1, src:'ai'};
+}
+function needEnrich(all){ const pi = pinfoMap(), m = new Map();
+  for (const r of all) for (const it of r.items) { const k = ikey(it); if (!pi[k] && !m.has(k) && (it.name || it.generic)) m.set(k, it); }
+  return m; }
+async function enrichProducts(all){
+  let total = 0;
+  for (let b = 0; b < 4; b++) {
+    const pi = pinfoMap(), need = [...needEnrich(all).entries()].slice(0, 50); if (!need.length) break;
+    const types = [...new Set(all.flatMap(r => r.items.map(it => getInfo(it, pi).type)).filter(Boolean))].slice(0, 80);
+    const prompt = `Aşağıda market fişlerinden ürün satırları var. Her biri için ürün cinsini, markasını ve paket boyutunu çıkar. SADECE JSON döndür:
+{"items":[{"id":0,"type":"süt","brand":"Pınar","detail":"yarım yağlı","size":1,"size_unit":"lt","pack":1}]}
+Kurallar:
+- type: markasız ve boyutsuz kısa ürün cinsi, küçük harf (süt, yoğurt, yumurta, zeytinyağı, ayçiçek yağı, makarna, çamaşır suyu gibi). Mevcut cinsler: ${types.join(', ') || '(yok)'}. Aynı ürün cinsi için bunlardan birini kullan; sadece gerçekten farklı bir ürünse yeni cins yaz. Çeşit farklarını (yarım yağlı, laktozsuz, tam yağlı, sızma) detail alanına yaz, cinsi bölme.
+- brand: ürün adından anlaşılan marka (Pınar, Sek, Sütaş, Ülker gibi). Markayı adda göremiyorsan boş bırak, tahmin uydurma. Bilinen yazım kısaltmalarını aç (SUT → süt, PNR → Pınar gibi, ama emin değilsen boş bırak).
+- size, size_unit: paket boyutu. size_unit yalnızca kg, g, lt, ml, cl veya adet olabilir. "1 L", "1LT", "1000 ML" gibi yazımları buna çevir. Yumurta gibi adetle satılanlarda size_unit adet ve size adet sayısıdır (15'li → 15 adet). "6'lı 1 lt" gibi çoklu pakette size 1, size_unit lt, pack 6. Boyutu adda göremiyorsan size 0 yaz; satış birimi kg/lt olan (tartılan) ürünlerde de size 0 yaz.
+Satırlar:
+${need.map(([k, it], i) => `${i} | ad: ${it.name} | fişte: ${it.raw || ''} | genel: ${it.generic || ''} | marka: ${it.brand || ''} | satış birimi: ${it.unit} | birim fiyat: ${it.unit_price}`).join('\n')}`;
+    const d = parseJ(await gemini({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:'application/json', temperature:0}}));
+    const out = Array.isArray(d.items) ? d.items : [], fresh = pinfoMap(); let n = 0;
+    out.forEach(o => { const e = need[Math.round(num(o.id))]; if (e && typeof o === 'object') { fresh[e[0]] = cleanInfo(o); n++; } });
+    LS.set('pinfo', fresh); total += n; if (!n) break;
+  }
+  return total;
+}
+async function maybeEnrich(){
+  if (enriching || !localStorage.getItem('gkey') || Date.now() - enrichFail < 600000) return;
+  const all = await DB.all(); if (!needEnrich(all).size) return;
+  enriching = true; const t0 = tab, d0 = detailId, c0 = cmpType; const st = $('#cmpstat'); if (st) st.textContent = '⏳ Ürünler analiz ediliyor…';
+  try { const n = await enrichProducts(all);
+    if (n && tab === t0 && detailId === d0 && cmpType === c0 && !(($('#askq') || {}).value) && !$('#dlg').open && (tab === 'rapor' || (tab === 'fisler' && detailId))) render(); else { const s2 = $('#cmpstat'); if (s2) s2.textContent = ''; } }
+  catch(e) { enrichFail = Date.now(); const s2 = $('#cmpstat'); if (s2) s2.textContent = 'Ürün analizi yapılamadı (' + e.message + '). Boyut ve marka şimdilik fişteki yazıma göre tahmin ediliyor.'; }
+  finally { enriching = false; }
+}
+
+/* ---- Rapor sekmesindeki kart ---- */
+function cmpHubCard(all){
+  const B = buildCompare(all), list = Object.values(B).filter(comparable).sort((a, b) => mainGroup(b).list.length - mainGroup(a).list.length || b.spent - a.spent);
+  const shown = cmpAll ? list : list.slice(0, 5);
+  return `<div class="card"><b>Ürün karşılaştır</b><div class="sub">Aynı ürünün farklı marka ve boyutlarını litre/kilo başına fiyata çevirir.</div><div id="cmpstat" class="sub"></div>
+    ${shown.length ? shown.map(T => { const G = mainGroup(T), lo = G.list[0].last.p, hi = G.list[G.list.length - 1].last.p;
+      return `<div class="li" data-act="cmp" data-t="${esc(T.type)}"><div><div><b>${esc(cap(T.type))}</b></div><div class="sub">${G.list.length} çeşit · ${TRY(lo)} – ${TRY(hi)} /${BASE_LABEL[G.base]}</div></div><span class="badge${hi > lo * 1.1 ? ' bad' : ''}">%${pct(hi, lo).toFixed(0)} fark</span></div>`; }).join('')
+      : '<div class="mut" style="margin-top:8px">Karşılaştırılacak ürün henüz yok. Aynı ürünü (örn. süt) farklı marka veya boyutta iki kez aldığında burada görünür.</div>'}
+    ${list.length > 5 ? `<button class="btn alt sm" data-act="cmpall">${cmpAll ? 'Daha az göster' : `Tümünü gör (${list.length})`}</button>` : ''}</div>`;
+}
+
+/* ---- karşılaştırma ekranı ---- */
+async function renderCompare(){
+  const all = await DB.all(), T = buildCompare(all)[cmpType];
+  if (!T) { cmpType = null; return render(); }
+  const groups = Object.values(T.groups).sort((a, b) => (b.known - a.known) || (b.list.length - a.list.length));
+  const mg = mainGroup(T);
+  let html = `<button class="btn alt sm" data-act="cmpback">← Geri</button><h2>${esc(cap(T.type))}</h2><div id="cmpstat" class="sub"></div>`;
+  for (const G of groups) {
+    const lab = BASE_LABEL[G.base], lo = G.list[0].last.p;
+    html += `<div class="card"><b>${G.known ? `Birim fiyat (₺/${lab})` : 'Paket boyutu bilinmeyenler'}</b> <span class="sub">${G.list.length} çeşit</span>
+      ${G.known ? '' : '<div class="sub">Boyut bilinmediği için adet fiyatı gösteriliyor ve karşılaştırmaya katılmıyor. Satıra dokunup boyutu girersen katılır.</div>'}`;
+    html += G.list.map((V, i) => { const l = V.last, more = G.known && i > 0 ? pct(l.p, lo) : 0;
+      return `<div class="vr" data-act="cmpedit" data-g="${esc(G.gk)}" data-v="${esc(V.vk)}"><div><div>${G.known && G.list.length > 1 && i === 0 ? '✅ ' : ''}<b>${esc(V.title)}</b>${V.sizeLabel && G.known ? ` <span class="badge">${esc(V.sizeLabel)}</span>` : ''}</div>
+        ${V.detail ? `<div class="sub">${esc(V.detail)}</div>` : ''}
+        <div class="sub">Son alım: ${shortDate(l.d)} · ${esc(l.s)} · paket ${TRY(l.pack)}${V.pts.length > 1 ? ` · ${V.pts.length} kez, ort. ${TRY(V.avg)}/${lab}` : ''}</div></div>
+        <div class="px"><b>${TRY(l.p)}/${esc(lab)}</b>${more >= 0.5 ? `<div class="up" style="font-size:12px">+%${more.toFixed(0)}</div>` : ''}</div></div>`; }).join('');
+    if (G.known && G.list.length > 1) { const ds = G.list.map(V => V.last.d).sort(), gap = Math.round(dayNum(ds[ds.length - 1]) - dayNum(ds[0]));
+      if (gap > 21) html += `<p class="warn">⚠️ Son alımlar arasında ${gap} gün var; fiyat farkının bir kısmı zamdan olabilir.</p>`;
+      if (new Set(G.list.map(V => key(normStore(V.last.s)))).size > 1) html += `<p class="sub">Alımlar farklı marketlerde yapılmış; fark marketten de kaynaklanabilir.</p>`; }
+    html += '</div>';
+  }
+  if (mg) html += `<div class="card"><b>🤖 Yapay zeka yorumu</b><div id="cmpai" style="margin-top:8px">${cmpNoteHtml(T, mg)}</div></div>`;
+  html += `<p class="sub">Marka, boyut veya ürün cinsi yanlışsa satıra dokunup düzeltebilirsin; düzeltmen hatırlanır.</p>`;
+  view.innerHTML = html;
+  maybeEnrich();
+}
+const cmpSig = (T, G) => T.type + '|' + G.list.map(V => `${V.vk}:${V.last.p.toFixed(2)}:${V.last.d}`).join(';');
+function cmpNoteHtml(T, G){
+  const n = LS.get('cmpnote', {})[cmpSig(T, G)];
+  return n ? `<div class="aitext">${esc(n)}</div>` : `<div class="sub">Rakamlar yukarıda uygulama tarafından hesaplandı. İstersen yapay zeka bunları sade bir dille yorumlasın.</div><button class="btn alt sm" data-act="cmpai" style="margin-top:8px">Yorumla</button>`;
+}
+async function doCmpAI(){
+  const all = await DB.all(), T = buildCompare(all)[cmpType], G = T && mainGroup(T), el = $('#cmpai'); if (!G || !el) return;
+  if (!localStorage.getItem('gkey')) { toast('Önce Ayarlar\'dan API anahtarını gir'); return show('ayar'); }
+  if (busy) return; busy = true; el.innerHTML = '<div class="mut">⏳ Yorumlanıyor…</div>';
+  const lab = BASE_LABEL[G.base];
+  const rows = G.list.map((V, i) => `${i + 1}) ${V.title}${V.sizeLabel ? ' · ' + V.sizeLabel : ''} · son alım ${V.last.d} · ${V.last.s} · ${r2(V.last.p)} TL/${lab} · paket fiyatı ${r2(V.last.pack)} TL · ${V.pts.length} kez alındı`).join('\n');
+  try {
+    const txt = await geminiText(`Aşağıda bir market ürününün (${T.type}) farklı marka/boyutlarının, kullanıcının kendi fişlerinden hesaplanmış birim fiyatları var (ucuzdan pahalıya sıralı). Kısa ve sade bir Türkçe karşılaştırma yorumu yaz (en çok 4 cümle).
+- Hangisinin en ucuz olduğunu ve diğerlerinin yüzde kaç daha pahalı olduğunu söyle.
+- Alım tarihleri veya marketler farklıysa, farkın bir kısmının zamdan veya marketten kaynaklanabileceğini belirt.
+- Yalnızca aşağıdaki rakamları kullan, yeni rakam veya bilgi uydurma. Kalite veya lezzet hakkında yorum yapma, sadece fiyat.
+Veri:
+${rows}`);
+    if (!txt) throw new Error('Boş cevap geldi');
+    const store = LS.get('cmpnote', {}); store[cmpSig(T, G)] = txt; LS.set('cmpnote', store); el.innerHTML = cmpNoteHtml(T, G);
+  } catch(e) { el.innerHTML = `<p class="err">${esc(e.message)}</p><button class="btn alt sm" data-act="cmpai">Tekrar dene</button>`; }
+  finally { busy = false; }
+}
+function openCmpEdit(gk, vk){
+  const all = DB.all(); all.then(rs => {
+    const T = buildCompare(rs)[cmpType], V = T && T.groups[gk] && T.groups[gk].vars[vk]; if (!V) return;
+    const i = V.info, dlg = $('#dlg'); dlg._cmp = {pks:[...V.pks], title:V.title};
+    dlg.innerHTML = `<b style="font-size:18px">Ürün bilgisini düzelt</b><p class="mut">Bu satırdaki ${V.pts.length} alım için geçerli olur.</p>
+      <label class="f">Ürün cinsi</label><input id="cmt" value="${esc(T.type)}">
+      <label class="f">Marka</label><input id="cmb" value="${esc(V.hasBrand ? V.title : (i.brand || ''))}" placeholder="Bilmiyorsan boş bırak">
+      <div class="three"><div><label class="f">Paket boyutu</label><input id="cms" inputmode="decimal" value="${i.size || ''}"></div>
+      <div><label class="f">Birim</label><select id="cmu">${[['', 'Bilinmiyor'], ['lt', 'lt'], ['ml', 'ml'], ['cl', 'cl'], ['kg', 'kg'], ['g', 'g'], ['adet', 'adet']].map(([v, l]) => `<option value="${v}" ${v === (i.size_unit || '') ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div><label class="f">Pakette kaç adet</label><input id="cmk" inputmode="numeric" value="${i.pack || 1}"></div></div>
+      <div class="sub" style="margin-top:6px">Örn. 1 lt süt: boyut 1, birim lt. 15'li yumurta: boyut 15, birim adet. 6'lı 1 lt: boyut 1, lt, pakette 6.</div>
+      <button class="btn" data-act="cmpsave">Kaydet</button><button class="btn alt" data-act="close">Vazgeç</button>`;
+    dlg.showModal(); });
+}
+function saveCmpEdit(){
+  const dlg = $('#dlg'), c = dlg._cmp; if (!c) return;
+  const type = key($('#cmt').value), brand = $('#cmb').value.trim(), size = num($('#cms').value), su = $('#cmu').value, pack = Math.max(1, Math.round(num($('#cmk').value) || 1));
+  if (!type) return toast('Ürün cinsi boş olamaz');
+  const pi = pinfoMap(); c.pks.forEach(k => { pi[k] = {type, brand, detail:(pi[k] && pi[k].detail) || '', size:su && size > 0 ? size : 0, size_unit:su && size > 0 ? su : '', pack, src:'user'}; });
+  LS.set('pinfo', pi); dlg.close(); cmpType = type; toast('Kaydedildi'); render();
 }
 
 /* ================= AYARLAR ================= */
@@ -662,10 +1290,19 @@ async function renderSettings(){
   <div class="card"><b>Okuma doğruluğu</b>${accHtml(all)}
     <div class="sub">Düzelttiğin ürün adları ve kategoriler hatırlanır; sonraki fişlerde uygulanır ve Gemini'ye örnek olarak gönderilir.</div>
     <button class="btn alt sm" data-act="wipemem">Öğrenilenleri sıfırla</button></div>
+  <div class="card"><b>Ürün adlarını birleştir</b>
+    <p class="mut">Aynı ürünün farklı yazımlarını ("süt 1lt", "pınar süt 1 lt") yapay zeka bulur, sen onaylarsın. Fiyat geçmişi ve enflasyon hesabı daha doğru olur.</p>
+    <button class="btn alt" data-act="mergefind">🔎 Benzer ürünleri bul</button></div>
   <div class="card"><b>Bütçe</b>
     <label class="f">Aylık toplam (TL)</label><input id="bt" inputmode="decimal" value="${b.total || ''}">
     <details style="margin-top:8px"><summary>Kategori bütçeleri (isteğe bağlı)</summary>${CATS.map(c => `<label class="f">${CAT_ICON[c]} ${c}</label><input data-bc="${esc(c)}" inputmode="decimal" value="${bc[c] || ''}">`).join('')}</details>
     <button class="btn" data-act="savebudget">Bütçeyi kaydet</button></div>
+  <div class="card"><b>Araç</b>
+    <label class="f">Araç adı (isteğe bağlı)</label><input id="vname" placeholder="Örn. Renault Clio" value="${esc(vehicle().name || '')}">
+    <label class="f">Genelde aldığın yakıt</label><select id="vfuel">${FUELS.map(x => `<option ${x === (vehicle().fuel || 'Benzin') ? 'selected' : ''}>${x}</option>`).join('')}</select>
+    <button class="btn" data-act="savevehicle">Kaydet</button>
+    <button class="btn alt" data-act="fexportcsv">Yakıt kayıtlarını indir (CSV)</button>
+    <button class="btn bad" data-act="fwipe">Yakıt kayıtlarını sil</button></div>
   <div class="card"><b>Veri (${all.length} fiş)</b>
     <div class="sub">Son yedek: ${lb ? shortDate(lb) : 'yok'}</div>
     <button class="btn alt" data-act="exportjson">Yedek indir (JSON, hafıza dahil)</button>
@@ -678,28 +1315,32 @@ async function renderSettings(){
     <input id="pin1" type="password" inputmode="numeric" placeholder="${pinHash() ? 'Mevcut PIN' : '4-8 haneli yeni PIN'}">
     ${pinHash() ? '<button class="btn alt" data-act="rmpin">PIN\'i kaldır</button>' : '<button class="btn" data-act="setpin">PIN koy</button>'}</div>
   <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>`;
-  $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0;
+  $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0, fn = 0;
     for (const r of recs) { if (r && r.id && validDate(r.date) && Array.isArray(r.items)) { await DB.put(r); n++; } else bad++; }
-    if (!Array.isArray(j)) { if (j.catmap) LS.set('catmap', {...catMap(), ...j.catmap}); if (j.namemap) LS.set('namemap', {...nameMap(), ...j.namemap});
+    if (!Array.isArray(j)) { if (Array.isArray(j.fuel)) for (const f of j.fuel) { if (f && f.id && validDate(f.date) && f.total >= 0) { await DB.put(f, 'fuel'); fn++; } } if (j.vehicle) LS.set('vehicle', j.vehicle); if (Array.isArray(j.fstations)) j.fstations.forEach(learnStation); if (j.catmap) LS.set('catmap', {...catMap(), ...j.catmap}); if (j.namemap) LS.set('namemap', {...nameMap(), ...j.namemap}); if (j.storemap) LS.set('storemap', {...storeMap(), ...j.storemap}); if (j.genmap) LS.set('genmap', {...genMap(), ...j.genmap}); if (j.pinfo) LS.set('pinfo', {...pinfoMap(), ...j.pinfo});
       if (Array.isArray(j.stores)) j.stores.forEach(learnStore); if (j.budget && !(LS.get('budget', null)?.total)) LS.set('budget', j.budget); }
-    toast(n + ' fiş yüklendi' + (bad ? `, ${bad} kayıt atlandı` : '')); renderSettings(); } catch(err) { toast('Geçersiz yedek dosyası'); } };
+    toast(n + ' fiş' + (fn ? ', ' + fn + ' yakıt kaydı' : '') + ' yüklendi' + (bad ? `, ${bad} kayıt atlandı` : '')); renderSettings(); } catch(err) { toast('Geçersiz yedek dosyası'); } };
 }
 function download(name, text, type){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
 
 /* ================= olaylar ================= */
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'askq') doAsk(); });
 document.addEventListener('input', e => { if (e.target.id === 'q') { qText = e.target.value; fillList(); return; } onInput(e); });
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.act === 'month') { repMonth = t.value; renderReport(); }
   else if (t.id === 'qsel') { qStore = t.value; fillList(); }
   else if (t.id === 'themesel') { localStorage.setItem('theme', t.value); applyTheme(); }
+  else if (t.dataset.fk && fdraft) { onInput(e); if (t.dataset.fk === 'fuel') updateFuelWarn(); }
   else { onInput(e); if (t.dataset.f === 'category' && draft) { const y = scrollY; renderReview(); scrollTo(0, y); } } });
-$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) { if (b.dataset.tab === 'ekle' && tab === 'ekle') { draft = null; photos = []; } detailId = null; show(b.dataset.tab); } };
+$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) { if (b.dataset.tab === 'add') { if (draft || photos.length) { detailId = null; return show('ekle'); } return openSheet(); } if (b.dataset.tab === 'yakit' && tab === 'yakit') { fdraft = null; fph = []; } detailId = null; cmpType = null; show(b.dataset.tab); } };
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT') return;
   const a = el.dataset.act;
-  if (a === 'manual') { draft = {id:crypto.randomUUID(), thumb:'', store:'', date:today(), items:[], total:0, isNew:true}; renderAdd(); }
+  if (a === 'manual') { closeSheet(); draft = {id:crypto.randomUUID(), thumb:'', store:'', date:today(), items:[], total:0, isNew:true}; show('ekle'); }
   else if (a === 'addrow') { draft.items.push(normItem({name:'', qty:1})); renderReview(); }
+  else if (a === 'adddiff') { const f = +(draft.total - itemsSum(draft)).toFixed(2); if (f > 0) { const bag = f <= 5;
+    draft.items.push(normItem({name:bag ? 'Poşet' : 'Diğer', generic:bag ? 'poşet' : 'diğer', qty:1, unit:'adet', line_total:f, category:'Diğer'})); } renderReview(); }
   else if (a === 'rm') { draft.items.splice(+el.dataset.i, 1); renderReview(); }
   else if (a === 'cancel') { const was = draft; draft = null; if (was && !was.isNew) { detailId = was.id; show(detailFrom); } else { detailId = null; show('fisler'); } }
   else if (a === 'save') {
@@ -710,10 +1351,10 @@ document.addEventListener('click', async e => {
     if (!draft.total) draft.total = +itemsSum(draft).toFixed(2);
     const wasNew = draft.isNew;
     if (wasNew) { const dup = await findDup(draft); if (dup && !confirm('Aynı market, gün ve tutarda başka bir fiş var. Yine de kaydedilsin mi?')) return; }
-    const r = {...draft}; delete r.isNew; delete r.ai; delete r.dupOf; const fq = r.fromQueue; delete r.fromQueue;
+    const r = {...draft}; delete r.isNew; delete r.ai; delete r.dupOf; delete r.recheck; const fq = r.fromQueue; delete r.fromQueue;
     if (acc) r.acc = acc; if (!r.created) r.created = Date.now();
     await DB.put(r); if (fq) await DB.del(fq, 'queue');
-    learnCats(r.items); learnNames(r.items); learnStore(r.store);
+    learnCats(r.items); learnNames(r.items); learnStore(r.store); learnStoreRaw(r.store_raw, r.store);
     const msg = await budgetAlert(r);
     draft = null; detailId = r.id; if (wasNew) detailFrom = 'fisler';
     toast('Kaydedildi' + (msg ? ' — ' + msg : '')); show(detailFrom); }
@@ -732,19 +1373,45 @@ document.addEventListener('click', async e => {
   else if (a === 'cancelphotos') { photos = []; renderAdd(); }
   else if (a === 'qread') readQueue(el.dataset.id);
   else if (a === 'qmanual') { const q = (await DB.all('queue')).find(x => x.id === el.dataset.id); if (!q) return;
-    draft = {id:crypto.randomUUID(), thumb:q.thumb, store:'', date:today(), items:[], total:0, isNew:true, fromQueue:q.id}; renderAdd(); }
+    draft = {id:crypto.randomUUID(), thumb:q.thumb, store:'', date:today(), items:[], total:0, isNew:true, fromQueue:q.id}; show('ekle'); }
   else if (a === 'qdel') { if (confirm('Bekleyen fotoğraf silinsin mi?')) { await DB.del(el.dataset.id, 'queue'); fillQueue(); } }
+  else if (a === 'fmanual2') { closeSheet(); fdraft = newFuel(); show('yakit'); }
+  else if (a === 'fmanual') { fdraft = newFuel(); show('yakit'); }
+  else if (a === 'fread') readFuel();
+  else if (a === 'fcrop') openCrop(0, fph, renderFuelPrep);
+  else if (a === 'fcancelphoto') { fph = []; renderFuel(); }
+  else if (a === 'fsave') saveFuel();
+  else if (a === 'fcancel') { fdraft = null; fph = []; renderFuel(); }
+  else if (a === 'fdelete') { if (confirm('Bu yakıt kaydı silinsin mi?')) { await DB.del(fdraft.id, 'fuel'); fdraft = null; renderFuel(); } }
+  else if (a === 'ffix') fuelFix(el.dataset.w);
+  else if (a === 'fedit') { const r = (await DB.all('fuel')).find(x => x.id === el.dataset.id); if (r) { fdraft = JSON.parse(JSON.stringify(r)); fdraft.isNew = false; renderFuel(); } }
+  else if (a === 'fall') { fshowAll = !fshowAll; renderFuel(); }
+  else if (a === 'savevehicle') { LS.set('vehicle', {name:$('#vname').value.trim(), fuel:$('#vfuel').value}); toast('Araç bilgisi kaydedildi'); }
+  else if (a === 'fexportcsv') { const rows = [['tarih','istasyon','yakit','miktar','birim_fiyat','tutar','km','depo_dolu','not']];
+    (await DB.all('fuel')).sort((x, y) => x.date.localeCompare(y.date)).forEach(r => rows.push([r.date, r.station, r.fuel, r.liters, r.unit_price, r.total, r.odo || '', r.full ? 'evet' : 'hayır', r.note || '']));
+    download('yakit-' + today() + '.csv', '\ufeff' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
+  else if (a === 'fwipe') { if (confirm('TÜM yakıt kayıtları silinecek. Emin misin?')) { await DB.clear('fuel'); toast('Yakıt kayıtları silindi'); renderSettings(); } }
+  else if (a === 'cmp') { cmpFrom = tab; cmpType = el.dataset.t; show('rapor'); }
+  else if (a === 'cmpback') { cmpType = null; show(cmpFrom); }
+  else if (a === 'cmpall') { cmpAll = !cmpAll; renderReport(); }
+  else if (a === 'cmpai') doCmpAI();
+  else if (a === 'cmpedit') openCmpEdit(el.dataset.g, el.dataset.v);
+  else if (a === 'cmpsave') saveCmpEdit();
+  else if (a === 'ask') doAsk();
+  else if (a === 'mergefind') { if (!localStorage.getItem('gkey')) return toast('Önce API anahtarını gir'); if (busy) return; busy = true; toast('⏳ Ürünler inceleniyor…');
+    try { const res = await findMerges(); if (!res.groups.length) toast('Birleştirilecek benzer ürün bulunamadı'); else mergeDialog(res); } catch(e) { toast('Olmadı: ' + e.message); } finally { busy = false; } }
+  else if (a === 'mergeapply') { const n = await applyMerges(); $('#dlg').close(); toast(n ? n + ' kalem birleştirildi' : 'Hiçbir şey seçilmedi'); if (tab === 'rapor') renderReport(); }
   else if (a === 'savekey') { localStorage.setItem('gkey', $('#gkey').value.trim()); localStorage.setItem('gmodel', $('#gmodel').value.trim() || 'gemini-flash-latest'); toast('Kaydedildi'); }
   else if (a === 'savebudget') { const cats = {}; document.querySelectorAll('[data-bc]').forEach(i => { const v = num(i.value); if (v > 0) cats[i.dataset.bc] = v; });
     LS.set('budget', {total:num($('#bt').value), cats}); toast('Bütçe kaydedildi'); }
-  else if (a === 'exportjson') { download('fis-yedek-' + today() + '.json', JSON.stringify({v:2, exported:new Date().toISOString(), receipts:await DB.all(), catmap:catMap(), namemap:nameMap(), stores:knownStores(), budget:LS.get('budget', null)}), 'application/json');
+  else if (a === 'exportjson') { download('fis-yedek-' + today() + '.json', JSON.stringify({v:2, exported:new Date().toISOString(), receipts:await DB.all(), fuel:await DB.all('fuel'), vehicle:LS.get('vehicle', null), fstations:LS.get('fstations', []), catmap:catMap(), namemap:nameMap(), storemap:storeMap(), genmap:genMap(), pinfo:pinfoMap(), stores:knownStores(), budget:LS.get('budget', null)}), 'application/json');
     localStorage.setItem('lastBackup', today()); toast('Yedek indirildi'); if (tab === 'ayar') renderSettings(); }
   else if (a === 'exportcsv') { const rows = [['tarih','market','urun','marka','genel_ad','kategori','adet','birim','birim_fiyat','indirim','tutar']];
     (await DB.all()).sort((x, y) => x.date.localeCompare(y.date)).forEach(r => r.items.forEach(i => rows.push([r.date, r.store, i.name, i.brand, i.generic, i.category, i.qty, i.unit, i.unit_price, i.discount, i.line_total])));
     download('fisler-' + today() + '.csv', '﻿' + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
   else if (a === 'persist') { const ok = await navigator.storage?.persist?.(); toast(ok ? 'Kalıcı depolama açıldı' : 'Tarayıcı izin vermedi; uygulamayı ana ekrana ekleyip tekrar dene'); renderSettings(); }
   else if (a === 'wipe') { if (confirm('TÜM fişler silinecek. Emin misin?')) { await DB.clear(); toast('Silindi'); renderSettings(); } }
-  else if (a === 'wipemem') { if (confirm('Öğrenilen kategori ve ürün adı eşleştirmeleri silinsin mi? Fişlerin silinmez.')) { localStorage.removeItem('catmap'); localStorage.removeItem('namemap'); toast('Sıfırlandı'); } }
+  else if (a === 'wipemem') { if (confirm('Öğrenilen kategori ve ürün adı eşleştirmeleri silinsin mi? Fişlerin silinmez.')) { localStorage.removeItem('catmap'); localStorage.removeItem('namemap'); localStorage.removeItem('storemap'); localStorage.removeItem('genmap'); localStorage.removeItem('pinfo'); localStorage.removeItem('cmpnote'); toast('Sıfırlandı'); } }
   else if (a === 'setpin') { const p = $('#pin1').value.trim(); if (!/^\d{4,8}$/.test(p)) return toast('PIN 4-8 rakam olmalı');
     if (!(crypto.subtle)) return toast('PIN için https gerekir');
     if (!confirm('PIN\'i unutursan uygulamaya giremezsin; tek çıkış site verisini silmektir ve fişlerin gider. Önce yedek aldığından emin ol. Devam edilsin mi?')) return;
@@ -754,7 +1421,27 @@ document.addEventListener('click', async e => {
 
 /* ================= başlat ================= */
 lock();
-DB.open().then(() => show('ekle')).catch(() => { view.innerHTML = '<div class="card err">Veritabanı açılamadı. Gizli sekmede olabilirsin; normal sekmede aç.</div>'; });
+/* ================= EKLE MENÜSÜ (ortadaki kamera) ================= */
+function closeSheet(){ const e = $('#sheetBg'); if (e) e.remove(); }
+function openSheet(){
+  closeSheet(); const bg = document.createElement('div'); bg.id = 'sheetBg';
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="Ekle"><div class="grip"></div><h3>Ne ekleyelim?</h3>
+    <div class="tiles">
+      <label class="tile"><span>🛒</span>Market fişi<small>Kamerayı aç</small><input id="s1" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="tile"><span>⛽</span>Yakıt fişi<small>Kamerayı aç</small><input id="s3" type="file" accept="image/*" capture="environment" hidden></label>
+    </div>
+    <label class="opt">🖼️ Market fişi · galeriden seç (birden fazla)<input id="s2" type="file" accept="image/*" multiple hidden></label>
+    <label class="opt">🖼️ Yakıt fişi · galeriden seç<input id="s4" type="file" accept="image/*" hidden></label>
+    <button class="opt" data-act="manual">✍️ Market fişini elle ekle</button>
+    <button class="opt" data-act="fmanual2">✍️ Yakıt kaydını elle ekle</button></div>`;
+  bg.onclick = e => { if (e.target === bg) closeSheet(); };
+  document.body.appendChild(bg);
+  const mk = e => { const f = [...e.target.files]; closeSheet(); detailId = null; cmpType = null; if (f.length) addPhotos(f); };
+  const fu = e => { const f = e.target.files[0]; closeSheet(); if (f) addFuelPhoto(f); };
+  $('#s1').onchange = $('#s2').onchange = mk; $('#s3').onchange = $('#s4').onchange = fu;
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+DB.open().then(() => show('fisler')).catch(() => { view.innerHTML = '<div class="card err">Veritabanı açılamadı. Gizli sekmede olabilirsin; normal sekmede aç.</div>'; });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
