@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#F2F4F8">
+<meta name="theme-color" content="#090D12">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -36,7 +36,7 @@
   --bad:#FF8A80;--ok:#6FD39A;--warn:#F2C14E;--cardborder:#243142;--shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;padding-bottom:112px;-webkit-font-smoothing:antialiased;touch-action:manipulation;overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;padding-top:env(safe-area-inset-top)}
-#sbar{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#064E3B;z-index:80;pointer-events:none}
+#sbar{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--bg);z-index:80;pointer-events:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 html{-webkit-text-size-adjust:100%}
 main{max-width:640px;margin:0 auto;padding:18px 16px 28px}
@@ -87,6 +87,7 @@ a.btn{text-decoration:none}
 .chip{color:var(--c)}.chip svg{display:block}
 nav button span{display:grid;place-items:center;height:26px}
 nav button.on svg{stroke-width:2.2}
+body.kb nav{display:none}
 .seg{display:flex;gap:4px;background:var(--field);border-radius:16px;padding:4px;margin:4px 0 14px}
 .seg button{flex:1;border:0;background:none;color:var(--mut);font:600 14px inherit;font-family:inherit;padding:10px 4px;border-radius:12px;min-height:42px;transition:background .15s,color .15s}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.15)}
@@ -460,7 +461,7 @@ const renderReport0 = renderReport;
 renderReport = async function(){ if (cmpType) return renderCompare(); await renderReport0(); maybeEnrich(); };
 
 /* ================= tema ================= */
-function applyTheme(){ const t = localStorage.getItem('theme') || 'auto', r = document.documentElement;
+function applyTheme(){ const t = 'dark', r = document.documentElement;
   if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
   const dark = t === 'dark' || (t === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
   const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = dark ? '#0B0F14' : '#F2F4F8'; }
@@ -1409,9 +1410,6 @@ async function renderSettings(){
   const b = LS.get('budget', {total:0, cats:{}}); const bc = b.cats || {};
   const lb = localStorage.getItem('lastBackup');
   view.innerHTML = `<h2>Ayarlar</h2>
-  <div class="card"><b>Görünüm</b>
-    <label class="f">Tema</label>
-    <select id="themesel">${[['auto','Telefonun ayarına uy'],['light','Açık'],['dark','Koyu']].map(([v, l]) => `<option value="${v}" ${(localStorage.getItem('theme') || 'auto') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
   <div class="card"><b>Gemini API anahtarı</b>
     <p class="mut">Ücretsiz anahtar: aistudio.google.com → "Get API key". Bir kez girmen yeter; telefonda iki yerde saklanır.</p>
     <div class="note">${localStorage.getItem('gkey') ? '✅ Anahtar kayıtlı' : '⚠️ Anahtar yok'} · ${persisted ? 'kalıcı depolama açık' : 'kalıcı depolama kapalı'}${(/iPhone|iPad/.test(navigator.userAgent) && !navigator.standalone) ? '<br>iPhone: Safari sekmesinde kullanırsan veriler silinebilir. Paylaş → "Ana Ekrana Ekle" ile kur ve hep oradan aç; anahtarı da orada gir.' : ''}</div>
@@ -1868,6 +1866,11 @@ function openSheet(){
   $('#s1').onchange = $('#s2').onchange = mk; $('#s3').onchange = $('#s4').onchange = fu;
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+/* iPhone: klavye kapanınca sabit menü yukarıda kalıyor; yazı alanı açıkken menüyü gizle, kapanınca yeniden yerleştir */
+const typing = e => /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !/^(checkbox|radio|file|range|button)$/.test(e.target.type || '');
+document.addEventListener('focusin', e => { if (typing(e)) document.body.classList.add('kb'); });
+document.addEventListener('focusout', e => { if (!typing(e)) return; setTimeout(() => { if (typing({target:document.activeElement || document.body})) return; document.body.classList.remove('kb'); window.scrollTo(0, window.scrollY); const n = $('#nav'); n.style.display = 'none'; void n.offsetHeight; n.style.display = ''; }, 150); });
+if (window.visualViewport) visualViewport.addEventListener('resize', () => { const n = $('#nav'); n.style.bottom = ''; });
 ['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
 DB.open().then(async () => { await restoreKey(); show('fisler'); maybeWelcome(); }).catch(() => { view.innerHTML = '<div class="card err">Veritabanı açılamadı. Gizli sekmede olabilirsin; normal sekmede aç.</div>'; });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
