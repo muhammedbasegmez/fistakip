@@ -342,8 +342,8 @@ Kurallar:
 let rdCancel = false, rdAc = null, onProg = null, bgFlag = false, bgHit = 0;
 document.addEventListener('visibilitychange', () => { if (!document.hidden && typeof busy !== 'undefined' && busy && rdAc && !rdCancel) { bgFlag = true; try { rdAc.abort(); } catch(e) {} } });
 const cancelErr = () => { const e = new Error('İptal edildi'); e.fatal = true; e.cancel = true; return e; };
-async function gemini(body){
-  const k = localStorage.getItem('gkey'); if (!k) { const e = new Error('API anahtarı girilmemiş'); e.fatal = true; throw e; }
+async function geminiOnly(body){
+  const k = localStorage.getItem('gkey'); if (!k) { const e = new Error('Gemini anahtarı girilmemiş'); e.fatal = true; throw e; }
   const first = (localStorage.getItem('gmodel') || 'gemini-flash-latest').trim();
   const models = [...new Set([first, 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-flash-lite-latest'])];
   let lastErr = null;
@@ -372,6 +372,38 @@ async function gemini(body){
     }
   }
   throw lastErr || new Error('Bilinmeyen hata');
+}
+/* Groq (ücretsiz, çok hızlı) — Gemini yoğun olduğunda yedek, istenirse ilk tercih. Gemini biçimindeki isteği çevirir, cevabı Gemini biçiminde döndürür. */
+async function groqCall(body){
+  const k = localStorage.getItem('grkey'); const model = localStorage.getItem('grmodel') || 'qwen/qwen3.8-27b';
+  const content = []; let imgs = 0;
+  for (const c of body.contents || []) for (const p of c.parts || []) {
+    if (p.text) content.push({type:'text', text:p.text});
+    else if (p.inline_data) { imgs++; content.push({type:'image_url', image_url:{url:'data:' + p.inline_data.mime_type + ';base64,' + p.inline_data.data}}); } }
+  if (imgs > 3) throw new Error('Groq en fazla 3 fotoğraf okur');
+  const req = {model, messages:[{role:'user', content}], temperature:0, max_completion_tokens:6000, reasoning_effort:'none'};
+  if (body.generationConfig && body.generationConfig.responseMimeType === 'application/json') req.response_format = {type:'json_object'};
+  for (let a = 0; a < 3; a++) {
+    if (rdCancel) throw cancelErr();
+    const ac = new AbortController(); rdAc = ac; const to = setTimeout(() => ac.abort(), 28000); let r;
+    onProg && onProg({t:'wait', n:a + 1});
+    try { r = await fetch('https://api.groq.com/openai/v1/chat/completions', {method:'POST', headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + k}, body:JSON.stringify(req), signal:ac.signal}); clearTimeout(to); rdAc = null; }
+    catch(e) { clearTimeout(to); if (rdCancel) throw cancelErr(); if (bgFlag && bgHit < 4) { bgFlag = false; bgHit++; a--; await sleep(600); continue; }
+      throw new Error(e && e.name === 'AbortError' ? 'Groq 28 sn içinde cevap vermedi' : 'Groq\'a ulaşılamadı'); }
+    if (r.ok) { const j = await r.json(); return {candidates:[{content:{parts:[{text:j.choices?.[0]?.message?.content || ''}]}}]}; }
+    let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
+    if (r.status === 400 && req.reasoning_effort && /reasoning/i.test(msg)) { delete req.reasoning_effort; a--; continue; }
+    throw new Error('Groq ' + r.status + (msg ? ': ' + msg.slice(0, 120) : ''));
+  }
+  throw new Error('Groq cevap vermedi');
+}
+async function gemini(body){
+  const gr = !!localStorage.getItem('grkey'), first = gr && localStorage.getItem('gmode') === 'first';
+  if (first) { try { return await groqCall(body); } catch(e) { if (e.cancel) throw e; onProg && onProg({t:'retry', note:e.message + ' — Gemini deneniyor'}); } }
+  try { return await geminiOnly(body); }
+  catch(e) { if (e.cancel || !gr || first) throw e;
+    onProg && onProg({t:'retry', note:e.message + ' — Groq ile deneniyor'});
+    try { return await groqCall(body); } catch(e2) { if (e2.cancel) throw e2; throw new Error(e.message + ' · Groq: ' + e2.message); } }
 }
 let wl = null;
 async function wlOn(){ try { if (navigator.wakeLock) wl = await navigator.wakeLock.request('screen'); } catch(e) {} }
@@ -1433,6 +1465,13 @@ async function renderSettings(){
     <label class="f">Model adı (çalışmazsa güncel bir Flash modeliyle değiştir)</label>
     <input id="gmodel" value="${esc(localStorage.getItem('gmodel') || 'gemini-flash-latest')}">
     <button class="btn" data-act="savekey">Kaydet</button></div>
+  <div class="card"><b>Yedek okuyucu (Groq)</b>
+    <p class="mut">İsteğe bağlı, ücretsiz. Gemini yoğunken fişi Groq okur. Anahtar: console.groq.com → API Keys.</p>
+    <div class="note">${localStorage.getItem('grkey') ? '✅ Groq anahtarı kayıtlı' : 'Anahtar yok (yedek kapalı)'}</div>
+    <input id="grkey" type="password" placeholder="gsk_..." value="${esc(localStorage.getItem('grkey') || '')}">
+    <label class="f">Sıra</label>
+    <select id="gmodesel"><option value="fallback" ${localStorage.getItem('gmode') !== 'first' ? 'selected' : ''}>Önce Gemini, olmazsa Groq</option><option value="first" ${localStorage.getItem('gmode') === 'first' ? 'selected' : ''}>Önce Groq (daha hızlı), olmazsa Gemini</option></select>
+    <button class="btn" data-act="savegroq">Kaydet</button></div>
   <div class="card"><b>Okuma doğruluğu</b>${accHtml(all)}
     <div class="sub">Düzelttiğin ürün adları ve kategoriler hatırlanır; sonraki fişlerde uygulanır ve Gemini'ye örnek olarak gönderilir.</div>
     <button class="btn alt sm" data-act="wipemem">Öğrenilenleri sıfırla</button></div>
@@ -1599,6 +1638,7 @@ document.addEventListener('click', async e => {
   else if (a === 'mergefind') { if (!localStorage.getItem('gkey')) return toast('Önce API anahtarını gir'); if (busy) return; busy = true; toast('⏳ Ürünler inceleniyor…');
     try { const res = await findMerges(); if (!res.groups.length) toast('Birleştirilecek benzer ürün bulunamadı'); else mergeDialog(res); } catch(e) { toast('Olmadı: ' + e.message); } finally { busy = false; } }
   else if (a === 'mergeapply') { const n = await applyMerges(); $('#dlg').close(); toast(n ? n + ' kalem birleştirildi' : 'Hiçbir şey seçilmedi'); if (tab === 'rapor') renderReport(); }
+  else if (a === 'savegroq') { const gk = $('#grkey').value.trim(), gm = $('#gmodesel').value; if (gk) { localStorage.setItem('grkey', gk); kvSet('grkey', gk); } else { localStorage.removeItem('grkey'); kvSet('grkey', ''); } localStorage.setItem('gmode', gm); kvSet('gmode', gm); toast('Kaydedildi'); renderSettings(); }
   else if (a === 'savekey') { saveKey($('#gkey').value.trim(), $('#gmodel').value.trim() || 'gemini-flash-latest'); toast('Kaydedildi'); renderSettings(); }
   else if (a === 'savebudget') { const cats = {}; document.querySelectorAll('[data-bc]').forEach(i => { const v = num(i.value); if (v > 0) cats[i.dataset.bc] = v; });
     LS.set('budget', {total:num($('#bt').value), cats}); toast('Bütçe kaydedildi'); }
@@ -1849,6 +1889,7 @@ function saveKey(k, m){ localStorage.setItem('gkey', k); if (m) localStorage.set
 async function restoreKey(){ try {
   if (!localStorage.getItem('gkey')) { const k = await kvGet('gkey'); if (k) { localStorage.setItem('gkey', k); const m = await kvGet('gmodel'); if (m) localStorage.setItem('gmodel', m); } }
   else kvSet('gkey', localStorage.getItem('gkey'));
+  if (!localStorage.getItem('grkey')) { const g = await kvGet('grkey'); if (g) { localStorage.setItem('grkey', g); const gm = await kvGet('gmode'); if (gm) localStorage.setItem('gmode', gm); } }
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e) {} }
 const validKey = k => /^AIza[\w-]{20,}$/.test(String(k || '').trim());
 function renderOnboard(){
