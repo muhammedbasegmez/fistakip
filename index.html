@@ -1506,7 +1506,8 @@ async function renderSettings(){
     <p class="mut">${pinHash() ? 'PIN kilidi açık.' : 'Telefonu başkası kullanıyorsa uygulama açılırken PIN sorar.'} Bu yalnızca bir ekran kilididir, veriyi şifrelemez. PIN'i unutursan tek çıkış site verisini silmektir ve fişlerin gider; önce yedek al.</p>
     <input id="pin1" type="password" inputmode="numeric" placeholder="${pinHash() ? 'Mevcut PIN' : '4-8 haneli yeni PIN'}">
     ${pinHash() ? '<button class="btn alt" data-act="rmpin">PIN\'i kaldır</button>' : '<button class="btn" data-act="setpin">PIN koy</button>'}</div>
-  <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>`;
+  <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>
+   <p class="mut" style="text-align:center;font-size:12px">Sürüm v24</p>`;
   accordion();
   $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0, fn = 0;
     for (const r of recs) { if (r && r.id && validDate(r.date) && Array.isArray(r.items)) { await DB.put(r); n++; } else bad++; }
