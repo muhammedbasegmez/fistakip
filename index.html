@@ -345,27 +345,29 @@ const cancelErr = () => { const e = new Error('İptal edildi'); e.fatal = true; 
 async function gemini(body){
   const k = localStorage.getItem('gkey'); if (!k) { const e = new Error('API anahtarı girilmemiş'); e.fatal = true; throw e; }
   const first = (localStorage.getItem('gmodel') || 'gemini-flash-latest').trim();
-  const models = [...new Set([first, 'gemini-flash-latest', 'gemini-flash-lite-latest'])];
+  const models = [...new Set([first, 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-flash-lite-latest'])];
   let lastErr = null;
   body.generationConfig = body.generationConfig || {};
   if (!body.generationConfig.thinkingConfig && localStorage.getItem('nothink') !== '1') body.generationConfig.thinkingConfig = {thinkingBudget:0};
   for (const m of models) {
-    for (let a = 0; a < 3; a++) {
+    for (let a = 0; a < 2; a++) {
       if (rdCancel) throw cancelErr();
-      let r; const ac = new AbortController(); rdAc = ac; const to = setTimeout(() => ac.abort(), 55000);
+      let r; const ac = new AbortController(); rdAc = ac; const to = setTimeout(() => ac.abort(), 28000);
       onProg && onProg({t:'wait', n:a + 1});
       try { r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
         {method:'POST', headers:{'Content-Type':'application/json', 'x-goog-api-key':k}, body:JSON.stringify(body), signal:ac.signal}); clearTimeout(to); rdAc = null; }
       catch(e) { clearTimeout(to); if (rdCancel) throw cancelErr();
         if (bgFlag && bgHit < 4) { bgFlag = false; bgHit++; a--; onProg && onProg({t:'retry', note:'Uygulamaya dönüldü, okuma kaldığı yerden yeniden başlıyor'}); await sleep(600); continue; }
-        lastErr = new Error(e && e.name === 'AbortError' ? 'Gemini 55 sn içinde cevap vermedi' : 'Google\'a ulaşılamadı (internet?)');
-        onProg && onProg({t:'retry', note:lastErr.message + ' — yeniden deneniyor (' + (a + 1) + '/3)'}); await sleep(a ? 6000 : 2500); continue; }
+        lastErr = new Error(e && e.name === 'AbortError' ? 'Gemini 28 sn içinde cevap vermedi' : 'Google\'a ulaşılamadı (internet?)');
+        onProg && onProg({t:'retry', note:lastErr.message + (a ? ' — yedek modele geçiliyor' : ' — yeniden deneniyor')}); await sleep(1200); continue; }
       if (r.ok) return r.json();
       let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
       if (r.status === 400 && /think/i.test(msg) && body.generationConfig.thinkingConfig) { delete body.generationConfig.thinkingConfig; try { localStorage.setItem('nothink', '1'); } catch(e) {} a--; continue; }
       if (r.status === 404) { lastErr = new Error('Model bulunamadı: ' + m); break; }
       if (r.status === 429 || r.status >= 500) { lastErr = new Error(r.status === 429 ? 'Ücretsiz kota veya dakikalık sınır doldu' : 'Google geçici hata verdi (' + r.status + ')');
-        onProg && onProg({t:'retry', note:lastErr.message + ' — yeniden deneniyor (' + (a + 1) + '/3)'}); await sleep(a ? 9000 : 3000); continue; }
+        /* yoğunlukta aynı modelde bekleme: bir kez hızlıca dene, olmazsa hemen yedek modele geç */
+        if (r.status >= 500 && a === 0) { onProg && onProg({t:'retry', note:lastErr.message + ' — yeniden deneniyor'}); await sleep(1200); continue; }
+        onProg && onProg({t:'retry', note:lastErr.message + ' — yedek modele geçiliyor'}); break; }
       const e = new Error('Gemini ' + r.status + ': ' + msg); e.fatal = true; throw e;
     }
   }
