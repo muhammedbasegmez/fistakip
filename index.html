@@ -76,7 +76,7 @@ label.f{display:block;color:var(--mut);font-size:13px;font-weight:600;margin:12p
 .warn{color:var(--warn);font-size:14px;font-weight:600}
 .li>b,.pl>b,.card.row>b,.catH>span:last-child{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
 .pl>span:last-child{font-variant-numeric:tabular-nums}
-nav{position:fixed;left:50%;transform:translate3d(-50%,0,0);-webkit-backface-visibility:hidden;bottom:calc(6px + env(safe-area-inset-bottom) * .3);width:min(calc(100% - 24px),520px);display:flex;gap:4px;padding:6px;
+nav{position:fixed;left:50%;transform:translate3d(-50%,0,0);-webkit-backface-visibility:hidden;bottom:calc(6px + env(safe-area-inset-bottom) * .3 - var(--d,0px));width:min(calc(100% - 24px),520px);display:flex;gap:4px;padding:6px;
   background:var(--card);background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);
   border-radius:26px;box-shadow:0 14px 34px -12px rgba(15,23,42,.34),0 0 0 1px var(--line);z-index:20}
 nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;background:none;border:0;color:var(--mut);padding:7px 0 6px;font-size:11.5px;font-weight:600;font-family:inherit;min-height:56px;border-radius:20px;transition:background .15s,color .15s}
@@ -132,7 +132,7 @@ body.kb nav{display:none}
 .sk{background:linear-gradient(90deg,var(--field) 25%,var(--line) 50%,var(--field) 75%);background-size:200% 100%;animation:sk 1.2s linear infinite;border-radius:14px}
 @keyframes sk{to{background-position:-200% 0}}
 .empty{text-align:center;padding:30px 16px}.empty .e{font-size:56px;line-height:1.1}.empty p{color:var(--mut);margin:8px 0 14px}
-.selbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom) * .3);width:min(calc(100% - 24px),520px);background:var(--ink);border-radius:18px;padding:6px;display:flex;gap:4px;z-index:25;box-shadow:0 12px 30px -10px rgba(0,0,0,.5)}
+.selbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom) * .3 - var(--d,0px));width:min(calc(100% - 24px),520px);background:var(--ink);border-radius:18px;padding:6px;display:flex;gap:4px;z-index:25;box-shadow:0 12px 30px -10px rgba(0,0,0,.5)}
 .selbar button{flex:1;background:none;border:0;color:var(--bg);font:600 13.5px inherit;font-family:inherit;padding:10px 2px;border-radius:12px;min-height:44px}
 .selbar button.d{color:#FF8A80}
 .swrap{position:relative;margin-bottom:14px;border-radius:var(--r);overflow:hidden}
@@ -183,7 +183,7 @@ nav button.on{background:var(--brand-soft);color:var(--brand-ink)}
 summary{cursor:pointer;color:var(--mut)}
 dialog{background:var(--card);color:var(--ink);border:1px solid var(--cardborder);border-radius:24px;width:min(92vw,520px);max-height:86vh;padding:18px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5)}
 dialog::backdrop{background:rgba(8,11,15,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom) * .3);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;display:none;z-index:60;max-width:90vw;text-align:center;font-weight:600;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom) * .3 - var(--d,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;display:none;z-index:60;max-width:90vw;text-align:center;font-weight:600;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
 #lock{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
 #lock[hidden]{display:none}
 .tbar{fill:var(--brand);opacity:.38}.tbar.on{opacity:1}.tlab{fill:var(--mut)}.tval{fill:var(--mut);font-weight:600}.tval.on{fill:var(--ink);font-weight:800}.avgl{stroke:var(--mut);stroke-width:.6;stroke-dasharray:3 3;opacity:.7}
@@ -339,25 +339,30 @@ Kurallar:
 - Okuyamadığın alanı boş bırak veya 0 yaz, tahmin uydurma.${examples()}`;
 }
 /* Ağ hatalarında ve kota/sunucu hatalarında kendiliğinden yeniden dener; model adı bulunamazsa yedek modele geçer */
-let rdCancel = false, rdAc = null, onProg = null;
+let rdCancel = false, rdAc = null, onProg = null, bgFlag = false, bgHit = 0;
+document.addEventListener('visibilitychange', () => { if (!document.hidden && typeof busy !== 'undefined' && busy && rdAc && !rdCancel) { bgFlag = true; try { rdAc.abort(); } catch(e) {} } });
 const cancelErr = () => { const e = new Error('İptal edildi'); e.fatal = true; e.cancel = true; return e; };
 async function gemini(body){
   const k = localStorage.getItem('gkey'); if (!k) { const e = new Error('API anahtarı girilmemiş'); e.fatal = true; throw e; }
   const first = (localStorage.getItem('gmodel') || 'gemini-flash-latest').trim();
   const models = [...new Set([first, 'gemini-flash-latest', 'gemini-flash-lite-latest'])];
   let lastErr = null;
+  body.generationConfig = body.generationConfig || {};
+  if (!body.generationConfig.thinkingConfig && localStorage.getItem('nothink') !== '1') body.generationConfig.thinkingConfig = {thinkingBudget:0};
   for (const m of models) {
     for (let a = 0; a < 3; a++) {
       if (rdCancel) throw cancelErr();
       let r; const ac = new AbortController(); rdAc = ac; const to = setTimeout(() => ac.abort(), 55000);
       onProg && onProg({t:'wait', n:a + 1});
       try { r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
-        {method:'POST', headers:{'Content-Type':'application/json', 'x-goog-api-key':k}, body:JSON.stringify(body), signal:ac.signal}); clearTimeout(to); }
+        {method:'POST', headers:{'Content-Type':'application/json', 'x-goog-api-key':k}, body:JSON.stringify(body), signal:ac.signal}); clearTimeout(to); rdAc = null; }
       catch(e) { clearTimeout(to); if (rdCancel) throw cancelErr();
+        if (bgFlag && bgHit < 4) { bgFlag = false; bgHit++; a--; onProg && onProg({t:'retry', note:'Uygulamaya dönüldü, okuma kaldığı yerden yeniden başlıyor'}); await sleep(600); continue; }
         lastErr = new Error(e && e.name === 'AbortError' ? 'Gemini 55 sn içinde cevap vermedi' : 'Google\'a ulaşılamadı (internet?)');
         onProg && onProg({t:'retry', note:lastErr.message + ' — yeniden deneniyor (' + (a + 1) + '/3)'}); await sleep(a ? 6000 : 2500); continue; }
       if (r.ok) return r.json();
       let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
+      if (r.status === 400 && /think/i.test(msg) && body.generationConfig.thinkingConfig) { delete body.generationConfig.thinkingConfig; try { localStorage.setItem('nothink', '1'); } catch(e) {} a--; continue; }
       if (r.status === 404) { lastErr = new Error('Model bulunamadı: ' + m); break; }
       if (r.status === 429 || r.status >= 500) { lastErr = new Error(r.status === 429 ? 'Ücretsiz kota veya dakikalık sınır doldu' : 'Google geçici hata verdi (' + r.status + ')');
         onProg && onProg({t:'retry', note:lastErr.message + ' — yeniden deneniyor (' + (a + 1) + '/3)'}); await sleep(a ? 9000 : 3000); continue; }
@@ -366,8 +371,12 @@ async function gemini(body){
   }
   throw lastErr || new Error('Bilinmeyen hata');
 }
+let wl = null;
+async function wlOn(){ try { if (navigator.wakeLock) wl = await navigator.wakeLock.request('screen'); } catch(e) {} }
+function wlOff(){ try { if (wl) wl.release(); } catch(e) {} wl = null; }
+async function apiImgs(arr){ const out = []; for (const x of arr) { try { out.push(toJpeg(await loadSrc(x), 1800, .78).split(',')[1]); } catch(e) { out.push(x.split(',')[1]); } } return out; }
 function progStart(title){
-  rdCancel = false; const o = document.createElement('div'); o.id = 'rdov';
+  rdCancel = false; bgFlag = false; bgHit = 0; wlOn(); const o = document.createElement('div'); o.id = 'rdov';
   o.innerHTML = `<div class="rdc"><div class="spin"></div><b style="font-size:18px">${esc(title)}</b>
     <div class="stp"><span id="ps1" class="on">Gönder</span><span id="ps2">Oku</span><span id="ps3">Kontrol</span></div>
     <div class="pbar"><i id="pb" style="width:8%"></i></div><div id="pm" style="font-weight:600">Fotoğraf hazırlanıyor…</div><div class="sub" id="pt" style="margin-top:6px"></div>
@@ -380,7 +389,7 @@ function progStart(title){
     b.style.width = Math.min(92, (step === 1 ? 10 : step === 2 ? 25 + Math.min(50, sec * 3) : 78 + Math.min(14, sec))) + '%';
     t.innerHTML = `${esc(note) || (sec > 40 ? 'Hâlâ cevap yok. İptal edersen fotoğraf kaybolmaz.' : sec > 20 ? 'Biraz uzadı, Google yoğun olabilir. Bekleyebilir ya da iptal edebilirsin.' : 'Genelde 5–15 saniye sürer.')}<br>Geçen süre: ${sec} sn`; }, 500);
   setTimeout(() => { if (step === 1) set(2, 'Gemini’ye gönderiliyor…'); }, 400);
-  return () => { clearInterval(tick); onProg = null; rdCancel = false; rdAc = null; o.remove(); };
+  return () => { clearInterval(tick); onProg = null; rdCancel = false; rdAc = null; wlOff(); o.remove(); };
 }
 async function analyze(b64s, hint){
   const parts = [{text:buildPrompt(b64s.length) + (hint || '')}, ...b64s.map(d => ({inline_data:{mime_type:'image/jpeg', data:d}}))];
@@ -596,22 +605,24 @@ async function openCrop(i, list = photos, after = renderPrep){
   window.addEventListener('resize', onResize); reset();
   requestAnimationFrame(() => { layout(); draw(); });
 }
-async function enqueue(ph, err){ await DB.put({id:crypto.randomUUID(), images:ph.map(p => p.full), thumb:ph[0].thumb, created:Date.now(), err:err || ''}, 'queue'); }
+async function enqueue(ph, err, id){ const rec = {id:id || crypto.randomUUID(), images:ph.map(p => p.full), thumb:ph[0].thumb, created:Date.now(), err:err || ''}; await DB.put(rec, 'queue'); return rec.id; }
 async function doRead(){
   if (busy || !photos.length) return;
   if (!localStorage.getItem('gkey')) { toast('Önce Ayarlar\'dan API anahtarını gir'); return show('ayar'); }
   busy = true; const btn = $('#rd'); if (btn) btn.disabled = true; const stopP = progStart('Fiş okunuyor');
   try {
-    if (navigator.onLine === false) { await enqueue(photos, 'İnternet yoktu'); photos = []; toast('İnternet yok, fiş sıraya alındı'); return renderAdd(); }
-    try { const {data, recheck} = await analyzeChecked(photos.map(p => p.full.split(',')[1])); draft = makeDraft(data, photos[0].thumb); draft.recheck = recheck; draft.images = photos.map(p => p.full); draft.dupOf = await findDup(draft); photos = []; }
-    catch(e) { if (e.cancel) { toast('İptal edildi, fotoğraflar duruyor'); return renderAdd(); } await enqueue(photos, e.message); photos = []; toast('Okunamadı: ' + e.message + ' — fiş sıraya alındı'); }
+    /* Önce fotoğrafları kalıcı sıraya yaz: uygulamadan çıkılsa, iPhone sayfayı kapatsa bile kaybolmaz */
+    const qid = await enqueue(photos, 'Okuma yarıda kaldı (uygulamadan çıkılmış olabilir)');
+    if (navigator.onLine === false) { await enqueue(photos, 'İnternet yoktu', qid); photos = []; toast('İnternet yok, fiş sıraya alındı'); return renderAdd(); }
+    try { const {data, recheck} = await analyzeChecked(await apiImgs(photos.map(p => p.full))); draft = makeDraft(data, photos[0].thumb); draft.recheck = recheck; draft.images = photos.map(p => p.full); draft.fromQueue = qid; draft.dupOf = await findDup(draft); photos = []; try { const q0 = (await DB.all('queue')).find(x => x.id === qid); if (q0) { q0.err = 'Okundu, henüz kaydedilmedi'; await DB.put(q0, 'queue'); } } catch(e) {} }
+    catch(e) { if (e.cancel) { await DB.del(qid, 'queue'); toast('İptal edildi, fotoğraflar duruyor'); return renderAdd(); } await enqueue(photos, e.message, qid); photos = []; toast('Okunamadı: ' + e.message + ' — fiş sıraya alındı'); }
     renderAdd();
   } finally { busy = false; stopP(); }
 }
 async function readQueue(id){
   if (busy) return; const q = (await DB.all('queue')).find(x => x.id === id); if (!q) return;
   busy = true; const stopP = progStart('Bekleyen fiş okunuyor');
-  try { const {data, recheck} = await analyzeChecked(q.images.map(s => s.split(',')[1])); draft = makeDraft(data, q.thumb); draft.recheck = recheck; draft.fromQueue = id; draft.images = q.images; draft.dupOf = await findDup(draft); }
+  try { const {data, recheck} = await analyzeChecked(await apiImgs(q.images)); draft = makeDraft(data, q.thumb); draft.recheck = recheck; draft.fromQueue = id; draft.images = q.images; draft.dupOf = await findDup(draft); }
   catch(e) { if (e.cancel) toast('İptal edildi'); else { q.err = e.message; await DB.put(q, 'queue'); toast('Okunamadı: ' + e.message); } }
   finally { busy = false; stopP(); }
   renderAdd();
@@ -1875,6 +1886,24 @@ if (window.visualViewport) visualViewport.addEventListener('resize', () => { con
 ['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
 DB.open().then(async () => { await restoreKey(); show('fisler'); maybeWelcome(); }).catch(() => { view.innerHTML = '<div class="card err">Veritabanı açılamadı. Gizli sekmede olabilirsin; normal sekmede aç.</div>'; });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// iPhone standalone: sabit menü kısa sayfalarda yukarıda kalabiliyor; gerçek ekran altına göre düzelt
+function fixNav(){
+  try{
+    if(!navigator.standalone) return;
+    if(innerWidth > innerHeight) return;
+    const n = document.getElementById('nav'); if(!n || getComputedStyle(n).display==='none') return;
+    const root = document.documentElement;
+    root.style.setProperty('--d','0px');
+    const sh = Math.max(screen.height, screen.width);
+    const gap = sh - n.getBoundingClientRect().bottom;
+    const want = 16;
+    const d = Math.round(gap - want);
+    if (Math.abs(d) > 2 && Math.abs(d) < 160) root.style.setProperty('--d', d + 'px');
+  }catch(e){}
+}
+['load','resize','orientationchange','pageshow','focusout'].forEach(ev => addEventListener(ev, () => { fixNav(); setTimeout(fixNav, 250); setTimeout(fixNav, 900); }));
+document.addEventListener('click', () => setTimeout(fixNav, 350));
 </script>
 </body>
 </html>
