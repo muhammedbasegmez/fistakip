@@ -348,7 +348,8 @@ async function geminiOnly(body){
   const models = [...new Set([first, 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-flash-lite-latest'])];
   let lastErr = null;
   body.generationConfig = body.generationConfig || {};
-  if (!body.generationConfig.thinkingConfig && localStorage.getItem('nothink') !== '1') body.generationConfig.thinkingConfig = {thinkingBudget:0};
+  const tm = localStorage.getItem('thinkmode') || 'b0';
+  if (!body.generationConfig.thinkingConfig) { if (tm === 'b0') body.generationConfig.thinkingConfig = {thinkingBudget:0}; else if (tm === 'lvl') body.generationConfig.thinkingConfig = {thinkingLevel:'minimal'}; }
   for (const m of models) {
     for (let a = 0; a < 2; a++) {
       if (rdCancel) throw cancelErr();
@@ -362,7 +363,7 @@ async function geminiOnly(body){
         onProg && onProg({t:'retry', note:lastErr.message + (a ? ' — yedek modele geçiliyor' : ' — yeniden deneniyor')}); await sleep(1200); continue; }
       if (r.ok) return r.json();
       let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
-      if (r.status === 400 && /think/i.test(msg) && body.generationConfig.thinkingConfig) { delete body.generationConfig.thinkingConfig; try { localStorage.setItem('nothink', '1'); } catch(e) {} a--; continue; }
+      if (r.status === 400 && body.generationConfig.thinkingConfig) { const cur = localStorage.getItem('thinkmode') || 'b0'; const nxt = cur === 'b0' ? 'lvl' : 'none'; try { localStorage.setItem('thinkmode', nxt); } catch(e) {} if (nxt === 'lvl') body.generationConfig.thinkingConfig = {thinkingLevel:'minimal'}; else delete body.generationConfig.thinkingConfig; a--; continue; }
       if (r.status === 404) { lastErr = new Error('Model bulunamadı: ' + m); break; }
       if (r.status === 429 || r.status >= 500) { lastErr = new Error(r.status === 429 ? 'Ücretsiz kota veya dakikalık sınır doldu' : 'Google geçici hata verdi (' + r.status + ')');
         /* yoğunlukta aynı modelde bekleme: bir kez hızlıca dene, olmazsa hemen yedek modele geç */
@@ -399,9 +400,10 @@ async function groqCall(body){
 }
 async function gemini(body){
   const gr = !!localStorage.getItem('grkey'), first = gr && localStorage.getItem('gmode') === 'first';
-  if (first) { try { return await groqCall(body); } catch(e) { if (e.cancel) throw e; onProg && onProg({t:'retry', note:e.message + ' — Gemini deneniyor'}); } }
+  let gErr = null;
+  if (first) { try { return await groqCall(body); } catch(e) { if (e.cancel) throw e; gErr = e; onProg && onProg({t:'retry', note:e.message + ' — Gemini deneniyor'}); } }
   try { return await geminiOnly(body); }
-  catch(e) { if (e.cancel || !gr || first) throw e;
+  catch(e) { if (e.cancel) throw e; if (gErr) throw new Error(e.message + ' · ' + gErr.message); if (!gr || first) throw e;
     onProg && onProg({t:'retry', note:e.message + ' — Groq ile deneniyor'});
     try { return await groqCall(body); } catch(e2) { if (e2.cancel) throw e2; throw new Error(e.message + ' · Groq: ' + e2.message); } }
 }
@@ -417,12 +419,12 @@ function progStart(title){
     <button class="btn alt" data-act="rdcancel">İptal</button></div>`;
   document.body.appendChild(o); const t0 = Date.now(); let step = 1, note = '';
   const set = (n, msg) => { step = n; note = ''; ['ps1', 'ps2', 'ps3'].forEach((id, i) => { const e = $('#' + id); if (e) e.className = i + 1 < n ? 'done' : i + 1 === n ? 'on' : ''; }); const m = $('#pm'); if (m && msg) m.textContent = msg; };
-  onProg = ev => { if (ev.t === 'wait' && step < 3) set(2, 'Gemini fişi okuyor…'); else if (ev.t === 'wait' && step === 3) set(3, 'Toplam uyuşmadı, fiş ikinci kez kontrol ediliyor…');
+  onProg = ev => { if (ev.t === 'wait' && step < 3) set(2, 'Fiş okunuyor…'); else if (ev.t === 'wait' && step === 3) set(3, 'Toplam uyuşmadı, fiş ikinci kez kontrol ediliyor…');
     else if (ev.t === 'second') set(3, 'Toplam uyuşmadı, fiş ikinci kez kontrol ediliyor…'); else if (ev.t === 'retry') { note = ev.note; } };
   const tick = setInterval(() => { const sec = Math.round((Date.now() - t0) / 1000), b = $('#pb'), t = $('#pt'); if (!b) return;
     b.style.width = Math.min(92, (step === 1 ? 10 : step === 2 ? 25 + Math.min(50, sec * 3) : 78 + Math.min(14, sec))) + '%';
     t.innerHTML = `${esc(note) || (sec > 40 ? 'Hâlâ cevap yok. İptal edersen fotoğraf kaybolmaz.' : sec > 20 ? 'Biraz uzadı, Google yoğun olabilir. Bekleyebilir ya da iptal edebilirsin.' : 'Genelde 5–15 saniye sürer.')}<br>Geçen süre: ${sec} sn`; }, 500);
-  setTimeout(() => { if (step === 1) set(2, 'Gemini’ye gönderiliyor…'); }, 400);
+  setTimeout(() => { if (step === 1) set(2, 'Gönderiliyor…'); }, 400);
   return () => { clearInterval(tick); onProg = null; rdCancel = false; rdAc = null; wlOff(); o.remove(); };
 }
 async function analyze(b64s, hint){
@@ -1507,7 +1509,7 @@ async function renderSettings(){
     <input id="pin1" type="password" inputmode="numeric" placeholder="${pinHash() ? 'Mevcut PIN' : '4-8 haneli yeni PIN'}">
     ${pinHash() ? '<button class="btn alt" data-act="rmpin">PIN\'i kaldır</button>' : '<button class="btn" data-act="setpin">PIN koy</button>'}</div>
   <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>
-   <p class="mut" style="text-align:center;font-size:12px">Sürüm v24</p>`;
+   <p class="mut" style="text-align:center;font-size:12px">Sürüm v25</p>`;
   accordion();
   $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0, fn = 0;
     for (const r of recs) { if (r && r.id && validDate(r.date) && Array.isArray(r.items)) { await DB.put(r); n++; } else bad++; }
