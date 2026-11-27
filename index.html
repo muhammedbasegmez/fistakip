@@ -345,7 +345,8 @@ const cancelErr = () => { const e = new Error('İptal edildi'); e.fatal = true; 
 async function geminiOnly(body){
   const k = localStorage.getItem('gkey'); if (!k) { const e = new Error('Gemini anahtarı girilmemiş'); e.fatal = true; throw e; }
   const first = (localStorage.getItem('gmodel') || 'gemini-flash-latest').trim();
-  const models = [...new Set([first, 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-flash-lite-latest'])];
+  /* ana 'latest' model sık yavaşlıyor/yoğun: önce 2.5 Flash (düşünme kapatılabiliyor) ve Flash-Lite, 'latest' en sona */
+  const models = [...new Set(first === 'gemini-flash-latest' ? ['gemini-2.5-flash', 'gemini-flash-lite-latest', 'gemini-flash-latest'] : [first, 'gemini-2.5-flash', 'gemini-flash-lite-latest', 'gemini-flash-latest'])];
   let lastErr = null;
   body.generationConfig = body.generationConfig || {};
   const tm = localStorage.getItem('thinkmode') || 'b0';
@@ -353,14 +354,15 @@ async function geminiOnly(body){
   for (const m of models) {
     for (let a = 0; a < 2; a++) {
       if (rdCancel) throw cancelErr();
-      let r; const ac = new AbortController(); rdAc = ac; const to = setTimeout(() => ac.abort(), 28000);
+      let r; const ac = new AbortController(); rdAc = ac; const to = setTimeout(() => ac.abort(), 20000);
       onProg && onProg({t:'wait', n:a + 1});
       try { r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
         {method:'POST', headers:{'Content-Type':'application/json', 'x-goog-api-key':k}, body:JSON.stringify(body), signal:ac.signal}); clearTimeout(to); rdAc = null; }
       catch(e) { clearTimeout(to); if (rdCancel) throw cancelErr();
         if (bgFlag && bgHit < 4) { bgFlag = false; bgHit++; a--; onProg && onProg({t:'retry', note:'Uygulamaya dönüldü, okuma kaldığı yerden yeniden başlıyor'}); await sleep(600); continue; }
-        lastErr = new Error(e && e.name === 'AbortError' ? 'Gemini 28 sn içinde cevap vermedi' : 'Google\'a ulaşılamadı (internet?)');
-        onProg && onProg({t:'retry', note:lastErr.message + (a ? ' — yedek modele geçiliyor' : ' — yeniden deneniyor')}); await sleep(1200); continue; }
+        const to2 = e && e.name === 'AbortError'; lastErr = new Error(to2 ? 'Gemini (' + m + ') 20 sn içinde cevap vermedi' : 'Google\'a ulaşılamadı (internet?)');
+        /* cevap vermeyen modelde bekleme: hemen sıradaki modele geç */
+        onProg && onProg({t:'retry', note:lastErr.message + (to2 || a ? ' — sıradaki modele geçiliyor' : ' — yeniden deneniyor')}); if (to2) break; await sleep(1200); continue; }
       if (r.ok) { if (lastRead) { lastRead.eng = 'Gemini'; lastRead.model = m; } return r.json(); }
       let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
       if (r.status === 400 && body.generationConfig.thinkingConfig) { const cur = localStorage.getItem('thinkmode') || 'b0'; const nxt = cur === 'b0' ? 'lvl' : 'none'; try { localStorage.setItem('thinkmode', nxt); } catch(e) {} if (nxt === 'lvl') body.generationConfig.thinkingConfig = {thinkingLevel:'minimal'}; else delete body.generationConfig.thinkingConfig; a--; continue; }
@@ -1514,7 +1516,7 @@ async function renderSettings(){
     <input id="pin1" type="password" inputmode="numeric" placeholder="${pinHash() ? 'Mevcut PIN' : '4-8 haneli yeni PIN'}">
     ${pinHash() ? '<button class="btn alt" data-act="rmpin">PIN\'i kaldır</button>' : '<button class="btn" data-act="setpin">PIN koy</button>'}</div>
   <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>
-   <p class="mut" style="text-align:center;font-size:12px">Sürüm v26</p>`;
+   <p class="mut" style="text-align:center;font-size:12px">Sürüm v27</p>`;
   accordion();
   $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0, fn = 0;
     for (const r of recs) { if (r && r.id && validDate(r.date) && Array.isArray(r.items)) { await DB.put(r); n++; } else bad++; }
@@ -1646,7 +1648,7 @@ document.addEventListener('click', async e => {
   else if (a === 'mergefind') { if (!localStorage.getItem('gkey')) return toast('Önce API anahtarını gir'); if (busy) return; busy = true; toast('⏳ Ürünler inceleniyor…');
     try { const res = await findMerges(); if (!res.groups.length) toast('Birleştirilecek benzer ürün bulunamadı'); else mergeDialog(res); } catch(e) { toast('Olmadı: ' + e.message); } finally { busy = false; } }
   else if (a === 'mergeapply') { const n = await applyMerges(); $('#dlg').close(); toast(n ? n + ' kalem birleştirildi' : 'Hiçbir şey seçilmedi'); if (tab === 'rapor') renderReport(); }
-  else if (a === 'savegroq') { const gk = $('#grkey').value.trim(), gm = $('#gmodesel').value; if (gk) { localStorage.setItem('grkey', gk); kvSet('grkey', gk); } else { localStorage.removeItem('grkey'); kvSet('grkey', ''); } localStorage.setItem('gmode', gm); kvSet('gmode', gm); toast('Kaydedildi'); renderSettings(); }
+  else if (a === 'savegroq') { const gk = $('#grkey').value.replace(/\s+/g, ''), gm = $('#gmodesel').value; if (gk && !/^gsk_[\w-]{20,}$/.test(gk)) return toast('Anahtar gsk_ ile başlamalı ve eksiksiz yapıştırılmalı'); if (gk) { localStorage.setItem('grkey', gk); kvSet('grkey', gk); } else { localStorage.removeItem('grkey'); kvSet('grkey', ''); } localStorage.setItem('gmode', gm); kvSet('gmode', gm); toast('Kaydedildi'); renderSettings(); }
   else if (a === 'savekey') { saveKey($('#gkey').value.trim(), $('#gmodel').value.trim() || 'gemini-flash-latest'); toast('Kaydedildi'); renderSettings(); }
   else if (a === 'savebudget') { const cats = {}; document.querySelectorAll('[data-bc]').forEach(i => { const v = num(i.value); if (v > 0) cats[i.dataset.bc] = v; });
     LS.set('budget', {total:num($('#bt').value), cats}); toast('Bütçe kaydedildi'); }
