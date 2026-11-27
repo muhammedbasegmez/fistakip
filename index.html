@@ -361,7 +361,7 @@ async function geminiOnly(body){
         if (bgFlag && bgHit < 4) { bgFlag = false; bgHit++; a--; onProg && onProg({t:'retry', note:'Uygulamaya dönüldü, okuma kaldığı yerden yeniden başlıyor'}); await sleep(600); continue; }
         lastErr = new Error(e && e.name === 'AbortError' ? 'Gemini 28 sn içinde cevap vermedi' : 'Google\'a ulaşılamadı (internet?)');
         onProg && onProg({t:'retry', note:lastErr.message + (a ? ' — yedek modele geçiliyor' : ' — yeniden deneniyor')}); await sleep(1200); continue; }
-      if (r.ok) return r.json();
+      if (r.ok) { if (lastRead) { lastRead.eng = 'Gemini'; lastRead.model = m; } return r.json(); }
       let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
       if (r.status === 400 && body.generationConfig.thinkingConfig) { const cur = localStorage.getItem('thinkmode') || 'b0'; const nxt = cur === 'b0' ? 'lvl' : 'none'; try { localStorage.setItem('thinkmode', nxt); } catch(e) {} if (nxt === 'lvl') body.generationConfig.thinkingConfig = {thinkingLevel:'minimal'}; else delete body.generationConfig.thinkingConfig; a--; continue; }
       if (r.status === 404) { lastErr = new Error('Model bulunamadı: ' + m); break; }
@@ -391,28 +391,32 @@ async function groqCall(body){
     try { r = await fetch('https://api.groq.com/openai/v1/chat/completions', {method:'POST', headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + k}, body:JSON.stringify(req), signal:ac.signal}); clearTimeout(to); rdAc = null; }
     catch(e) { clearTimeout(to); if (rdCancel) throw cancelErr(); if (bgFlag && bgHit < 4) { bgFlag = false; bgHit++; a--; await sleep(600); continue; }
       throw new Error(e && e.name === 'AbortError' ? 'Groq 28 sn içinde cevap vermedi' : 'Groq\'a ulaşılamadı'); }
-    if (r.ok) { const j = await r.json(); return {candidates:[{content:{parts:[{text:j.choices?.[0]?.message?.content || ''}]}}]}; }
+    if (r.ok) { if (lastRead) { lastRead.eng = 'Groq'; lastRead.model = model; } const j = await r.json(); return {candidates:[{content:{parts:[{text:j.choices?.[0]?.message?.content || ''}]}}]}; }
     let msg = ''; try { msg = (await r.json()).error.message; } catch(e) {}
     if (r.status === 400 && req.reasoning_effort && /reasoning/i.test(msg)) { delete req.reasoning_effort; a--; continue; }
     throw new Error('Groq ' + r.status + (msg ? ': ' + msg.slice(0, 120) : ''));
   }
   throw new Error('Groq cevap vermedi');
 }
+let lastRead = null;
+const noteLog = n => { if (lastRead && n) lastRead.notes.push(Math.round((Date.now() - lastRead.t0) / 1000) + ' sn: ' + n); };
 async function gemini(body){
+  if (!lastRead) lastRead = {t0:Date.now(), notes:[], eng:'', model:'', calls:0};
+  lastRead.calls++;
   const gr = !!localStorage.getItem('grkey'), first = gr && localStorage.getItem('gmode') === 'first';
-  let gErr = null;
-  if (first) { try { return await groqCall(body); } catch(e) { if (e.cancel) throw e; gErr = e; onProg && onProg({t:'retry', note:e.message + ' — Gemini deneniyor'}); } }
-  try { return await geminiOnly(body); }
-  catch(e) { if (e.cancel) throw e; if (gErr) throw new Error(e.message + ' · ' + gErr.message); if (!gr || first) throw e;
+  let gErr = null; const fin = () => { if (lastRead) { lastRead.ms = Date.now() - lastRead.t0; try { localStorage.setItem('lastread', JSON.stringify(lastRead)); } catch(e) {} } };
+  if (first) { try { const g = await groqCall(body); fin(); return g; } catch(e) { if (e.cancel) throw e; gErr = e; onProg && onProg({t:'retry', note:e.message + ' — Gemini deneniyor'}); } }
+  try { const g = await geminiOnly(body); fin(); return g; }
+  catch(e) { fin(); if (e.cancel) throw e; if (gErr) throw new Error(e.message + ' · ' + gErr.message); if (!gr || first) throw e;
     onProg && onProg({t:'retry', note:e.message + ' — Groq ile deneniyor'});
-    try { return await groqCall(body); } catch(e2) { if (e2.cancel) throw e2; throw new Error(e.message + ' · Groq: ' + e2.message); } }
+    try { const g = await groqCall(body); fin(); return g; } catch(e2) { fin(); if (e2.cancel) throw e2; throw new Error(e.message + ' · Groq: ' + e2.message); } }
 }
 let wl = null;
 async function wlOn(){ try { if (navigator.wakeLock) wl = await navigator.wakeLock.request('screen'); } catch(e) {} }
 function wlOff(){ try { if (wl) wl.release(); } catch(e) {} wl = null; }
 async function apiImgs(arr){ const out = []; for (const x of arr) { try { out.push(toJpeg(await loadSrc(x), 1800, .78).split(',')[1]); } catch(e) { out.push(x.split(',')[1]); } } return out; }
 function progStart(title){
-  rdCancel = false; bgFlag = false; bgHit = 0; wlOn(); const o = document.createElement('div'); o.id = 'rdov';
+  rdCancel = false; bgFlag = false; bgHit = 0; lastRead = null; wlOn(); const o = document.createElement('div'); o.id = 'rdov';
   o.innerHTML = `<div class="rdc"><div class="spin"></div><b style="font-size:18px">${esc(title)}</b>
     <div class="stp"><span id="ps1" class="on">Gönder</span><span id="ps2">Oku</span><span id="ps3">Kontrol</span></div>
     <div class="pbar"><i id="pb" style="width:8%"></i></div><div id="pm" style="font-weight:600">Fotoğraf hazırlanıyor…</div><div class="sub" id="pt" style="margin-top:6px"></div>
@@ -420,7 +424,7 @@ function progStart(title){
   document.body.appendChild(o); const t0 = Date.now(); let step = 1, note = '';
   const set = (n, msg) => { step = n; note = ''; ['ps1', 'ps2', 'ps3'].forEach((id, i) => { const e = $('#' + id); if (e) e.className = i + 1 < n ? 'done' : i + 1 === n ? 'on' : ''; }); const m = $('#pm'); if (m && msg) m.textContent = msg; };
   onProg = ev => { if (ev.t === 'wait' && step < 3) set(2, 'Fiş okunuyor…'); else if (ev.t === 'wait' && step === 3) set(3, 'Toplam uyuşmadı, fiş ikinci kez kontrol ediliyor…');
-    else if (ev.t === 'second') set(3, 'Toplam uyuşmadı, fiş ikinci kez kontrol ediliyor…'); else if (ev.t === 'retry') { note = ev.note; } };
+    else if (ev.t === 'second') set(3, 'Toplam uyuşmadı, fiş ikinci kez kontrol ediliyor…'); else if (ev.t === 'retry') { note = ev.note; noteLog(ev.note); } };
   const tick = setInterval(() => { const sec = Math.round((Date.now() - t0) / 1000), b = $('#pb'), t = $('#pt'); if (!b) return;
     b.style.width = Math.min(92, (step === 1 ? 10 : step === 2 ? 25 + Math.min(50, sec * 3) : 78 + Math.min(14, sec))) + '%';
     t.innerHTML = `${esc(note) || (sec > 40 ? 'Hâlâ cevap yok. İptal edersen fotoğraf kaybolmaz.' : sec > 20 ? 'Biraz uzadı, Google yoğun olabilir. Bekleyebilir ya da iptal edebilirsin.' : 'Genelde 5–15 saniye sürer.')}<br>Geçen süre: ${sec} sn`; }, 500);
@@ -1473,7 +1477,8 @@ async function renderSettings(){
     <input id="grkey" type="password" placeholder="gsk_..." value="${esc(localStorage.getItem('grkey') || '')}">
     <label class="f">Sıra</label>
     <select id="gmodesel"><option value="fallback" ${localStorage.getItem('gmode') !== 'first' ? 'selected' : ''}>Önce Gemini, olmazsa Groq</option><option value="first" ${localStorage.getItem('gmode') === 'first' ? 'selected' : ''}>Önce Groq (daha hızlı), olmazsa Gemini</option></select>
-    <button class="btn" data-act="savegroq">Kaydet</button></div>
+    <button class="btn" data-act="savegroq">Kaydet</button>
+    ${(() => { try { const l = JSON.parse(localStorage.getItem('lastread') || 'null'); return l ? `<div class="note" style="margin-top:10px"><b>Son okuma:</b> ${esc(l.eng || 'başarısız')} ${esc(l.model || '')} · ${Math.round((l.ms || 0) / 1000)} sn · ${l.calls || 1} istek${l.notes.length ? '<br>' + l.notes.slice(0, 8).map(esc).join('<br>') : ''}</div>` : ''; } catch(e) { return ''; } })()}</div>
   <div class="card"><b>Okuma doğruluğu</b>${accHtml(all)}
     <div class="sub">Düzelttiğin ürün adları ve kategoriler hatırlanır; sonraki fişlerde uygulanır ve Gemini'ye örnek olarak gönderilir.</div>
     <button class="btn alt sm" data-act="wipemem">Öğrenilenleri sıfırla</button></div>
@@ -1509,7 +1514,7 @@ async function renderSettings(){
     <input id="pin1" type="password" inputmode="numeric" placeholder="${pinHash() ? 'Mevcut PIN' : '4-8 haneli yeni PIN'}">
     ${pinHash() ? '<button class="btn alt" data-act="rmpin">PIN\'i kaldır</button>' : '<button class="btn" data-act="setpin">PIN koy</button>'}</div>
   <p class="mut">Veriler tarayıcı içinde saklanır. Tarayıcı verilerini temizlersen veya uygulamayı kaldırırsan gider; arada bir yedek indir.</p>
-   <p class="mut" style="text-align:center;font-size:12px">Sürüm v25</p>`;
+   <p class="mut" style="text-align:center;font-size:12px">Sürüm v26</p>`;
   accordion();
   $('#imp').onchange = async e => { try { const j = JSON.parse(await e.target.files[0].text()); const recs = Array.isArray(j) ? j : (j.receipts || []); let n = 0, bad = 0, fn = 0;
     for (const r of recs) { if (r && r.id && validDate(r.date) && Array.isArray(r.items)) { await DB.put(r); n++; } else bad++; }
